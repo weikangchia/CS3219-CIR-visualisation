@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+    crossorigin="anonymous">
+
+  <link rel="stylesheet" href="css/custom.css" />
+
+  <style>
+    .bar {
+      fill: steelblue;
+    }
+  </style>
+
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href="#">Pair 2</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Top 10 Authors
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Top 5 Papers</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Top 10 Authors for Venue arXiv</h1>
+
+    <div class="row">
+      <div class="col">
+        <div id="graphic"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- d3 Script -->
+
+  <script>
+    var data = [{
+      "name": "Bob",
+      "count": 33
+    }, {
+      "name": "Robin",
+      "count": 12
+    }, {
+      "name": "Anne",
+      "count": 41
+    }, {
+      "name": "Mark",
+      "count": 16
+    }, {
+      "name": "Joe",
+      "count": 59
+    }, {
+      "name": "Eve",
+      "count": 38
+    }];
+
+    // set the dimensions and margins of the graph
+    var margin = {
+        top: 20,
+        right: 20,
+        bottom: 100,
+        left: 100
+      },
+      width = 960 - margin.left - margin.right,
+      height = 350 - margin.top - margin.bottom,
+      padding = 100; // space around the chart, not including labels
+
+    // set the ranges
+    var y = d3.scaleBand()
+      .range([height, 0])
+      .padding(0.1);
+
+    var x = d3.scaleLinear()
+      .range([0, width]);
+
+    // append the svg object to the body of the page
+    // append a 'group' element to 'svg'
+    // moves the 'group' element to the top left margin
+    var svg = d3.select("#graphic").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
+
+    // format the data
+    data.forEach(function (d) {
+      d.count = +d.count;
+    });
+
+    // Scale the range of the data in the domains
+    x.domain([0, d3.max(data, function (d) {
+      return d.count;
+    })])
+    y.domain(data.map(function (d) {
+      return d.name;
+    }));
+
+    // append the rectangles for the bar chart
+    svg.selectAll(".bar")
+      .data(data)
+      .enter().append("rect")
+      .attr("class", "bar")
+      .attr("width", function (d) {
+        return x(d.count);
+      })
+      .attr("y", function (d) {
+        return y(d.name);
+      })
+      .attr("height", y.bandwidth());
+
+    // add the x Axis
+    svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+
+    // add the y Axis
+    svg.append("g")
+      .call(d3.axisLeft(y));
+
+    svg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate("+ (-padding/2) +","+(height/2)+")rotate(-90)")
+      .text("Author");
+
+    svg.append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate("+ (width/2) +","+(height-(-padding/2))+")")  // centre below axis
+      .text("Number of publications");
+  </script>
+
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
