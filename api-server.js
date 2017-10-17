@@ -1,9 +1,11 @@
 "use strict";
 
-var commander = require("commander");
-var Parser = require("./Parser.js");
+const commander = require("commander");
 const express = require("express");
 const path = require("path");
+const Parser = require("./Parser.js");
+const PapersController = require("./Controllers/PapersController.js");
+const _ = require("lodash");
 
 commander
   .version("0.1.0")
@@ -18,31 +20,71 @@ var port = commander.port;
 if (!port) {
   port = 3000;
   console.log("Using default port: ", port);
-}else{
+} else {
   console.log("Using port: ", port);
-  
 }
 
 if (!commander.directory) {
   commander.directory = "./data";
   console.log("Using default data directory: ", commander.directory);
-}else {
+} else {
   console.log("Using data directory: ", commander.directory);
+}
+
+/**
+ * Business Logic
+ */
+
+/**
+  * @param {integer} topN number of authors (default is 10)
+  */
+function getTopAuthors(topN) {
+  topN = topN || 10;
+  var topAuthors = papersController.group({
+    groupsFromPaper: function(paper) {
+      return paper.getAuthors().map(author => {
+        return author.name;
+      });
+    },
+    filterPaper: function(paper) {
+      return true;
+    }
+  });
+
+  topAuthors = Object.keys(topAuthors)
+    .sort(
+      (author1, author2) =>
+        topAuthors[author2].length - topAuthors[author1].length
+    )
+    .slice(0, topN)
+    .map(author => {
+      return {
+        author: author,
+        count: topAuthors[author].length
+      };
+    });
+
+  return topAuthors;
 }
 
 /**
  * Define app
  */
 const app = express();
-var papers
+const papersController = new PapersController();
 
 app.get("/", (req, res) => {
   res.send("hello world " + papers.length);
 });
 
+app.get("/top-authors", (req, res) => {
+  res.send(JSON.stringify(getTopAuthors()));
+});
+
 app.all("/", function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.setHeader("Content-Type", "application/json");
   next();
 });
 
@@ -52,7 +94,7 @@ app.all("/", function(req, res, next) {
 var parser = new Parser();
 parser.parseDirectory(commander.directory).then(
   parsedPapers => {
-    papers = parsedPapers
+    papersController.setPapers(parsedPapers);
     app.listen(port, () => {
       console.log("API serving on port 3000!");
     });
