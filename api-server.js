@@ -73,21 +73,31 @@ function getTopAuthors(topN) {
 const app = express();
 const papersController = new PapersController();
 
-app.get("/", (req, res) => {
-  res.send("hello world " + papers.length);
-});
-
-app.get("/top-authors", (req, res) => {
-  res.send(JSON.stringify(getTopAuthors()));
-});
-
-app.all("/", function(req, res, next) {
+app.use(function(req, res, next) {
+  console.log("Incoming request: ", req);
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   res.setHeader("Content-Type", "application/json");
+
   next();
 });
 
+app.get("/", (req, res) => {
+  res.send(JSON.stringify({ mode: "test" }));
+});
+
+app.get("/top-authors", (req, res) => {
+  if (req) {
+  }
+
+  res.send(JSON.stringify(getTopAuthors()));
+});
+
+function startServer() {
+  app.listen(port, () => {
+    console.log("API serving on port 3000!");
+  });
+}
 /**
  * Parse data files and start server
  */
@@ -95,9 +105,7 @@ var parser = new Parser();
 parser.parseDirectory(commander.directory).then(
   parsedPapers => {
     papersController.setPapers(parsedPapers);
-    app.listen(port, () => {
-      console.log("API serving on port 3000!");
-    });
+    startServer();
   },
   err => {
     console.error(err);
