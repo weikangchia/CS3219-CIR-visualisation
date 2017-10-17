@@ -63,7 +63,7 @@ var Parser = (function() {
       var walks = [];
       var papers;
       walker.on("file", function(root, fileStats, next) {
-        if(fileStats.name.endsWith('json')){
+        if (fileStats.name.endsWith("json")) {
           var filePath = directory + "/" + fileStats.name;
           walks.push(parseFile(filePath));
         }
