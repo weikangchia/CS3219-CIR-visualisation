@@ -2,3 +2,52 @@ body {
   min-height: 75rem;
   padding-top: 4.5rem;
 }
+
+.axis {
+  font-size: 11px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.toolTip {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  position: absolute;
+  display: none;
+  width: auto;
+  height: auto;
+  background: none repeat scroll 0 0 #eee;
+  border: 0 none;
+  border-radius: 8px 8px 8px 8px;
+  box-shadow: 0 0 5px #999999;
+  color: #333;
+  font: 12px sans-serif;
+  padding: 8px;
+  text-align: center;
+}
+
+.bar {
+  fill: #2196F3;
+}
+
+.line {
+  fill: none;
+  stroke: #2196F3;
+  stroke-width: 2px;
+}
+
+.links line {
+  stroke: #999;
+  stroke-width: 1.5px;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.label {
+  text-anchor: middle;
+  fill: #424242;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+}
