@@ -15,21 +15,32 @@ commander
     "Directory where json file(s) are located"
   )
   .option("-p, --port <port>", "Port served on")
+  .option("-s, --silent [silent]", "silent")
   .parse(process.argv);
+
+/** arguments */
+
+var verbose = !commander.silent;
+
+function log(...args) {
+  if (verbose) {
+    console.log(...args);
+  }
+}
 
 var port = commander.port;
 if (!port) {
   port = 3000;
-  console.log("Using default port: ", port);
+  log("Using default port: ", port);
 } else {
-  console.log("Using port: ", port);
+  log("Using port: ", port);
 }
 
 if (!commander.directory) {
   commander.directory = "./data";
-  console.log("Using default data directory: ", commander.directory);
+  log("Using default data directory: ", commander.directory);
 } else {
-  console.log("Using data directory: ", commander.directory);
+  log("Using data directory: ", commander.directory);
 }
 
 /**
@@ -75,7 +86,7 @@ const app = express();
 const papersController = new PapersController();
 
 app.use(function(req, res, next) {
-  console.log("Incoming request: ", req);
+  log("Incoming request: ", req.path, req.query);
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   res.setHeader("Content-Type", "application/json");
@@ -96,7 +107,7 @@ app.get("/top-authors", (req, res) => {
 
 function startServer() {
   app.listen(port, () => {
-    console.log("API serving on port 3000!");
+    log("API serving on port 3000!");
   });
 }
 
