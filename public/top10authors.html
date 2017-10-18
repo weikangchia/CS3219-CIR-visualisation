@@ -118,7 +118,7 @@
     d3.json("http://localhost:3000/top-authors?" + searchParams.toString(), function (error, data) {
       if (error) throw error;
 
-      var maxCount = d3.max(data, d => +d.count)
+      const maxCount = d3.max(data, d => +d.count)
 
       // scale the range of the data in the domains
       x.domain([0, maxCount])
@@ -135,6 +135,7 @@
           return y(d.author);
         })
         .attr("height", y.bandwidth())
+        .attr("transform", "translate(" + margin.left/2 + ", 0)")
         .on("mousemove", function (d) {
           toolTip.style("left", (d3.event.pageX - 50) + "px");
           toolTip.style("top", (d3.event.pageY - 140) + "px");
@@ -152,13 +153,16 @@
       // add the x Axis
       svg.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("transform", "translate(" + margin.left/2 + "," + height + ")")
         .call(d3.axisBottom(x).ticks([maxCount]));
 
       // add the y Axis
       svg.append("g")
+        .attr("transform", "translate(" + margin.left/2 + ", 0)")
         .attr("class", "axis")
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y))
+        .selectAll(".tick text")
+        .call(wrapText, margin.left - 10);
 
       svg.append("text")
         .attr("text-anchor", "middle")
@@ -167,8 +171,78 @@
 
       svg.append("text")
         .attr("text-anchor", "middle")
-        .attr("transform", "translate(" + (width / 2) + "," + (height - (-padding / 2)) + ")") // centre below axis
+        .attr("transform", "translate(" + (width / 2) + "," + (height - (-padding / 2)) + ")")
         .text("Number of publications");
+
+      function wrapText(text, width) {
+        text.each(function () {
+          var text = d3.select(this),
+            textContent = text.text(),
+            tempWord = addBreakSpace(textContent).split(/\s+/),
+            x = text.attr('x'),
+            y = text.attr('y'),
+            dy = parseFloat(text.attr('dy') || 0),
+            tspan = text.text(null).append('tspan').attr('x', x).attr('y', y).attr('dy', dy + 'em');
+          for (var i = 0; i < tempWord.length; i++) {
+            tempWord[i] = calHyphen(tempWord[i]);
+          }
+          textContent = tempWord.join(" ");
+          var words = textContent.split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            spanContent,
+            breakChars = ['/', '&', '-'];
+          while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(' '));
+            if (tspan.node().getComputedTextLength() > width) {
+              line.pop();
+              spanContent = line.join(' ');
+              breakChars.forEach(char => {
+                // Remove spaces trailing breakChars that were added above
+                spanContent = spanContent.replace(char + ' ', char);
+              });
+              tspan.text(spanContent);
+              line = [word];
+              tspan = text.append('tspan').attr('x', x).attr('y', y).attr('dy', ++lineNumber * lineHeight + dy +
+                'em').text(word);
+            }
+          }
+          var emToPxRatio = parseInt(window.getComputedStyle(text._groups[0][0]).fontSize.slice(0, -2));
+          text.attr("transform", "translate(-" + (margin.left - padding + 10) + ", -" + lineNumber / 2 * lineHeight *
+            emToPxRatio + ")");
+
+          function calHyphen(word) {
+            tspan.text(word);
+            if (tspan.node().getComputedTextLength() > width) {
+              var chars = word.split('');
+              var asword = "";
+              for (var i = 0; i < chars.length; i++) {
+                asword += chars[i];
+                tspan.text(asword);
+                if (tspan.node().getComputedTextLength() > width) {
+                  if (chars[i - 1] !== "-") {
+                    word = word.slice(0, i - 1) + "- " + calHyphen(word.slice(i - 1));
+                  }
+                  i = chars.length;
+                }
+              }
+            }
+            return word;
+          }
+        });
+
+        function addBreakSpace(inputString) {
+          var breakChars = ['/', '&', '-']
+          breakChars.forEach(char => {
+            // Add a space after each break char for the function to use to determine line breaks
+            inputString = inputString.replace(char, char + ' ');
+          });
+          return inputString;
+        }
+      }
 
       /**
        * further processing
@@ -186,17 +260,20 @@
 
           $('publications').empty()
           authorsDict[e].papers.forEach((paper) => {
-            var $paper = $("<p>").append('<a target="_blank" href="https://google.com/search?q=' + paper.title + '">' + paper.title + '</a>')
+            var $paper = $("<p>").append('<a target="_blank" href="https://google.com/search?q=' + paper.title +
+              '">' + paper.title + '</a>')
             $('publications').append($paper)
           })
         })
     });
+
   </script>
 
   <style>
     g.tick:hover {
       text-decoration: underline
     }
+
   </style>
 
   <!-- Optional JavaScript -->
