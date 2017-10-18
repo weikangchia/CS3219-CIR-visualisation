@@ -87,7 +87,7 @@
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json("./authors.json", function (error, data) {
+    d3.json("http://localhost:3000/top-authors", function (error, data) {
       if (error) throw error;
 
       // format the data

@@ -1,22 +1,24 @@
-var Author = (function() {
-  function Constructor() {
-    this.id = ''
-    this.name = ''
+class Author {
+  constructor() {
+    this.id = '';
+    this.name = '';
   }
-  Constructor.prototype = {
-    getName() {
-      return this.name;
-    },
-    setName(name) {
-      this.name = name;
-    },
-    getId() {
-      return this.id;
-    },
-    setId(id) {
-      this.id = id;
-    }
-  };
-  return Constructor;
-})();
+
+  getName() {
+    return this.name;
+  }
+
+  setName(name) {
+    this.name = name;
+  }
+
+  getId() {
+    return this.id;
+  }
+
+  setId(id) {
+    this.id = id;
+  }
+}
+
 module.exports = Author;

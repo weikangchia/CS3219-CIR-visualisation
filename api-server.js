@@ -1,5 +1,3 @@
-"use strict";
-
 const commander = require("commander");
 const express = require("express");
 const path = require("path");
@@ -7,6 +5,9 @@ const Parser = require("./Parser.js");
 const PapersController = require("./Controllers/PapersController.js");
 const _ = require("lodash");
 const readline = require("readline");
+
+const app = express();
+const papersController = new PapersController();
 
 commander
   .version("0.1.0")
@@ -24,6 +25,7 @@ var verbose = !commander.silent;
 
 function log(...args) {
   if (verbose) {
+    // eslint-disable-next-line no-console
     console.log(...args);
   }
 }
@@ -82,8 +84,6 @@ function getTopAuthors(options) {
 /**
  * Define app
  */
-const app = express();
-const papersController = new PapersController();
 
 app.use(function(req, res, next) {
   log("Incoming request: ", req.path, req.query);
@@ -95,7 +95,11 @@ app.use(function(req, res, next) {
 });
 
 app.get("/", (req, res) => {
-  res.send(JSON.stringify({ mode: "test" }));
+  res.send(
+    JSON.stringify({
+      mode: "test"
+    })
+  );
 });
 
 app.get("/top-authors", (req, res) => {
@@ -122,7 +126,7 @@ function startServer() {
 }
 
 /**
- * Parse data files and start server
+ * Parse the data files and start the server.
  */
 var parser = new Parser();
 var i = 0;
@@ -144,6 +148,7 @@ parser.parseDirectory(commander.directory).then(
     startServer();
   },
   err => {
+    // eslint-disable-next-line no-console
     console.error(err);
   }
 );
