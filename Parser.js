@@ -31,6 +31,7 @@ var Parser = (function() {
       }, this);
 
       paper.setTitle(obj.title);
+      paper.setId(obj.id);
       paper.setVenue(obj.venue);
       resolve(paper);
     });

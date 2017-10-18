@@ -5,6 +5,14 @@ class Paper {
     this.venue = "";
   }
 
+  setId(id) {
+    this.id = id;
+  }
+
+  getId(){
+    return this.id
+  }
+
   getTitle() {
     return this.title;
   }
@@ -28,6 +36,7 @@ class Paper {
   getVenue(venue) {
     return this.venue;
   }
+
   setVenue(venue) {
     this.venue = venue;
   }
