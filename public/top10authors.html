@@ -42,7 +42,8 @@
   </nav>
 
   <div class="container">
-    <h1>Top 10 Authors for Venue arXiv</h1>
+    <h1 id="header">Top 10 Authors for Venue
+      <span class='venue'></span></h1>
 
     <div class="row">
       <div class="col">
@@ -55,6 +56,20 @@
   <!-- d3 Script -->
 
   <script>
+    /**
+     * Parse url params and redirect if need be
+     */
+    var searchParams = new URLSearchParams(window.location.search)
+    var venue = searchParams.get("venue")
+    console.log(venue)
+    if (!venue) {
+      var venue = prompt("Please enter venue", "arXiv");
+      searchParams.set('venue', venue);
+      window.location.search = searchParams
+    }
+
+    document.querySelectorAll('.venue').forEach(dom => dom.innerHTML = venue)
+
     // set the dimensions and margins of the graph
     const margin = {
       top: 20,
@@ -85,9 +100,9 @@
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");    
+        "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json("http://localhost:3000/top-authors", function (error, data) {
+    d3.json("http://localhost:3000/top-authors" + window.location.search, function (error, data) {
       if (error) throw error;
 
       var maxCount = d3.max(data, d => +d.count)
