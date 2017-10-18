@@ -18,26 +18,36 @@ class PapersController {
   /**
    * Group paper based on the options.
    *
+   * 
    * @callback paperFilter
    * @param {Paper} paper
-   * @returns true if the paper is to be included
+   * @returns true if paper is to be included
    *
    * @callback groupsFromPaper
    * @param {Paper} paper
    * @returns groups that paper belongs in
-   *
-   * @typedef {Object} GroupingOptions
-   * @property {function} filter
-   *
-   * @param {GroupingOptions} options
-   */
+
+  * @typedef {Object} GroupingOptions
+  * @property {groupsFromPaper} groupsFromPaper default a function that returns JSON.stringify(paper)
+  * @property {paperFilter} paperFilter if not specified all papers will be included
+  * 
+  * @param {GroupingOptions} options
+  */
   group(options) {
-    const groups = {};
-    this.papers.forEach((paper) => {
+    options = options || {};
+
+    options.groupsFromPaper =
+      options.groupsFromPaper ||
+      (paper => {
+        [JSON.stringify(paper)];
+      });
+
+    var groups = {};
+    this.papers.forEach(paper => {
       if (options.paperFilter && !options.paperFilter(paper)) {
         return;
       }
-      options.groupsFromPaper(paper).forEach((key) => {
+      options.groupsFromPaper(paper).forEach(key => {
         groups[key] = groups[key] || [];
         groups[key].push(paper);
       });

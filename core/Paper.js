@@ -1,7 +1,8 @@
 class Paper {
   constructor() {
-    this.title = '';
+    this.title = "";
     this.authors = [];
+    this.venue = "";
   }
 
   getTitle() {
@@ -23,6 +24,12 @@ class Paper {
   addAuthor(author) {
     this.authors.push(author);
   }
-}
 
+  getVenue(venue) {
+    return this.venue;
+  }
+  setVenue(venue) {
+    this.venue = venue;
+  }
+}
 module.exports = Paper;
