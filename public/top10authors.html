@@ -44,9 +44,17 @@
   </nav>
 
   <div class="container">
-    <h1 id="header">Top 10 Authors for Venue
-      <span class='venue'></span>
-    </h1>
+    <div class="row">
+      <div class="col">
+        <h1 id="header">Top 10 Authors for Venue
+          <span id="venue"></span>
+        </h1>
+
+        <p>Visualization for the top 10 authors for a venue based on the number of publications he/she has made across all available
+          years for that venue.</p>
+      </div>
+    </div>
+
 
     <div class="row">
       <div class="col">
@@ -55,13 +63,17 @@
       </div>
     </div>
 
-    <hr>
-    <author>
-      <h2 class="author"></h2>
-      <publications>
+    <div class="row">
+      <div class="col">
+        <hr>
+        <author>
+          <h2 class="author"></h2>
+          <publications>
 
-      </publications>
-    </author>
+          </publications>
+        </author>
+      </div>
+    </div>
   </div>
 
   <!-- d3 Script -->
@@ -70,17 +82,17 @@
     /**
      * Parse url params and redirect if need be
      */
-    const searchParams = new URLSearchParams(window.location.search)
-    let venue = searchParams.get("venue")
+    const searchParams = new URLSearchParams(window.location.search);
+    let venue = searchParams.get("venue");
     if (!venue) {
       venue = prompt("Please enter venue", "arXiv");
       if (venue) {
         searchParams.set('venue', venue);
-        window.location.search = searchParams.toString()
+        window.location.search = searchParams.toString();
       }
     }
 
-    $('.venue').html(venue)
+    $('#venue').html(venue);
 
     // set the dimensions and margins of the graph
     const margin = {
@@ -134,7 +146,7 @@
           return y(d.author);
         })
         .attr("height", y.bandwidth())
-        .attr("transform", "translate(" + margin.left/2 + ", 0)")
+        .attr("transform", "translate(" + margin.left / 2 + ", 0)")
         .on("mousemove", function (d) {
           toolTip.style("left", (d3.event.pageX - 50) + "px");
           toolTip.style("top", (d3.event.pageY - 140) + "px");
@@ -152,12 +164,12 @@
       // add the x Axis
       svg.append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(" + margin.left/2 + "," + height + ")")
+        .attr("transform", "translate(" + margin.left / 2 + "," + height + ")")
         .call(d3.axisBottom(x).ticks([maxCount]));
 
       // add the y Axis
       svg.append("g")
-        .attr("transform", "translate(" + margin.left/2 + ", 0)")
+        .attr("transform", "translate(" + margin.left / 2 + ", 0)")
         .attr("class", "axis")
         .call(d3.axisLeft(y))
         .selectAll(".tick text")
@@ -175,7 +187,7 @@
 
       /**
        * Wrap function adapted from https://stackoverflow.com/a/43535941/1005162
-       */ 
+       */
       function wrapText(text, width) {
         text.each(function () {
           let text = d3.select(this),
@@ -213,7 +225,8 @@
             }
           }
           const emToPxRatio = parseInt(window.getComputedStyle(text._groups[0][0]).fontSize.slice(0, -2));
-          text.attr("transform", "translate(-" + (margin.left - padding + 10) + ", -" + lineNumber / 2 * lineHeight *
+          text.attr("transform", "translate(-" + (margin.left - padding + 10) + ", -" + lineNumber / 2 *
+            lineHeight *
             emToPxRatio + ")");
 
           function calHyphen(word) {
