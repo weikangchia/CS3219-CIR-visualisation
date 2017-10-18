@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start-frontend": "nodemon app.js",
-    "start-server": "nodemon --ignore './public' api-server.js"
+    "start-api-server": "nodemon --ignore './public' api-server.js"
   },
   "author": "",
   "license": "ISC",
