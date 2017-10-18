@@ -6,6 +6,7 @@ const path = require("path");
 const Parser = require("./Parser.js");
 const PapersController = require("./Controllers/PapersController.js");
 const _ = require("lodash");
+const readline = require("readline");
 
 commander
   .version("0.1.0")
@@ -98,10 +99,24 @@ function startServer() {
     console.log("API serving on port 3000!");
   });
 }
+
 /**
  * Parse data files and start server
  */
 var parser = new Parser();
+var i = 0;
+
+if (verbose) {
+  parser.setEventHandler("onLineParsed", line => {
+    readline.cursorTo(process.stdout, 0);
+    process.stdout.write("Parsed lines: " + ++i);
+  });
+
+  parser.setEventHandler("onFilesParsedComplete", line => {
+    process.stdout.write("\n");
+  });
+}
+
 parser.parseDirectory(commander.directory).then(
   parsedPapers => {
     papersController.setPapers(parsedPapers);
