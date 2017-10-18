@@ -1,7 +1,11 @@
 const express = require('express');
 const path = require('path');
-
-const app = express();
+const serveIndex = require('serve-index')
+ 
+var app = express()
+ 
+// Serve index at /
+app.use('/', express.static('public/'), serveIndex('public', {'icons': true}))
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
