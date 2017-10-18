@@ -70,11 +70,10 @@
     /**
      * Parse url params and redirect if need be
      */
-    var searchParams = new URLSearchParams(window.location.search)
-    var venue = searchParams.get("venue")
+    const searchParams = new URLSearchParams(window.location.search)
+    let venue = searchParams.get("venue")
     if (!venue) {
-      console.log(venue)
-      var venue = prompt("Please enter venue", "arXiv");
+      venue = prompt("Please enter venue", "arXiv");
       if (venue) {
         searchParams.set('venue', venue);
         window.location.search = searchParams.toString()
@@ -174,20 +173,23 @@
         .attr("transform", "translate(" + (width / 2) + "," + (height - (-padding / 2)) + ")")
         .text("Number of publications");
 
+      /**
+       * Wrap function adapted from https://stackoverflow.com/a/43535941/1005162
+       */ 
       function wrapText(text, width) {
         text.each(function () {
-          var text = d3.select(this),
+          let text = d3.select(this),
             textContent = text.text(),
             tempWord = addBreakSpace(textContent).split(/\s+/),
             x = text.attr('x'),
             y = text.attr('y'),
             dy = parseFloat(text.attr('dy') || 0),
             tspan = text.text(null).append('tspan').attr('x', x).attr('y', y).attr('dy', dy + 'em');
-          for (var i = 0; i < tempWord.length; i++) {
+          for (let i = 0; i < tempWord.length; i++) {
             tempWord[i] = calHyphen(tempWord[i]);
           }
           textContent = tempWord.join(" ");
-          var words = textContent.split(/\s+/).reverse(),
+          let words = textContent.split(/\s+/).reverse(),
             word,
             line = [],
             lineNumber = 0,
@@ -201,7 +203,7 @@
               line.pop();
               spanContent = line.join(' ');
               breakChars.forEach(char => {
-                // Remove spaces trailing breakChars that were added above
+                // remove spaces trailing breakChars that were added above
                 spanContent = spanContent.replace(char + ' ', char);
               });
               tspan.text(spanContent);
@@ -210,16 +212,16 @@
                 'em').text(word);
             }
           }
-          var emToPxRatio = parseInt(window.getComputedStyle(text._groups[0][0]).fontSize.slice(0, -2));
+          const emToPxRatio = parseInt(window.getComputedStyle(text._groups[0][0]).fontSize.slice(0, -2));
           text.attr("transform", "translate(-" + (margin.left - padding + 10) + ", -" + lineNumber / 2 * lineHeight *
             emToPxRatio + ")");
 
           function calHyphen(word) {
             tspan.text(word);
             if (tspan.node().getComputedTextLength() > width) {
-              var chars = word.split('');
-              var asword = "";
-              for (var i = 0; i < chars.length; i++) {
+              const chars = word.split('');
+              let asword = "";
+              for (let i = 0; i < chars.length; i++) {
                 asword += chars[i];
                 tspan.text(asword);
                 if (tspan.node().getComputedTextLength() > width) {
@@ -235,9 +237,9 @@
         });
 
         function addBreakSpace(inputString) {
-          var breakChars = ['/', '&', '-']
+          const breakChars = ['/', '&', '-']
           breakChars.forEach(char => {
-            // Add a space after each break char for the function to use to determine line breaks
+            // add a space after each break char for the function to use to determine line breaks
             inputString = inputString.replace(char, char + ' ');
           });
           return inputString;
