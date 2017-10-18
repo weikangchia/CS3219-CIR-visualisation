@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="css/custom.css">
 
   <script src="./js/d3.v4.min.js"></script>
+  <script src="./js/jquery-3.2.1.slim.min.js"></script>
+
 </head>
 
 <body>
@@ -43,7 +45,8 @@
 
   <div class="container">
     <h1 id="header">Top 10 Authors for Venue
-      <span class='venue'></span></h1>
+      <span class='venue'></span>
+    </h1>
 
     <div class="row">
       <div class="col">
@@ -51,6 +54,14 @@
         <div class="toolTip"></div>
       </div>
     </div>
+
+    <hr>
+    <author>
+      <h2 class="author"></h2>
+      <publications>
+
+      </publications>
+    </author>
   </div>
 
   <!-- d3 Script -->
@@ -61,14 +72,16 @@
      */
     var searchParams = new URLSearchParams(window.location.search)
     var venue = searchParams.get("venue")
-    console.log(venue)
     if (!venue) {
+      console.log(venue)
       var venue = prompt("Please enter venue", "arXiv");
-      searchParams.set('venue', venue);
-      window.location.search = searchParams
+      if (venue) {
+        searchParams.set('venue', venue);
+        window.location.search = searchParams.toString()
+      }
     }
 
-    document.querySelectorAll('.venue').forEach(dom => dom.innerHTML = venue)
+    $('.venue').html(venue)
 
     // set the dimensions and margins of the graph
     const margin = {
@@ -102,7 +115,7 @@
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json("http://localhost:3000/top-authors" + window.location.search, function (error, data) {
+    d3.json("http://localhost:3000/top-authors?" + searchParams.toString(), function (error, data) {
       if (error) throw error;
 
       var maxCount = d3.max(data, d => +d.count)
@@ -156,13 +169,38 @@
         .attr("text-anchor", "middle")
         .attr("transform", "translate(" + (width / 2) + "," + (height - (-padding / 2)) + ")") // centre below axis
         .text("Number of publications");
+
+      /**
+       * further processing
+       */
+      var authorsDict = {}
+      data.forEach(function (authorEntry) {
+        authorsDict[authorEntry.author] = authorEntry
+      }, this);
+
+      d3.selectAll('g.tick')
+        .style('cursor', 'pointer')
+        .style('color', 'blue')
+        .on('click', (e) => {
+          $('author .author').html(e)
+
+          $('publications').empty()
+          authorsDict[e].papers.forEach((paper) => {
+            var $paper = $("<p>").append('<a target="_blank" href="https://google.com/search?q=' + paper.title + '">' + paper.title + '</a>')
+            $('publications').append($paper)
+          })
+        })
     });
   </script>
 
+  <style>
+    g.tick:hover {
+      text-decoration: underline
+    }
+  </style>
 
   <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="./js/jquery-3.2.1.slim.min.js"></script>
+  <!-- Popper.js, then Bootstrap JS -->
   <script src="./js/popper.min.js"></script>
   <script src="./js/bootstrap.min.js"></script>
 </body>
