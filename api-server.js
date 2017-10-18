@@ -33,9 +33,9 @@ function log(...args) {
 let port = commander.port;
 if (!port) {
   port = 3000;
-  log("Using default port: ", port);
+  log("Using default port:", port);
 } else {
-  log("Using port: ", port);
+  log("Using port:", port);
 }
 
 if (!commander.directory) {
@@ -84,7 +84,7 @@ function getTopAuthors(options) {
  */
 
 app.use((req, res, next) => {
-  log("Incoming request: ", req.path, req.query);
+  log("Incoming request:", req.path, req.query);
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   res.setHeader("Content-Type", "application/json");
@@ -105,13 +105,14 @@ app.get("/top-authors", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(paper => paper.getVenue() === params.venue);
+    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
   }
 
   if (paperFilters.length > 0) {
     options.paperFilter = paper =>
       paperFilters.every(paperFilter => paperFilter(paper));
   }
+
   res.send(JSON.stringify(getTopAuthors(options)));
 });
 
