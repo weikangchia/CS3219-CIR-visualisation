@@ -1,7 +1,7 @@
 class Author {
   constructor() {
-    this.id = '';
-    this.name = '';
+    this.id = "";
+    this.name = "";
   }
 
   getName() {

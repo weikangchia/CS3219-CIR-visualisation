@@ -1,8 +1,7 @@
 const commander = require("commander");
 const express = require("express");
-const path = require("path");
 const Parser = require("./Parser.js");
-const PapersController = require("./Controllers/PapersController.js");
+const PapersController = require("./controllers/PapersController.js");
 const _ = require("lodash");
 const readline = require("readline");
 
@@ -21,7 +20,7 @@ commander
 
 /** arguments */
 
-var verbose = !commander.silent;
+const verbose = !commander.silent;
 
 function log(...args) {
   if (verbose) {
@@ -30,7 +29,8 @@ function log(...args) {
   }
 }
 
-var port = commander.port;
+// eslint-disable-next-line prefer-destructuring
+let port = commander.port;
 if (!port) {
   port = 3000;
   log("Using default port: ", port);
@@ -50,14 +50,14 @@ if (!commander.directory) {
  */
 
 /**
-  * @param {integer} topN number of authors (default is 10)
-  */
+ * @param {integer} topN number of authors (default is 10)
+ */
 function getTopAuthors(options) {
   options = options || {};
-  var topN = options.topN || 10;
-  var topAuthors = papersController.group({
-    groupsFromPaper: function(paper) {
-      return paper.getAuthors().map(author => {
+  const topN = options.topN || 10;
+  let topAuthors = papersController.group({
+    groupsFromPaper: (paper) => {
+      return paper.getAuthors().map((author) => {
         return author.name;
       });
     },
@@ -65,12 +65,10 @@ function getTopAuthors(options) {
   });
 
   topAuthors = Object.keys(topAuthors)
-    .sort(
-      (author1, author2) =>
-        topAuthors[author2].length - topAuthors[author1].length
-    )
+    .sort((author1, author2) =>
+      topAuthors[author2].length - topAuthors[author1].length)
     .slice(0, topN)
-    .map(author => {
+    .map((author) => {
       return {
         author: author,
         count: topAuthors[author].length,
@@ -85,7 +83,7 @@ function getTopAuthors(options) {
  * Define app
  */
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   log("Incoming request: ", req.path, req.query);
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -95,21 +93,19 @@ app.use(function(req, res, next) {
 });
 
 app.get("/", (req, res) => {
-  res.send(
-    JSON.stringify({
-      mode: "test"
-    })
-  );
+  res.send(JSON.stringify({
+    mode: "test"
+  }));
 });
 
 app.get("/top-authors", (req, res) => {
-  var params = req.query;
+  const params = req.query;
 
-  var options = {};
-  var paperFilters = [];
+  const options = {};
+  const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(paper => paper.getVenue() == params.venue);
+    paperFilters.push(paper => paper.getVenue() === params.venue);
   }
 
   if (paperFilters.length > 0) {
@@ -128,26 +124,26 @@ function startServer() {
 /**
  * Parse the data files and start the server.
  */
-var parser = new Parser();
-var i = 0;
+const parser = new Parser();
+let i = 0;
 
 if (verbose) {
-  parser.setEventHandler("onLineParsed", line => {
+  parser.setEventHandler("onLineParsed", (line) => {
     readline.cursorTo(process.stdout, 0);
-    process.stdout.write("Parsed lines: " + ++i);
+    process.stdout.write(`Parsed lines: ${++i}`);
   });
 
-  parser.setEventHandler("onFilesParsedComplete", line => {
+  parser.setEventHandler("onFilesParsedComplete", (line) => {
     process.stdout.write("\n");
   });
 }
 
 parser.parseDirectory(commander.directory).then(
-  parsedPapers => {
+  (parsedPapers) => {
     papersController.setPapers(parsedPapers);
     startServer();
   },
-  err => {
+  (err) => {
     // eslint-disable-next-line no-console
     console.error(err);
   }

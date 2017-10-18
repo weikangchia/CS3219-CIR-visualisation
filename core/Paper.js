@@ -41,4 +41,5 @@ class Paper {
     this.venue = venue;
   }
 }
+
 module.exports = Paper;
