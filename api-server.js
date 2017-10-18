@@ -50,17 +50,16 @@ if (!commander.directory) {
 /**
   * @param {integer} topN number of authors (default is 10)
   */
-function getTopAuthors(topN) {
-  topN = topN || 10;
+function getTopAuthors(options) {
+  options = options || {};
+  var topN = options.topN || 10;
   var topAuthors = papersController.group({
     groupsFromPaper: function(paper) {
       return paper.getAuthors().map(author => {
         return author.name;
       });
     },
-    filterPaper: function(paper) {
-      return true;
-    }
+    paperFilter: options.paperFilter
   });
 
   topAuthors = Object.keys(topAuthors)
@@ -72,7 +71,8 @@ function getTopAuthors(topN) {
     .map(author => {
       return {
         author: author,
-        count: topAuthors[author].length
+        count: topAuthors[author].length,
+        papers: topAuthors[author]
       };
     });
 
@@ -99,10 +99,20 @@ app.get("/", (req, res) => {
 });
 
 app.get("/top-authors", (req, res) => {
-  if (req) {
+  var params = req.query;
+
+  var options = {};
+  var paperFilters = [];
+
+  if (params.venue) {
+    paperFilters.push(paper => paper.getVenue() == params.venue);
   }
 
-  res.send(JSON.stringify(getTopAuthors()));
+  if (paperFilters.length > 0) {
+    options.paperFilter = paper =>
+      paperFilters.every(paperFilter => paperFilter(paper));
+  }
+  res.send(JSON.stringify(getTopAuthors(options)));
 });
 
 function startServer() {

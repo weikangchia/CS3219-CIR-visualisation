@@ -24,12 +24,21 @@ var Controller = (function() {
      */
     /**
      * @typedef {Object} GroupingOptions
-     * @property {function} filter
+     * @property {groupsFromPaper} groupsFromPaper default a function that returns JSON.stringify(paper)
+     * @property {paperFilter} paperFilter if not specified all papers will be included
      */
     /**
      * @param {GroupingOptions} options
      */
     group: function(options) {
+      options = options || {};
+
+      options.groupsFromPaper =
+        options.groupsFromPaper ||
+        (paper => {
+          [JSON.stringify(paper)];
+        });
+
       var groups = {};
       this.papers.forEach(paper => {
         if (options.paperFilter && !options.paperFilter(paper)) {
@@ -40,7 +49,8 @@ var Controller = (function() {
           groups[key].push(paper);
         });
       });
-      return groups
+
+      return groups;
     }
   };
   return Constructor;
