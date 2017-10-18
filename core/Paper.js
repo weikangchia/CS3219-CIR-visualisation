@@ -2,6 +2,7 @@ var Paper = (function() {
   var Constructor = function() {
     this.title = ''
     this.authors = []
+    this.venue = ''
   };
   Constructor.prototype = {
     getTitle() {
@@ -18,6 +19,12 @@ var Paper = (function() {
     },
     addAuthor(author) {
       this.authors.push(author);
+    },
+    getVenue(venue){
+      return this.venue
+    },
+    setVenue(venue){
+      this.venue = venue
     }
   };
   return Constructor;
