@@ -3,6 +3,10 @@ class Paper {
     this.title = "";
     this.authors = [];
     this.venue = "";
+    this.inCitations = []
+    this.outCitations = []
+    this.year = null
+    this.abstract = ''
   }
 
   setId(id) {
@@ -39,6 +43,38 @@ class Paper {
 
   setVenue(venue) {
     this.venue = venue;
+  }
+
+  getInCitations() {
+    return this.inCitations;
+  }
+
+  setInCitations(inCitations) {
+    this.inCitations = inCitations;
+  }
+
+  getOutCitations() {
+    return this.outCitations;
+  }
+
+  setOutCitations(outCitations) {
+    this.outCitations = outCitations;
+  }
+
+  getYear() {
+    return this.year;
+  }
+
+  setYear(year) {
+    this.year = year;
+  }
+
+  getAbstract() {
+    return this.abstract;
+  }
+
+  setAbstract(abstract) {
+    this.abstract = abstract;
   }
 }
 

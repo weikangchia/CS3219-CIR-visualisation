@@ -33,6 +33,10 @@ var Parser = (function() {
       paper.setTitle(obj.title);
       paper.setId(obj.id);
       paper.setVenue(obj.venue);
+      paper.setInCitations(obj.inCitations);
+      paper.setOutCitations(obj.outCitations);
+      paper.setYear(obj.year);
+      paper.setAbstract(obj.paperAbstract);
       resolve(paper);
     });
   }
