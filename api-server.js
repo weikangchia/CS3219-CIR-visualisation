@@ -55,12 +55,11 @@ if (!commander.directory) {
 function getTopAuthors(options) {
   options = options || {};
   let topN = options.topN || 10;
+
+  var authors = papersController.getAuthorsObject();
   let topAuthors = papersController.group({
-    groupsFromPaper: paper => {
-      return paper.getAuthors().map(author => {
-        return author.name;
-      });
-    },
+    groupsFromPaper: paper =>
+      paper.getAuthors().map(author => author.getId() || author.getName()),
     paperFilter: options.paperFilter
   });
 
@@ -70,20 +69,16 @@ function getTopAuthors(options) {
         topAuthors[author2].length - topAuthors[author1].length
     )
     .slice(0, topN)
-    .map(author => {
+    .map(authorId => {
       return {
-        author: author,
-        count: topAuthors[author].length,
-        papers: topAuthors[author]
+        author: authors[authorId],
+        count: topAuthors[authorId].length,
+        papers: topAuthors[authorId]
       };
     });
 
   return topAuthors;
 }
-
-/**
- * Business Logic
- */
 
 /**
  * @param {integer} topN number of authors (default is 10)
@@ -113,6 +108,38 @@ function getTopPapers(options) {
     )
   );
   return topPapers;
+}
+
+/**
+ * @param {integer} topN number of authors (default is 10)
+ */
+function getPublicationTrends(options) {
+  options = options || {};
+  let topN = options.topN || 10;
+  let topAuthors = papersController.group({
+    groupsFromPaper: paper => {
+      return paper.getAuthors().map(author => {
+        return author.name;
+      });
+    },
+    paperFilter: options.paperFilter
+  });
+
+  topAuthors = Object.keys(topAuthors)
+    .sort(
+      (author1, author2) =>
+        topAuthors[author2].length - topAuthors[author1].length
+    )
+    .slice(0, topN)
+    .map(author => {
+      return {
+        author: author,
+        count: topAuthors[author].length,
+        papers: topAuthors[author]
+      };
+    });
+
+  return topAuthors;
 }
 
 /**

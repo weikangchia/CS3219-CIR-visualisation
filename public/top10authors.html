@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" id="author">
       <div class="col">
         <hr>
         <author>
@@ -84,7 +84,7 @@
       left: 100
     };
 
-    const width = 960 - margin.left - margin.right;
+    const width = ($(window).width() * 4 / 5.0) - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
     const padding = 100;
 
@@ -108,39 +108,43 @@
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-    d3.json("http://localhost:3000/top-authors?" + searchParams.toString(), function (error, data) {
+    function authorIdentifier(author){
+      author = author.author || author
+      return author.name || author.id
+    }
+    d3.json("http://localhost:3000/top-authors?" + searchParams.toString(), function (error, authors) {
       if (error) throw error;
 
-      const maxCount = d3.max(data, d => +d.count)
+      const maxCount = d3.max(authors, d => +d.count)
 
-      // scale the range of the data in the domains
+      // scale the range of the authors in the domains
       x.domain([0, maxCount])
 
-      // reverse the order that data is added to the graph ie, author most publications at the top
-      y.domain(data.reverse().map(d => d.author));
+      // reverse the order that authors is added to the graph ie, author with most publications at the top
+      y.domain(authors.reverse().map(topAuthor => authorIdentifier(topAuthor.author)));
 
       // append the rectangles for the bar chart
       svg.selectAll(".bar")
-        .data(data)
+        .data(authors)
         .enter().append("rect")
         .attr("class", "bar")
-        .attr("y", function (d) {
-          return y(d.author);
+        .attr("y", function (topAuthor) {
+          return y(authorIdentifier(topAuthor.author));
         })
         .attr("height", y.bandwidth())
         .attr("transform", "translate(" + margin.left / 2 + ", 0)")
-        .on("mousemove", function (d) {
+        .on("mousemove", function (topAuthor) {
           toolTip.style("left", (d3.event.pageX - 50) + "px");
           toolTip.style("top", (d3.event.pageY - 140) + "px");
           toolTip.style("display", "inline-block");
-          toolTip.html((d.author) + "<br>" + (d.count) + " publications");
+          toolTip.html((authorIdentifier(topAuthor)) + "<br>" + (topAuthor.count) + " publications");
         })
         .on("mouseout", function (d) {
           toolTip.style("display", "none");
         })
         .transition().duration(1000)
-        .attr("width", function (d) {
-          return x(d.count);
+        .attr("width", function (topAuthor) {
+          return x(topAuthor.count);
         });
 
       // add the x Axis
@@ -173,13 +177,12 @@
        * further processing
        */
       var authorsDict = {}
-      data.forEach(function (authorEntry) {
-        authorsDict[authorEntry.author] = authorEntry
+      authors.forEach(function (authorEntry) {
+        authorsDict[authorIdentifier(authorEntry)] = authorEntry
       }, this);
 
       d3.selectAll('g.tick')
         .style('cursor', 'pointer')
-        .style('color', 'blue')
         .on('click', (e) => {
           $('author .author').html(e)
 
@@ -189,6 +192,8 @@
               '">' + paper.title + '</a>')
             $('publications').append($paper)
           })
+
+          location.href = "#author"
         })
     });
   </script>

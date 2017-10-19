@@ -69,7 +69,7 @@
 
     $('.venue').html(venue)
   </script>
-  
+
   <!-- d3 Script -->
 
   <script>
@@ -105,8 +105,8 @@
         left: 70
       };
 
-      const barWidth = 900 - barMargin.left - barMargin.right;
-      const barHeight = 500 - barMargin.top - barMargin.bottom;
+      const barWidth = ($(window).width() * 4 / 5) - barMargin.left - barMargin.right;
+      const barHeight = $(window).height() - barMargin.top - barMargin.bottom;
       const barPadding = 100; // space around the chart, not including labels
 
       // set the ranges
@@ -221,7 +221,7 @@
        */
 
       const colors = d3.schemeCategory20c;
-      const bubbleWidth = 900;
+      const bubbleWidth = $(window).width() * 4 / 5;
       const bubbleHeight = 450;
 
       const bubbleSvg = d3.select("#graphBubble")

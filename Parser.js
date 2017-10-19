@@ -24,7 +24,7 @@ var Parser = (function() {
 
       obj.authors.forEach(function(authorObj) {
         var author = new Author();
-        author.setId(authorObj.id);
+        author.setId(authorObj.ids[0]);
         author.setName(authorObj.name);
 
         paper.addAuthor(author);

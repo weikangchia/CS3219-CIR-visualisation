@@ -2,6 +2,22 @@ class PapersController {
   constructor() {
     this.papers = [];
     this.papersObject = null;
+    this.authorsObject = null;
+  }
+
+  getAuthorsObject() {
+    if (this.authorsObject == null) {
+      var obj = {};
+      this.papers.forEach(paper =>
+        paper
+          .getAuthors()
+          .forEach(
+            author => (obj[author.getId()] = obj[author.getId()] || author)
+          )
+      );
+      this.authorsObject = obj;
+    }
+    return this.authorsObject;
   }
 
   getPapersObject() {
@@ -10,12 +26,14 @@ class PapersController {
       this.papers.forEach(
         paper => (obj[paper.getId()] = obj[paper.getId()] || paper)
       );
+      this.papersObject = obj;
     }
-    return obj;
+    return this.papersObject;
   }
 
   setPapers(papers) {
     this.papersObject = null;
+    this.authorsObject = null;
     this.papers = papers;
   }
 
@@ -26,9 +44,11 @@ class PapersController {
   /**
    * Group paper based on the options.
    *
+   * @typedef {Object.<string, Paper[]>} PaperGroups
    * 
    * @callback paperFilter
    * @param {Paper} paper
+   * @param {PaperGroups} already grouped papers
    * @returns true if paper is to be included
    *
    * @callback groupsFromPaper
@@ -52,7 +72,7 @@ class PapersController {
 
     var groups = {};
     this.papers.forEach(paper => {
-      if (options.paperFilter && !options.paperFilter(paper)) {
+      if (options.paperFilter && !options.paperFilter(paper, groups)) {
         return;
       }
       options.groupsFromPaper(paper).forEach(key => {
