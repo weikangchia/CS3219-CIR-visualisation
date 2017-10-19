@@ -116,30 +116,15 @@ function getTopPapers(options) {
 function getPublicationTrends(options) {
   options = options || {};
   let topN = options.topN || 10;
-  let topAuthors = papersController.group({
-    groupsFromPaper: paper => {
-      return paper.getAuthors().map(author => {
-        return author.name;
-      });
-    },
+  let publicationsByYear = papersController.group({
+    groupsFromPaper: paper => [paper.getYear() || 0],
     paperFilter: options.paperFilter
   });
 
-  topAuthors = Object.keys(topAuthors)
-    .sort(
-      (author1, author2) =>
-        topAuthors[author2].length - topAuthors[author1].length
-    )
-    .slice(0, topN)
-    .map(author => {
-      return {
-        author: author,
-        count: topAuthors[author].length,
-        papers: topAuthors[author]
-      };
-    });
-
-  return topAuthors;
+  for (var key in publicationsByYear) {
+    publicationsByYear[key] = { count: publicationsByYear[key].length };
+  }
+  return publicationsByYear;
 }
 
 /**
@@ -200,6 +185,26 @@ app.get("/top-papers", (req, res) => {
       paperFilters.every(paperFilter => paperFilter(paper));
   }
   res.send(JSON.stringify(getTopPapers(options)));
+});
+
+app.get("/publication-trends", (req, res) => {
+  const params = req.query;
+
+  const options = {};
+  const paperFilters = [];
+
+  if (params.venue) {
+    paperFilters.push(
+      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
+    );
+  }
+
+  if (paperFilters.length > 0) {
+    options.paperFilter = paper =>
+      paperFilters.every(paperFilter => paperFilter(paper));
+  }
+
+  res.send(JSON.stringify(getPublicationTrends(options)));
 });
 
 function startServer() {

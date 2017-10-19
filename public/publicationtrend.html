@@ -15,14 +15,14 @@
   <script src="./js/jquery-3.2.1.slim.min.js"></script>
   <script src="./js/utils.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-  
+
 </head>
 
 <body ng-app="">
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
-    <h1>Publication Trends for Venue ICSE</h1>
+    <h1>Publication Trends for <span class="venue"></span></h1>
 
     <div class="row">
       <div class="col">
@@ -31,122 +31,135 @@
     </div>
   </div>
 
+  <!-- params processing -->
+  <script>
+    /**
+     * Parse url params and redirect if need be
+     */
+    var searchParams = new URLSearchParams(window.location.search)
+    var venue = searchParams.get("venue")
+    if (!venue) {
+      var venue = prompt("Please enter venue", "arXiv");
+      if (venue) {
+        searchParams.set('venue', venue);
+        window.location.search = searchParams.toString()
+      }
+    }
+
+    $('.venue').html(venue)
+  </script>
+
   <!-- d3 Script -->
 
   <script>
-    const data = [{
-      "year": 1990,
-      "count": 33
-    }, {
-      "year": 1991,
-      "count": 12
-    }, {
-      "year": 1992,
-      "count": 41
-    }, {
-      "year": 1993,
-      "count": 16
-    }, {
-      "year": 1994,
-      "count": 59
-    }, {
-      "year": 1995,
-      "count": 38
-    }];
+    d3.json(API_HOST + "/publication-trends?" + searchParams.toString(), function (error, data) {
+      /**
+       * Process data
+       */
 
-    // set the dimensions and margins of the graph
-    const margin = {
-      top: 20,
-      right: 70,
-      bottom: 70,
-      left: 70
-    };
-
-    const width = 960 - margin.left - margin.right;
-    const height = 500 - margin.top - margin.bottom;
-    const padding = 100;
-
-    // parse the date / time
-    const parseTime = d3.timeParse("%Y");
-
-    // set the ranges
-    const x = d3.scaleTime().range([0, width]);
-    const y = d3.scaleLinear().range([height, 0]);
-
-    // define the line
-    const valueline = d3.line()
-      .x(function (d) {
-        return x(d.year);
+      data = Object.keys(data).map((year) => {
+        return {
+          year: year,
+          count: data[year].count
+        }
       })
-      .y(function (d) {
-        return y(d.count);
+
+      console.log(data)
+
+      // set the dimensions and margins of the graph
+      const margin = {
+        top: 20,
+        right: 70,
+        bottom: 70,
+        left: 70
+      };
+
+      const width = 960 - margin.left - margin.right;
+      const height = 500 - margin.top - margin.bottom;
+      const padding = 100;
+
+      // parse the date / time
+      const parseTime = d3.timeParse("%Y");
+
+      // set the ranges
+      const x = d3.scaleTime().range([0, width]);
+      const y = d3.scaleLinear().range([height, 0]);
+
+      // define the line
+      const valueline = d3.line()
+        .x(function (d) {
+          return x(d.year);
+        })
+        .y(function (d) {
+          return y(d.count);
+        });
+
+      const svg = d3.select("#graph").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+      data.forEach(function (d) {
+        d.year = parseTime(d.year);
+        d.count = +d.count;
       });
 
-    const svg = d3.select("#graph").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+      const countMax = d3.max(data, function (d) {
+        return d.count;
+      });
 
-    data.forEach(function (d) {
-      d.year = parseTime(d.year);
-      d.count = +d.count;
-    });
+      // scale the range of the data
+      x.domain(d3.extent(data, function (d) {
+        return d.year;
+      }));
 
-    const countMax = d3.max(data, function (d) {
-      return d.count;
-    });
+      y.domain([0, countMax + 10]);
 
-    // scale the range of the data
-    x.domain(d3.extent(data, function (d) {
-      return d.year;
-    }));
+      // add the value line path.
+      svg.append("path")
+        .data([data])
+        .attr("class", "line")
+        .attr("d", valueline);
 
-    y.domain([0, countMax + 10]);
+      const curtain = svg.append("rect")
+        .attr("x", -1 * width)
+        .attr("y", -1 * height)
+        .attr("height", height)
+        .attr("width", width)
+        .attr("class", "curtain")
+        .attr("transform", "rotate(180)")
+        .style("fill", "#ffffff");
 
-    // add the value line path.
-    svg.append("path")
-      .data([data])
-      .attr("class", "line")
-      .attr("d", valueline);
+      curtain.transition()
+        .duration(1500)
+        .ease(d3.easeLinear)
+        .attr("x", -2 * width);
 
-    const curtain = svg.append("rect")
-      .attr("x", -1 * width)
-      .attr("y", -1 * height)
-      .attr("height", height)
-      .attr("width", width)
-      .attr("class", "curtain")
-      .attr("transform", "rotate(180)")
-      .style("fill", "#ffffff");
+      // add the x-axis
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
 
-    curtain.transition()
-      .duration(1500)
-      .ease(d3.easeLinear)
-      .attr("x", -2 * width);
+      // add the y-aixs
+      svg.append("g")
+        .attr("class", "axis")
+        .call(d3.axisLeft(y));
 
-    // add the x-axis
-    svg.append("g")
-      .attr("class", "axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
+      // add the y-axis title
+      svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + (-padding / 2) + "," + (height / 2) + ")rotate(-90)")
+        .text("Number of Publications");
 
-    // add the y-aixs
-    svg.append("g")
-      .attr("class", "axis")
-      .call(d3.axisLeft(y));
-
-    // add the y-axis title
-    svg.append("text")
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(" + (-padding / 2) + "," + (height / 2) + ")rotate(-90)")
-      .text("Number of Publications");
-
-    // add the x-aixs title
-    svg.append("text")
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(" + (width / 2) + "," + (height - (-padding / 2)) + ")") // centre below axis
-      .text("Year");
+      // add the x-aixs title
+      svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + (width / 2) + "," + (height - (-padding / 2)) + ")") // centre below axis
+        .text("Year");
+    })
   </script>
 
 

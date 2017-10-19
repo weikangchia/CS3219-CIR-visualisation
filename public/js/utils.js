@@ -1,3 +1,5 @@
+var API_HOST = 'http://localhost:3000'
+
 function googleSearchUrl(searchTerm) {
   return 'https://google.com/search?q=' + searchTerm ;
 }

@@ -55,7 +55,7 @@
   </div>
 
   <!-- Params script -->
-  
+
   <script>
     /**
      * Parse url params and redirect if need be
@@ -108,11 +108,11 @@
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-    function authorIdentifier(author){
+    function authorIdentifier(author) {
       author = author.author || author
       return author.name || author.id
     }
-    d3.json("http://localhost:3000/top-authors?" + searchParams.toString(), function (error, authors) {
+    d3.json(API_HOST + "/top-authors?" + searchParams.toString(), function (error, authors) {
       if (error) throw error;
 
       const maxCount = d3.max(authors, d => +d.count)
