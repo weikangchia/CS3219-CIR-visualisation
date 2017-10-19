@@ -68,7 +68,6 @@
     }
 
     $('.venue').html(venue)
-
   </script>
 
   <!-- d3 Script -->
@@ -242,6 +241,13 @@
         .attr("class", "paper")
         .attr("r", paper => radiusScale(paper.inCitations.length))
         .attr("fill", (d, i) => colors[i])
+        .on('mouseover', function () {
+          d3.select(this).style('opacity', '0.5').attr('cursor', 'pointer')
+        })
+        .on('mouseleave', function () {
+          d3.select(this).style('opacity', '1')
+        })
+        .on("click", displayPaper)
         .call(d3.drag()
           .on("start", dragStarted)
           .on("drag", dragged)
@@ -295,7 +301,6 @@
         d.fy = null;
       }
     });
-
   </script>
 
   <style>
@@ -308,7 +313,6 @@
     #graphBubble .label {
       font-size: 15px;
     }
-
   </style>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
