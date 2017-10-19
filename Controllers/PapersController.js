@@ -1,18 +1,26 @@
 class PapersController {
   constructor() {
     this.papers = [];
+    this.papersObject = null;
+  }
+
+  getPapersObject() {
+    if (this.papersObject == null) {
+      var obj = {};
+      this.papers.forEach(
+        paper => (obj[paper.getId()] = obj[paper.getId()] || paper)
+      );
+    }
+    return obj;
   }
 
   setPapers(papers) {
+    this.papersObject = null;
     this.papers = papers;
   }
 
   getPapers() {
     return this.papers;
-  }
-
-  addPaper(paper) {
-    this.papers.push(paper);
   }
 
   /**

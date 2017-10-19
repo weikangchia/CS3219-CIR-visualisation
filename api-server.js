@@ -82,6 +82,40 @@ function getTopAuthors(options) {
 }
 
 /**
+ * Business Logic
+ */
+
+/**
+ * @param {integer} topN number of authors (default is 10)
+ */
+function getTopPapers(options) {
+  options = options || {};
+  let topN = options.topN || 5;
+  let papers = papersController.getPapers();
+  let papersDict = papersController.getPapersObject();
+
+  var topPapers = papers;
+
+  if (options.paperFilter) {
+    topPapers = topPapers.filter(options.paperFilter);
+  }
+  topPapers = topPapers
+    .sort(
+      (paper1, paper2) =>
+        paper2.getInCitations().length - paper1.getInCitations().length
+    )
+    .slice(0, topN);
+  topPapers.forEach(paper =>
+    paper.setInCitations(
+      paper.getInCitations().map(inCitationId => {
+        return papersDict[inCitationId] || inCitationId;
+      })
+    )
+  );
+  return topPapers;
+}
+
+/**
  * Define app
  */
 
@@ -120,6 +154,25 @@ app.get("/top-authors", (req, res) => {
   }
 
   res.send(JSON.stringify(getTopAuthors(options)));
+});
+
+app.get("/top-papers", (req, res) => {
+  const params = req.query;
+
+  const options = {};
+  const paperFilters = [];
+
+  if (params.venue) {
+    paperFilters.push(
+      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
+    );
+  }
+
+  if (paperFilters.length > 0) {
+    options.paperFilter = paper =>
+      paperFilters.every(paperFilter => paperFilter(paper));
+  }
+  res.send(JSON.stringify(getTopPapers(options)));
 });
 
 function startServer() {
