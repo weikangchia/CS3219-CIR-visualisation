@@ -1,0 +1,33 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <a class="navbar-brand" href="#">Pair 2</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
+    aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="top10authors.html">Top 10 Authors</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="top5papers.html">Top 5 Papers</a>
+        <span class="sr-only">(current)</span>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="publicationtrend.html">Publication Trend</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="web.html">Citation Web</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<script>
+  $(document).ready(() => {
+    $(".nav-link").each((index, link) => {
+      if (location.href.indexOf(link.href) >= 0) {
+        $(".nav-item").eq(index).addClass("active")
+      }
+    })
+  })
+</script>
