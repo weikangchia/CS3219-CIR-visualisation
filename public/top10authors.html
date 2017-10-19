@@ -71,6 +71,7 @@
     }
 
     $('#venue').html(venue || '(all)');
+
   </script>
 
   <!-- d3 Script -->
@@ -159,19 +160,19 @@
         .attr("class", "axis")
         .call(d3.axisLeft(y))
         .selectAll(".tick text")
-        .call(wrapText, margin.left - 10);
+        .call(wrapYText, margin.left - 10);
 
+      // add y-axis title
       svg.append("text")
         .attr("text-anchor", "middle")
         .attr("transform", "translate(" + (-padding * 1.5 / 2) + "," + (height / 2) + ")rotate(-90)")
         .text("Author");
 
+      // add x-axis title
       svg.append("text")
         .attr("text-anchor", "middle")
         .attr("transform", "translate(" + (width / 2) + "," + (height - (-padding / 2)) + ")")
         .text("Number of publications");
-
-
 
       /**
        * further processing
@@ -196,12 +197,14 @@
           location.href = "#author"
         })
     });
+
   </script>
 
   <style>
     g.tick:hover {
       font-weight: bold;
     }
+
   </style>
 
   <!-- Optional JavaScript -->

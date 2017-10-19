@@ -43,10 +43,10 @@
 
     <div class="row">
       <div id="paper-display" class="col paper-display">
-        <h2 class='paper-title'></h2>
-        <p class='paper-abstract'></p>
+        <h2 class="paper-title"></h2>
+        <p class="paper-abstract"></p>
         <p>
-          <a class='paper-google'></a>
+          <a class="paper-google"></a>
         </p>
       </div>
     </div>
@@ -68,6 +68,7 @@
     }
 
     $('.venue').html(venue)
+
   </script>
 
   <!-- d3 Script -->
@@ -101,13 +102,13 @@
       const barMargin = {
         top: 20,
         right: 70,
-        bottom: 70,
+        bottom: 100,
         left: 70
       };
 
-      const barWidth = ($(window).width() * 4 / 5) - barMargin.left - barMargin.right;
-      const barHeight = $(window).height() - barMargin.top - barMargin.bottom;
-      const barPadding = 100; // space around the chart, not including labels
+      const barWidth = 900 - barMargin.left - barMargin.right;
+      const barHeight = 500 - barMargin.top - barMargin.bottom;
+      const barPadding = 100;
 
       // set the ranges
       const x = d3.scaleBand()
@@ -134,7 +135,7 @@
       // some processing
 
       data.forEach(function (paper) {
-        var lines = [
+        const lines = [
           (paper.title),
           (paper.inCitations.length) + " citations",
           "Authors:",
@@ -165,7 +166,7 @@
         .on("mousemove", (paper, index, rects) => {
           d3.select(rects[index])
             .attr('cursor', 'pointer')
-            .style("fill", barHoverFill)
+            .style("fill", barHoverFill);
 
           toolTip
             .style("left", (d3.event.pageX - 100) + "px")
@@ -175,7 +176,7 @@
         })
         .on("mouseout", (paper, index, rects) => {
           d3.select(rects[index])
-            .attr("style", '')
+            .attr("style", '');
           toolTip.style("display", "none");
         })
         .on("click", (paper) => {
@@ -191,7 +192,9 @@
       barSvg.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(0," + barHeight + ")")
-        .call(d3.axisBottom(x).tickFormat(e => truncate(e)))
+        .call(d3.axisBottom(x))
+        .selectAll(".tick text")
+        .call(wrapXText, x.bandwidth());
 
       // add the y-axis
       barSvg.append("g")
@@ -207,22 +210,15 @@
       // add x-axis title
       barSvg.append("text")
         .attr("text-anchor", "middle")
-        .attr("transform", "translate(" + (barWidth / 2) + "," + (barHeight - (-barPadding / 2)) + ")")
+        .attr("transform", "translate(" + (barWidth / 2) + "," + (barHeight - (-barPadding * 1.5 / 2)) + ")")
         .text("Paper");
 
-      // barSvg
-      //   .selectAll(".bar .tick text")
-      //   .call(wrapText, 100);
-
       /** 
-       * BUBBLE CHART
-       * code for bubble chart
-       * 
+       * Bubble Chart
        */
-
       const colors = d3.schemeCategory20c;
       const bubbleWidth = $(window).width() * 4 / 5;
-      const bubbleHeight = 450;
+      const bubbleHeight = 500;
 
       const bubbleSvg = d3.select("#graphBubble")
         .append("svg")
@@ -231,7 +227,7 @@
         .append("g").attr("transform", "translate(" + bubbleWidth / 2 + "," + bubbleHeight / 2 + ")");
 
       const radiusScale = d3.scaleSqrt()
-        .domain([countMin, countMax]).range([35, bubbleWidth / 7]);
+        .domain([countMin, countMax]).range([50, 80]);
 
       // the simulation is a collection of forces about where
       // we want the circles to go and how we want the circles to interact
@@ -249,7 +245,7 @@
         .call(d3.drag()
           .on("start", dragStarted)
           .on("drag", dragged)
-          .on("end", dragEnded));;
+          .on("end", dragEnded));
 
       const labels = bubbleSvg.selectAll(".label")
         .data(data)
@@ -257,8 +253,10 @@
         .append("text")
         .attr("class", "label")
         .append("tspan")
-        .text((paper) => truncate(paper.title, 30))
-        .on("click", displayPaper)
+        .text(function (d) {
+          return d.inCitations.length;
+        })
+        .on("click", displayPaper);
 
       simulation.nodes(data)
         .on("tick", ticked);
@@ -297,6 +295,7 @@
         d.fy = null;
       }
     });
+
   </script>
 
   <style>
@@ -309,6 +308,7 @@
     #graphBubble .label {
       font-size: 15px;
     }
+
   </style>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
