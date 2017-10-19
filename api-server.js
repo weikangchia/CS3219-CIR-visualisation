@@ -54,10 +54,10 @@ if (!commander.directory) {
  */
 function getTopAuthors(options) {
   options = options || {};
-  const topN = options.topN || 10;
+  let topN = options.topN || 10;
   let topAuthors = papersController.group({
-    groupsFromPaper: (paper) => {
-      return paper.getAuthors().map((author) => {
+    groupsFromPaper: paper => {
+      return paper.getAuthors().map(author => {
         return author.name;
       });
     },
@@ -65,10 +65,12 @@ function getTopAuthors(options) {
   });
 
   topAuthors = Object.keys(topAuthors)
-    .sort((author1, author2) =>
-      topAuthors[author2].length - topAuthors[author1].length)
+    .sort(
+      (author1, author2) =>
+        topAuthors[author2].length - topAuthors[author1].length
+    )
     .slice(0, topN)
-    .map((author) => {
+    .map(author => {
       return {
         author: author,
         count: topAuthors[author].length,
@@ -93,9 +95,11 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(JSON.stringify({
-    mode: "test"
-  }));
+  res.send(
+    JSON.stringify({
+      mode: "test"
+    })
+  );
 });
 
 app.get("/top-authors", (req, res) => {
@@ -105,7 +109,9 @@ app.get("/top-authors", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
+    paperFilters.push(
+      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
+    );
   }
 
   if (paperFilters.length > 0) {
@@ -129,22 +135,22 @@ const parser = new Parser();
 let i = 0;
 
 if (verbose) {
-  parser.setEventHandler("onLineParsed", (line) => {
+  parser.setEventHandler("onLineParsed", line => {
     readline.cursorTo(process.stdout, 0);
     process.stdout.write(`Parsed lines: ${++i}`);
   });
 
-  parser.setEventHandler("onFilesParsedComplete", (line) => {
+  parser.setEventHandler("onFilesParsedComplete", line => {
     process.stdout.write("\n");
   });
 }
 
 parser.parseDirectory(commander.directory).then(
-  (parsedPapers) => {
+  parsedPapers => {
     papersController.setPapers(parsedPapers);
     startServer();
   },
-  (err) => {
+  err => {
     // eslint-disable-next-line no-console
     console.error(err);
   }
