@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="css/custom.css">
 
   <script src="./js/d3.v4.min.js"></script>
+  <script src="./js/jquery-3.2.1.slim.min.js"></script>
+  <script src="./js/utils.js"></script>
+
 </head>
 
 <body>
@@ -41,237 +44,292 @@
   </nav>
 
   <div class="container">
-    <h1>Top 5 Papers for Venue arXiv</h1>
+    <h1>Top 5 Papers for Venue
+      <span class="venue"></span>
+    </h1>
 
     <div class="row">
       <div class="col">
         <div id="graphHorizontal"></div>
         <div class="toolTip"></div>
       </div>
+    </div>
+
+    <div class="row">
       <div class="col">
         <div id="graphBubble"></div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div id="paper-display" class="col paper-display">
+        <h2 class='paper-title'></h2>
+        <p class='paper-abstract'></p>
+        <p>
+          <a class='paper-google'></a>
+        </p>
       </div>
     </div>
   </div>
 
   <!-- d3 Script -->
-
   <script>
-    const data = [{
-      "name": "Bob",
-      "count": 33
-    }, {
-      "name": "Robin",
-      "count": 12
-    }, {
-      "name": "Anne",
-      "count": 41
-    }, {
-      "name": "Mark",
-      "count": 16
-    }, {
-      "name": "Joe",
-      "count": 59
-    }, {
-      "name": "Eve",
-      "count": 38
-    }];
-
-    // format the data
-    data.forEach(function (d) {
-      d.count = +d.count;
-    });
-
-    const countMin = d3.min(data, function (d) {
-      return d.count;
-    });
-
-    const countMax = d3.max(data, function (d) {
-      return d.count;
-    });
-
-    // code for bar chart
-
-    // set the dimensions and margins of the graph
-    const barMargin = {
-      top: 20,
-      right: 70,
-      bottom: 70,
-      left: 70
-    };
-
-    const barWidth = 450 - barMargin.left - barMargin.right;
-    const barHeight = 500 - barMargin.top - barMargin.bottom;
-    const barPadding = 100; // space around the chart, not including labels
-
-    // set the ranges
-    const x = d3.scaleBand()
-      .range([0, barWidth])
-      .padding(0.1);
-    const y = d3.scaleLinear()
-      .range([barHeight, 0]);
-
-    const toolTip = d3.select(".toolTip");
-
-    // append the svg object to the body of the page
-    // append a 'group' element to 'svg'
-    // moves the 'group' element to the top left margin
-    const barSvg = d3.select("#graphHorizontal").append("svg")
-      .attr("width", barWidth + barMargin.left + barMargin.right)
-      .attr("height", barHeight + barMargin.top + barMargin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + barMargin.left + "," + barMargin.top + ")");
-
-    // scale the range of the data in the domains
-    y.domain([0, countMax]);
-    x.domain(data.map(function (d) {
-      return d.name;
-    }));
-
-    // append the rectangles for the bar chart
-    barSvg.selectAll(".bar")
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function (d) {
-        return x(d.name);
-      })
-      .attr("width", x.bandwidth())
-      .attr("y", barHeight)
-      .attr("height", 0)
-      .on("mousemove", function (d) {
-        toolTip.style("left", (d3.event.pageX - 100) + "px");
-        toolTip.style("top", (d3.event.pageY - 200) + "px");
-        toolTip.style("display", "inline-block");
-        toolTip.html((d.name) + "<br>" + (d.count) + " citations");
-      })
-      .on("mouseout", function (d) {
-        toolTip.style("display", "none");
-      })
-      .transition().duration(1000)
-      .attr("y", function (d) {
-        return y(d.count);
-      })
-      .attr("height", calcBarHeight);
-
-    function calcBarHeight(d) {
-      return barHeight - y(d.count);
+    /**
+     * Parse url params and redirect if need be
+     */
+    var searchParams = new URLSearchParams(window.location.search)
+    var venue = searchParams.get("venue")
+    if (!venue) {
+      var venue = prompt("Please enter venue", "arXiv");
+      if (venue) {
+        searchParams.set('venue', venue);
+        window.location.search = searchParams.toString()
+      }
     }
 
-    // add the x-axis
-    barSvg.append("g")
-      .attr("class", "axis")
-      .attr("transform", "translate(0," + barHeight + ")")
-      .call(d3.axisBottom(x));
+    $('.venue').html(venue)
 
-    // add the y-axis
-    barSvg.append("g")
-      .attr("class", "axis")
-      .call(d3.axisLeft(y));
-
-    // add y-axis title
-    barSvg.append("text")
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(" + (-barPadding / 2) + "," + (barHeight / 2) + ")rotate(-90)")
-      .text("Number of Citations");
-
-    // add x-axis title
-    barSvg.append("text")
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(" + (barWidth / 2) + "," + (barHeight - (-barPadding / 2)) + ")")
-      .text("Paper");
-
-    // code for bubble chart
-
-    const colors = d3.schemeCategory20c;
-    const bubbleWidth = 450;
-    const bubbleHeight = 450;
-
-    const bubbleSvg = d3.select("#graphBubble")
-      .append("svg")
-      .attr("height", bubbleHeight)
-      .attr("width", bubbleWidth)
-      .append("g").attr("transform", "translate(" + bubbleWidth / 2 + "," + bubbleHeight / 2 + ")");
-
-    const radiusScale = d3.scaleSqrt()
-      .domain([countMin, countMax]).range([35, 70]);
-
-    // the simulation is a collection of forces about where
-    // we want the circles to go and how we want the circles to interact
-    const simulation = d3.forceSimulation()
-      .force("x", d3.forceX(0).strength(0.05))
-      .force("y", d3.forceY(0).strength(0.05))
-      .force("collide", d3.forceCollide(function (d) {
-        return radiusScale(d.count);
-      }));
-
-    const circles = bubbleSvg.selectAll(".paper")
-      .data(data)
-      .enter().append("circle")
-      .attr("class", "paper")
-      .attr("r", function (d) {
-        return radiusScale(d.count);
-      })
-      .attr("fill", function (d, i) {
-        return colors[i];
-      })
-      .call(d3.drag()
-        .on("start", dragStarted)
-        .on("drag", dragged)
-        .on("end", dragEnded));;
-
-    const labels = bubbleSvg.selectAll(".label")
-      .data(data)
-      .enter()
-      .append("text")
-      .attr("class", "label")
-      .append("tspan")
-      .text(function (d) {
-        return d.name;
-      });
-
-    simulation.nodes(data)
-      .on("tick", ticked);
-
-    function ticked() {
-      circles
-        .attr("cx", function (d) {
-          return d.x;
+    function displayPaper(paper) {
+      location.href = "#paper-display";
+      $paper = $(".paper-display")
+      $paper.find(".paper-title")
+        .html(paper.title)
+        .css({
+          'border-bottom': '1px solid black',
+          'padding-bottom': '20px'
         })
-        .attr("cy", function (d) {
-          return d.y;
-        });
+      $paper.find(".paper-abstract")
+        .html(paper.abstract)
+      $paper.find(".paper-google")
+        .attr('href', googleSearchUrl(paper.title))
+        .html('Search on Google')
+    }
 
-      labels.attr("x", function (d) {
-          return d.x;
+    d3.json("http://localhost:3000/top-papers?" + searchParams.toString(), function (error, data) {
+      const countMin = d3.min(data, paper => paper.inCitations.length);
+      const countMax = d3.max(data, paper => paper.inCitations.length);
+
+      /**
+       * Bar chart
+       */
+
+      // set the dimensions and margins of the graph
+      const barMargin = {
+        top: 20,
+        right: 70,
+        bottom: 70,
+        left: 70
+      };
+
+      const barWidth = 900 - barMargin.left - barMargin.right;
+      const barHeight = 500 - barMargin.top - barMargin.bottom;
+      const barPadding = 100; // space around the chart, not including labels
+
+      // set the ranges
+      const x = d3.scaleBand()
+        .range([0, barWidth])
+        .padding(0.1);
+      const y = d3.scaleLinear()
+        .range([barHeight, 0]);
+
+      const toolTip = d3.select(".toolTip");
+
+      // append the svg object to the body of the page
+      // append a 'group' element to 'svg'
+      // moves the 'group' element to the top left margin
+      const barSvg = d3.select("#graphHorizontal").append("svg")
+        .attr("width", barWidth + barMargin.left + barMargin.right)
+        .attr("height", barHeight + barMargin.top + barMargin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + barMargin.left + "," + barMargin.top + ")");
+
+      // scale the range of the data in the domains
+      y.domain([0, countMax]);
+      x.domain(data.map(paper => paper.title));
+
+      // some processing
+
+      data.forEach(function (paper) {
+        var lines = [
+          (paper.title),
+          (paper.inCitations.length) + " citations",
+          "Authors:",
+          paper.authors.map(author => author.name).join(", ")
+        ]
+        paper.toolTipString = lines.join("<br>")
+      }, this);
+
+      var barDefaultFill = '#6baed6',
+        barHoverFill = "#3182bd"
+      // append the rectangles for the bar chart
+      var bars = barSvg.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", paper => x(paper.title))
+        .attr("width", x.bandwidth())
+        .attr("y", barHeight)
+        .attr("height", 0)
+        .attr("fill", barDefaultFill)
+        .attr('cursor', 'default')
+
+      bars.transition().duration(1000)
+        .attr("y", (paper) => y(paper.inCitations.length))
+        .attr("height", calcBarHeight)
+
+      bars
+        .on("mousemove", (paper, index, rects) => {
+          d3.select(rects[index])
+            .attr('cursor', 'pointer')
+            .style("fill", barHoverFill)
+
+          toolTip
+            .style("left", (d3.event.pageX - 100) + "px")
+            .style("top", (d3.event.pageY - 100) + "px")
+            .style("display", "inline-block")
+            .html(paper.toolTipString);
         })
-        .attr("y", function (d) {
-          return d.y;
+        .on("mouseout", (paper, index, rects) => {
+          console.log(d3.select(rects[index]), rects[index])
+          d3.select(rects[index])
+            .attr("style", '')
+          toolTip.style("display", "none");
         })
-    }
+        .on("click", (paper) => {
+          displayPaper(paper)
+        })
 
-    function dragStarted(d) {
-      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
 
-    function dragged(d) {
-      d.fx = d3.event.x;
-      d.fy = d3.event.y;
-    }
+      function calcBarHeight(paper) {
+        return barHeight - y(paper.inCitations.length);
+      }
 
-    function dragEnded(d) {
-      if (!d3.event.active) simulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-    }
+      // add the x-axis
+      barSvg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + barHeight + ")")
+        .call(d3.axisBottom(x).tickFormat(e => truncate(e)))
+
+      // add the y-axis
+      barSvg.append("g")
+        .attr("class", "axis")
+        .call(d3.axisLeft(y))
+
+      // add y-axis title
+      barSvg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + (-barPadding / 2) + "," + (barHeight / 2) + ")rotate(-90)")
+        .text("Number of Citations");
+
+      // add x-axis title
+      barSvg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + (barWidth / 2) + "," + (barHeight - (-barPadding / 2)) + ")")
+        .text("Paper");
+
+      // barSvg
+      //   .selectAll(".bar .tick text")
+      //   .call(wrapText, 100);
+
+      /** 
+       * BUBBLE CHART
+       * code for bubble chart
+       * 
+       */
+
+      const colors = d3.schemeCategory20c;
+      const bubbleWidth = 900;
+      const bubbleHeight = 450;
+
+      const bubbleSvg = d3.select("#graphBubble")
+        .append("svg")
+        .attr("height", bubbleHeight)
+        .attr("width", bubbleWidth)
+        .append("g").attr("transform", "translate(" + bubbleWidth / 2 + "," + bubbleHeight / 2 + ")");
+
+      const radiusScale = d3.scaleSqrt()
+        .domain([countMin, countMax]).range([35, bubbleWidth / 7]);
+
+      // the simulation is a collection of forces about where
+      // we want the circles to go and how we want the circles to interact
+      const simulation = d3.forceSimulation()
+        .force("x", d3.forceX(0).strength(0.05))
+        .force("y", d3.forceY(0).strength(0.05))
+        .force("collide", d3.forceCollide(paper => radiusScale(paper.inCitations.length)));
+
+      const circles = bubbleSvg.selectAll(".paper")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "paper")
+        .attr("r", paper => radiusScale(paper.inCitations.length))
+        .attr("fill", (d, i) => colors[i])
+        .call(d3.drag()
+          .on("start", dragStarted)
+          .on("drag", dragged)
+          .on("end", dragEnded));;
+
+      const labels = bubbleSvg.selectAll(".label")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .append("tspan")
+        .text((paper) => truncate(paper.title, 30))
+        .on("click", displayPaper)
+
+      simulation.nodes(data)
+        .on("tick", ticked);
+
+      function ticked() {
+        circles
+          .attr("cx", function (d) {
+            return d.x;
+          })
+          .attr("cy", function (d) {
+            return d.y;
+          });
+
+        labels.attr("x", function (d) {
+            return d.x;
+          })
+          .attr("y", function (d) {
+            return d.y;
+          })
+      }
+
+      function dragStarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+      }
+
+      function dragEnded(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+    });
   </script>
 
+  <style>
+    #graphBubble .label:hover {
+      text-decoration: bold;
+      font-size: 20px;
+      cursor: pointer;
+    }
 
+    #graphBubble .label {
+      font-size: 15px;
+    }
+  </style>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="./js/jquery-3.2.1.slim.min.js"></script>
   <script src="./js/popper.min.js"></script>
   <script src="./js/bootstrap.min.js"></script>
 </body>
