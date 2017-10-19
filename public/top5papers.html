@@ -51,8 +51,8 @@
       </div>
     </div>
   </div>
+  <!-- Params processing -->
 
-  <!-- d3 Script -->
   <script>
     /**
      * Parse url params and redirect if need be
@@ -68,7 +68,11 @@
     }
 
     $('.venue').html(venue)
+  </script>
+  
+  <!-- d3 Script -->
 
+  <script>
     function displayPaper(paper) {
       location.href = "#paper-display";
       $paper = $(".paper-display")
