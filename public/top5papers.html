@@ -81,12 +81,13 @@
         .css({
           'border-bottom': '1px solid black',
           'padding-bottom': '20px'
-        })
+        });
       $paper.find(".paper-abstract")
-        .html(paper.abstract)
+        .html(paper.abstract);
       $paper.find(".paper-google")
-        .attr('href', googleSearchUrl(paper.title))
-        .html('Search on Google')
+        .attr("href", googleScholarSearchUrl(paper.title))
+        .attr("target", "_blank")
+        .html("Search on Google");
     }
 
     d3.json(API_HOST + "/top-papers?" + searchParams.toString(), function (error, data) {

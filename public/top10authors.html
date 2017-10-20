@@ -189,7 +189,7 @@
 
           $('publications').empty()
           authorsDict[e].papers.forEach((paper) => {
-            var $paper = $("<p>").append('<a target="_blank" href="' + googleSearchUrl(paper.title) +
+            var $paper = $("<p>").append('<a target="_blank" href="' + googleScholarSearchUrl(paper.title) +
               '">' + paper.title + '</a>')
             $('publications').append($paper)
           })
