@@ -155,8 +155,8 @@ function getInCitationsGraph(options) {
   var links = [];
 
   function dig(paper, level, maxLevel) {
-    nodes.push(minimizePaper(paper, level));    
-    if (level > maxLevel) {
+    nodes.push(minimizePaper(paper, level));
+    if (level >= maxLevel) {
       return;
     } else {
       let inCitations = paper.getInCitations();
@@ -192,8 +192,8 @@ function getInCitationsGraph(options) {
   dig(paper, 1, options.levels);
 
   return {
-    nodes,
-    links
+    nodes: nodes,
+    links: links
   };
 }
 
