@@ -66,6 +66,7 @@
     });
 
     d3.json(API_HOST + "/publication-trends?" + searchParams.toString(), function (error, data) {
+      if (error) return showError(error)
       $("#fakeLoader").hide();
 
       /**

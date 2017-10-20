@@ -3,6 +3,7 @@ const express = require("express");
 const Parser = require("./Parser.js");
 const PapersController = require("./controllers/PapersController.js");
 const readline = require("readline");
+const _ = require('lodash')
 
 const app = express();
 const papersController = new PapersController();
@@ -65,10 +66,12 @@ function getTopAuthors(options) {
   });
 
   topAuthors = Object.keys(topAuthors)
-    .sort((author1, author2) =>
-      topAuthors[author2].length - topAuthors[author1].length)
+    .sort(
+      (author1, author2) =>
+        topAuthors[author2].length - topAuthors[author1].length
+    )
     .slice(0, topN)
-    .map((authorId) => {
+    .map(authorId => {
       return {
         author: authors[authorId],
         count: topAuthors[authorId].length,
@@ -96,13 +99,18 @@ function getTopPapers(options) {
     topPapers = topPapers.filter(options.paperFilter);
   }
   topPapers = topPapers
-    .sort((paper1, paper2) =>
-      paper2.getInCitations().length - paper1.getInCitations().length)
+    .sort(
+      (paper1, paper2) =>
+        paper2.getInCitations().length - paper1.getInCitations().length
+    )
     .slice(0, topN);
   topPapers.forEach(paper =>
-    paper.setInCitations(paper.getInCitations().map((inCitationId) => {
-      return papersDict[inCitationId] || inCitationId;
-    })));
+    paper.setInCitations(
+      paper.getInCitations().map(inCitationId => {
+        return papersDict[inCitationId] || inCitationId;
+      })
+    )
+  );
 
   return topPapers;
 }
@@ -130,6 +138,62 @@ function getPublicationTrends(options) {
   }
 
   return publicationsByYear;
+}
+
+function getInCitationsGraph(options) {
+  function minimizePaper(paper, level) {
+    return {
+      id: paper.getId(),
+      level: level + 1,
+      title: paper.getTitle()
+    };
+  }
+
+  var allPapers = papersController.getPapersObject();
+
+  var nodes = [];
+  var links = [];
+
+  function dig(paper, level, maxLevel) {
+    if (level > maxLevel || !paper) {
+      return;
+    } else {
+      nodes.push(minimizePaper(paper, level));
+      let inCitations = paper.getInCitations();
+      inCitations.forEach(inCitation => {
+        if (!inCitation) return;
+        var inCitationId = inCitation.getId ? inCitation.getId() : inCitation;
+        links.push({
+          source: paper.getId(),
+          target: inCitationId
+        });
+        dig(allPapers[inCitationId], level + 1, maxLevel);
+      });
+    }
+  }
+
+  options = options || {};
+  options.levels = options.levels || 3;
+
+  var paperId = options.title
+    ? _.find(
+        Object.keys(allPapers),
+        paperId =>
+          allPapers[paperId].getTitle().toLowerCase() ==
+          options.title.toLowerCase()
+      )
+    : _.maxBy(
+        Object.keys(allPapers),
+        paperId => allPapers[paperId].getInCitations().length
+      );
+
+  var paper = allPapers[paperId];
+  dig(paper, 1, options.levels);
+
+  return {
+    nodes,
+    links
+  };
 }
 
 /**
@@ -169,9 +233,11 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(JSON.stringify({
-    mode: "test"
-  }));
+  res.send(
+    JSON.stringify({
+      mode: "test"
+    })
+  );
 });
 
 app.get("/top-authors", (req, res) => {
@@ -181,7 +247,9 @@ app.get("/top-authors", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
+    paperFilters.push(
+      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
+    );
   }
 
   if (paperFilters.length > 0) {
@@ -199,7 +267,9 @@ app.get("/top-papers", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
+    paperFilters.push(
+      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
+    );
   }
 
   if (paperFilters.length > 0) {
@@ -216,7 +286,9 @@ app.get("/publication-trends", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
+    paperFilters.push(
+      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
+    );
   }
 
   if (paperFilters.length > 0) {
@@ -233,8 +305,8 @@ app.get("/key-phrase-trends", (req, res) => {
   const options = {};
   const paperFilters = [];
 
-  paperFilters.push((paper) => {
-    return paper.getKeyPhrases().some((phrase) => {
+  paperFilters.push(paper => {
+    return paper.getKeyPhrases().some(phrase => {
       return phrase.toLowerCase() === params.phrase.toLowerCase();
     });
   });
@@ -245,6 +317,16 @@ app.get("/key-phrase-trends", (req, res) => {
   }
 
   res.send(JSON.stringify(getKeyPhrasesTrends(options)));
+});
+
+app.get("/incitation-graph", (req, res) => {
+  const params = req.query;
+
+  const options = {};
+  options.title = params.title;
+  options.levels = params.levels;
+
+  res.send(JSON.stringify(getInCitationsGraph(options)));
 });
 
 function startServer() {
@@ -260,22 +342,22 @@ const parser = new Parser();
 let i = 0;
 
 if (verbose) {
-  parser.setEventHandler("onLineParsed", (line) => {
+  parser.setEventHandler("onLineParsed", line => {
     readline.cursorTo(process.stdout, 0);
     process.stdout.write(`Parsed lines: ${++i}`);
   });
 
-  parser.setEventHandler("onFilesParsedComplete", (line) => {
+  parser.setEventHandler("onFilesParsedComplete", line => {
     process.stdout.write("\n");
   });
 }
 
 parser.parseDirectory(commander.directory).then(
-  (parsedPapers) => {
+  parsedPapers => {
     papersController.setPapers(parsedPapers);
     startServer();
   },
-  (err) => {
+  err => {
     // eslint-disable-next-line no-console
     console.error(err);
   }
