@@ -26,9 +26,8 @@
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
-    <h1>Publication Trends for
-      <span class="venue"></span>
-    </h1>
+    <h1>Keyword Phrase Trends (
+      <span class="phrase"></span>)</h1>
 
     <div class="row">
       <div class="col">
@@ -38,21 +37,21 @@
   </div>
 
   <!-- params processing -->
-  <script>
+  <script type="text/javascript">
     /**
      * Parse url params and redirect if need be
      */
-    var searchParams = new URLSearchParams(window.location.search)
-    var venue = searchParams.get("venue")
-    if (!venue) {
-      var venue = prompt("Please enter venue", "arXiv");
-      if (venue) {
-        searchParams.set('venue', venue);
-        window.location.search = searchParams.toString()
+    const searchParams = new URLSearchParams(window.location.search);
+    let phrase = searchParams.get("phrase");
+    if (!phrase) {
+      phrase = prompt("Please enter keyword phrase", "Machine Translation");
+      if (phrase) {
+        searchParams.set('phrase', phrase);
+        window.location.search = searchParams.toString();
       }
     }
 
-    $('.venue').html(venue)
+    $('.phrase').html(phrase);
 
   </script>
 
@@ -65,10 +64,9 @@
       bgColor: "#2ecc71"
     });
 
-    d3.json(API_HOST + "/publication-trends?" + searchParams.toString(), function (error, data) {
-      if (error) return showError(error)
+    d3.json(API_HOST + "/key-phrase-trends?" + searchParams.toString(), function (error, data) {
       $("#fakeLoader").hide();
-      
+
       /**
        * Process data
        */
@@ -179,8 +177,6 @@
 
 
   <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="./js/jquery-3.2.1.slim.min.js"></script>
   <script src="./js/popper.min.js"></script>
   <script src="./js/bootstrap.min.js"></script>
 </body>

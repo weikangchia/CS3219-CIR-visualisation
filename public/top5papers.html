@@ -11,15 +11,18 @@
 
   <link rel="stylesheet" href="css/custom.css">
 
+  <link rel="stylesheet" href="css/fakeLoader.css">
+
   <script src="./js/d3.v4.min.js"></script>
-  <script src="./js/jquery-3.2.1.slim.min.js"></script>
+  <script src="./js/jquery.min.js"></script>
   <script src="./js/utils.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+  <script src="./js/angular.min.js"></script>
+  <script src="./js/fakeLoader.min.js"></script>
 
 </head>
 
 <body ng-app="">
-
+  <div id="fakeLoader"></div>
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
@@ -72,6 +75,12 @@
   <!-- d3 Script -->
 
   <script>
+    $("#fakeLoader").fakeLoader({
+      zIndex: "999",
+      spinner: "spinner1",
+      bgColor: "#2ecc71"
+    });
+
     function displayPaper(paper) {
       location.href = "#paper-display";
       $paper = $(".paper-display")
@@ -91,6 +100,8 @@
 
     d3.json(API_HOST + "/top-papers?" + searchParams.toString(), function (error, data) {
       if (error) return showError(error)
+      $("#fakeLoader").hide();
+
       const countMin = d3.min(data, paper => paper.inCitations.length);
       const countMax = d3.max(data, paper => paper.inCitations.length);
 
