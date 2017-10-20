@@ -18,7 +18,7 @@ function truncate(str, max) {
  * Wrap Y axis function adapted from https://stackoverflow.com/a/43535941/1005162
  */
 function wrapYText(text, width) {
-  text.each(function () {
+  text.each(function() {
     let text = d3.select(this),
       textContent = text.text(),
       tempWord = addBreakSpace(textContent).split(/\s+/),
@@ -26,11 +26,11 @@ function wrapYText(text, width) {
       y = text.attr("y"),
       dy = parseFloat(text.attr("dy") || 0),
       tspan = text
-      .text(null)
-      .append("tspan")
-      .attr("x", x)
-      .attr("y", y)
-      .attr("dy", dy + "em");
+        .text(null)
+        .append("tspan")
+        .attr("x", x)
+        .attr("y", y)
+        .attr("dy", dy + "em");
     for (let i = 0; i < tempWord.length; i++) {
       tempWord[i] = calHyphen(tempWord[i]);
     }
@@ -68,10 +68,10 @@ function wrapYText(text, width) {
     text.attr(
       "transform",
       "translate(-" +
-      (margin.left - padding + 10) +
-      ", -" +
-      lineNumber / 2 * lineHeight * emToPxRatio +
-      ")"
+        (margin.left - padding + 10) +
+        ", -" +
+        lineNumber / 2 * lineHeight * emToPxRatio +
+        ")"
     );
 
     function calHyphen(word) {
@@ -96,7 +96,7 @@ function wrapYText(text, width) {
 
   function addBreakSpace(inputString) {
     const breakChars = ["/", "&", "-"];
-    breakChars.forEach((char) => {
+    breakChars.forEach(char => {
       // add a space after each break char for the function to use to determine line breaks
       inputString = inputString.replace(char, `${char} `);
     });
@@ -108,25 +108,53 @@ function wrapYText(text, width) {
  * Wrap X axis function adapted from https://bl.ocks.org/mbostock/7555321
  */
 function wrapXText(text, width) {
-  text.each(function () {
+  text.each(function() {
     var text = d3.select(this),
-      words = text.text().split(/\s+/).reverse(),
+      words = text
+        .text()
+        .split(/\s+/)
+        .reverse(),
       word,
       line = [],
       lineNumber = 0,
       lineHeight = 1.1, // ems
       y = text.attr("y"),
       dy = parseFloat(text.attr("dy")),
-      tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-    while (word = words.pop()) {
+      tspan = text
+        .text(null)
+        .append("tspan")
+        .attr("x", 0)
+        .attr("y", y)
+        .attr("dy", dy + "em");
+    while ((word = words.pop())) {
       line.push(word);
       tspan.text(line.join(" "));
       if (tspan.node().getComputedTextLength() > width) {
         line.pop();
         tspan.text(line.join(" "));
         line = [word];
-        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+        tspan = text
+          .append("tspan")
+          .attr("x", 0)
+          .attr("y", y)
+          .attr("dy", ++lineNumber * lineHeight + dy + "em")
+          .text(word);
       }
     }
   });
+}
+
+function showError(err) {
+  var $error = $("<div>")
+    .html(err)
+    .css({
+      position: "fixed",
+      bottom: "0px",
+      width: "100vw",
+      "text-align": "center",
+      background: "red",
+      color: "white",
+      display: "block",
+    });
+  $("body").append($error);
 }

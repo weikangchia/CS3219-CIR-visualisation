@@ -114,7 +114,7 @@
       return author.name || author.id
     }
     d3.json(API_HOST + "/top-authors?" + searchParams.toString(), function (error, authors) {
-      if (error) throw error;
+      if (error) return showError('Server Error')
 
       const maxCount = d3.max(authors, d => +d.count)
 

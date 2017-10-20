@@ -22,7 +22,9 @@
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
-    <h1>Publication Trends for <span class="venue"></span></h1>
+    <h1>Publication Trends for
+      <span class="venue"></span>
+    </h1>
 
     <div class="row">
       <div class="col">
@@ -53,6 +55,7 @@
 
   <script>
     d3.json(API_HOST + "/publication-trends?" + searchParams.toString(), function (error, data) {
+      if (error) return showError(error)
       /**
        * Process data
        */
@@ -63,8 +66,6 @@
           count: data[year].count
         }
       })
-
-      console.log(data)
 
       // set the dimensions and margins of the graph
       const margin = {

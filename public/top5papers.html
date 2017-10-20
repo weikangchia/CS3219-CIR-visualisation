@@ -67,7 +67,6 @@
     }
 
     $('.venue').html(venue)
-
   </script>
 
   <!-- d3 Script -->
@@ -91,6 +90,7 @@
     }
 
     d3.json(API_HOST + "/top-papers?" + searchParams.toString(), function (error, data) {
+      if (error) return showError(error)
       const countMin = d3.min(data, paper => paper.inCitations.length);
       const countMax = d3.max(data, paper => paper.inCitations.length);
 
@@ -302,7 +302,6 @@
         d.fy = null;
       }
     });
-
   </script>
 
   <style>
@@ -315,7 +314,6 @@
     #graphBubble .label {
       font-size: 15px;
     }
-
   </style>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
