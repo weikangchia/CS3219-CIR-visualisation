@@ -3,7 +3,7 @@ const API_HOST = "http://localhost:3000";
 /**
  * Returns a Google scholar search url.
  *
- * @param {string} searchTerm 
+ * @param {string} searchTerm
  */
 function googleScholarSearchUrl(searchTerm) {
   return `https://scholar.google.com.sg/scholar?q=${searchTerm}`;

@@ -26,9 +26,17 @@
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
-    <h1>Top 5 Papers for Venue
-      <span class="venue"></span>
-    </h1>
+    <div class="row">
+      <div class="col">
+        <h1>Top 5 Papers for Venue
+          <span class="venue"></span>
+        </h1>
+
+        <p>Visualization for the top 5 papers for a venue based on the number of citations across all available years for a
+          venue.
+        </p>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col">
@@ -38,12 +46,14 @@
     </div>
 
     <div class="row">
-      <div class="col-6">
+      <div class="col col-lg6">
         <div id="graphBubble"></div>
       </div>
-      <div class="col-6">
+      <div class="col col-lg6">
         <div id="paper-display" class="col paper-display">
           <h2 class="paper-title"></h2>
+          <p class="paper-authors"></p>
+          <p class="paper-key-phrases"></p>
           <p class="paper-abstract"></p>
           <p>
             <a class="paper-google"></a>
@@ -97,6 +107,28 @@
         .attr("href", googleScholarSearchUrl(paper.title))
         .attr("target", "_blank")
         .html("Search on Google");
+
+      let authors = "Authors: ";
+      paper.authors.forEach((author, index) => {
+        if (index !== 0) {
+          authors = authors.concat(", ");
+        }
+        authors = authors.concat(author.name);
+      });
+
+      $paper.find(".paper-authors")
+        .html(authors);
+
+      let keyPhrases = "Key phrases: ";
+      paper.keyPhrases.forEach((keyPhrase, index) => {
+        if (index !== 0) {
+          keyPhrases = keyPhrases.concat(", ");
+        }
+        keyPhrases = keyPhrases.concat(keyPhrase);
+      });
+
+      $paper.find(".paper-key-phrases")
+        .html(keyPhrases);
     }
 
     d3.json(API_HOST + "/top-papers?" + searchParams.toString(), function (error, data) {

@@ -40,6 +40,23 @@ body {
   stroke-opacity: 0.6;
 }
 
+.focus circle {
+  fill: #F1F3F3;
+  stroke: rgb(6, 82, 141);
+  stroke-width: 5px;
+}
+
+.hover-line {
+  stroke: rgb(6, 82, 141);
+  stroke-width: 2px;
+  stroke-dasharray: 3, 3;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
 .nodes circle {
   stroke: #fff;
   stroke-width: 1.5px;
