@@ -35,19 +35,18 @@
     </div>
 
     <div class="row">
-      <div class="col">
+      <div class="col-6">
         <div id="graphBubble"></div>
       </div>
-    </div>
+      <div class="col-6">
+        <div id="paper-display" class="col paper-display">
+          <h2 class="paper-title"></h2>
+          <p class="paper-abstract"></p>
+          <p>
+            <a class="paper-google"></a>
+          </p>
+        </div>
 
-
-    <div class="row">
-      <div id="paper-display" class="col paper-display">
-        <h2 class="paper-title"></h2>
-        <p class="paper-abstract"></p>
-        <p>
-          <a class="paper-google"></a>
-        </p>
       </div>
     </div>
   </div>
@@ -68,6 +67,7 @@
     }
 
     $('.venue').html(venue)
+
   </script>
 
   <!-- d3 Script -->
@@ -216,7 +216,7 @@
        * Bubble Chart
        */
       const colors = d3.schemeCategory20c;
-      const bubbleWidth = $(window).width() * 4 / 5;
+      const bubbleWidth = 500;
       const bubbleHeight = 500;
 
       const bubbleSvg = d3.select("#graphBubble")
@@ -301,6 +301,7 @@
         d.fy = null;
       }
     });
+
   </script>
 
   <style>
@@ -313,6 +314,7 @@
     #graphBubble .label {
       font-size: 15px;
     }
+
   </style>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
