@@ -3,18 +3,19 @@ class Paper {
     this.title = "";
     this.authors = [];
     this.venue = "";
-    this.inCitations = []
-    this.outCitations = []
-    this.year = null
-    this.abstract = ''
+    this.inCitations = [];
+    this.outCitations = [];
+    this.year = null;
+    this.abstract = '';
+    this.keyPhrases = [];
   }
 
   setId(id) {
     this.id = id;
   }
 
-  getId(){
-    return this.id
+  getId() {
+    return this.id;
   }
 
   getTitle() {
@@ -75,6 +76,14 @@ class Paper {
 
   setAbstract(abstract) {
     this.abstract = abstract;
+  }
+
+  setKeyPhrases(keyPhrases) {
+    this.keyPhrases = keyPhrases;
+  }
+
+  getKeyPhrases() {
+    return this.keyPhrases;
   }
 }
 

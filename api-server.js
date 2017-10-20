@@ -2,7 +2,6 @@ const commander = require("commander");
 const express = require("express");
 const Parser = require("./Parser.js");
 const PapersController = require("./controllers/PapersController.js");
-const _ = require("lodash");
 const readline = require("readline");
 
 const app = express();
@@ -50,13 +49,15 @@ if (!commander.directory) {
  */
 
 /**
+ * Returns the topN authors.
+ *
  * @param {integer} topN number of authors (default is 10)
  */
 function getTopAuthors(options) {
   options = options || {};
-  let topN = options.topN || 10;
+  const topN = options.topN || 10;
 
-  var authors = papersController.getAuthorsObject();
+  const authors = papersController.getAuthorsObject();
   let topAuthors = papersController.group({
     groupsFromPaper: paper =>
       paper.getAuthors().map(author => author.getId() || author.getName()),
@@ -64,12 +65,10 @@ function getTopAuthors(options) {
   });
 
   topAuthors = Object.keys(topAuthors)
-    .sort(
-      (author1, author2) =>
-        topAuthors[author2].length - topAuthors[author1].length
-    )
+    .sort((author1, author2) =>
+      topAuthors[author2].length - topAuthors[author1].length)
     .slice(0, topN)
-    .map(authorId => {
+    .map((authorId) => {
       return {
         author: authors[authorId],
         count: topAuthors[authorId].length,
@@ -81,50 +80,79 @@ function getTopAuthors(options) {
 }
 
 /**
- * @param {integer} topN number of authors (default is 10)
+ * Returns the topN papers.
+ *
+ * @param {integer} topN number of papers (default is 10)
  */
 function getTopPapers(options) {
   options = options || {};
-  let topN = options.topN || 5;
-  let papers = papersController.getPapers();
-  let papersDict = papersController.getPapersObject();
+  const topN = options.topN || 5;
+  const papers = papersController.getPapers();
+  const papersDict = papersController.getPapersObject();
 
-  var topPapers = papers;
+  let topPapers = papers;
 
   if (options.paperFilter) {
     topPapers = topPapers.filter(options.paperFilter);
   }
   topPapers = topPapers
-    .sort(
-      (paper1, paper2) =>
-        paper2.getInCitations().length - paper1.getInCitations().length
-    )
+    .sort((paper1, paper2) =>
+      paper2.getInCitations().length - paper1.getInCitations().length)
     .slice(0, topN);
   topPapers.forEach(paper =>
-    paper.setInCitations(
-      paper.getInCitations().map(inCitationId => {
-        return papersDict[inCitationId] || inCitationId;
-      })
-    )
-  );
+    paper.setInCitations(paper.getInCitations().map((inCitationId) => {
+      return papersDict[inCitationId] || inCitationId;
+    })));
+
   return topPapers;
 }
 
 /**
- * @param {integer} topN number of authors (default is 10)
+ * Returns the publication trends information.
+ *
+ * @param {integer}
  */
 function getPublicationTrends(options) {
   options = options || {};
-  let topN = options.topN || 10;
-  let publicationsByYear = papersController.group({
+
+  const topN = options.topN || 10;
+
+  const publicationsByYear = papersController.group({
     groupsFromPaper: paper => [paper.getYear() || 0],
     paperFilter: options.paperFilter
   });
 
-  for (var key in publicationsByYear) {
-    publicationsByYear[key] = { count: publicationsByYear[key].length };
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key of Object.keys(publicationsByYear)) {
+    publicationsByYear[key] = {
+      count: publicationsByYear[key].length
+    };
   }
+
   return publicationsByYear;
+}
+
+/**
+ * Returns the key phrases trends information.
+ *
+ * @param {*} options
+ */
+function getKeyPhrasesTrends(options) {
+  options = options || {};
+
+  const keyPhrasesByYear = papersController.group({
+    groupsFromPaper: paper => [paper.getYear() || 0],
+    paperFilter: options.paperFilter
+  });
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key of Object.keys(keyPhrasesByYear)) {
+    keyPhrasesByYear[key] = {
+      count: keyPhrasesByYear[key].length
+    };
+  }
+
+  return keyPhrasesByYear;
 }
 
 /**
@@ -141,11 +169,9 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(
-    JSON.stringify({
-      mode: "test"
-    })
-  );
+  res.send(JSON.stringify({
+    mode: "test"
+  }));
 });
 
 app.get("/top-authors", (req, res) => {
@@ -155,9 +181,7 @@ app.get("/top-authors", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(
-      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
-    );
+    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
   }
 
   if (paperFilters.length > 0) {
@@ -175,9 +199,7 @@ app.get("/top-papers", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(
-      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
-    );
+    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
   }
 
   if (paperFilters.length > 0) {
@@ -194,9 +216,7 @@ app.get("/publication-trends", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(
-      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
-    );
+    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
   }
 
   if (paperFilters.length > 0) {
@@ -205,6 +225,26 @@ app.get("/publication-trends", (req, res) => {
   }
 
   res.send(JSON.stringify(getPublicationTrends(options)));
+});
+
+app.get("/key-phrase-trends", (req, res) => {
+  const params = req.query;
+
+  const options = {};
+  const paperFilters = [];
+
+  paperFilters.push((paper) => {
+    return paper.getKeyPhrases().some((phrase) => {
+      return phrase.toLowerCase() === params.phrase.toLowerCase();
+    });
+  });
+
+  if (paperFilters.length > 0) {
+    options.paperFilter = paper =>
+      paperFilters.every(paperFilter => paperFilter(paper));
+  }
+
+  res.send(JSON.stringify(getKeyPhrasesTrends(options)));
 });
 
 function startServer() {
@@ -220,22 +260,22 @@ const parser = new Parser();
 let i = 0;
 
 if (verbose) {
-  parser.setEventHandler("onLineParsed", line => {
+  parser.setEventHandler("onLineParsed", (line) => {
     readline.cursorTo(process.stdout, 0);
     process.stdout.write(`Parsed lines: ${++i}`);
   });
 
-  parser.setEventHandler("onFilesParsedComplete", line => {
+  parser.setEventHandler("onFilesParsedComplete", (line) => {
     process.stdout.write("\n");
   });
 }
 
 parser.parseDirectory(commander.directory).then(
-  parsedPapers => {
+  (parsedPapers) => {
     papersController.setPapers(parsedPapers);
     startServer();
   },
-  err => {
+  (err) => {
     // eslint-disable-next-line no-console
     console.error(err);
   }

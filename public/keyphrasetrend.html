@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="css/custom.css">
+
+  <script src="./js/d3.v4.min.js"></script>
+  <script src="./js/jquery-3.2.1.slim.min.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+</head>
+
+<body ng-app="">
+  <div ng-include="'nav.html'"></div>
+
+  <div class="container">
+    <h1>Keyword Phrase Trends (<span class="phrase"></span>)</h1>
+
+    <div class="row">
+      <div class="col">
+        <div id="graph"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- params processing -->
+  <script>
+    /**
+     * Parse url params and redirect if need be
+     */
+    var searchParams = new URLSearchParams(window.location.search)
+    var phrase = searchParams.get("phrase")
+    if (!phrase) {
+      var phrase = prompt("Please enter keyword phrase", "Machine Translation");
+      if (phrase) {
+        searchParams.set('phrase', phrase);
+        window.location.search = searchParams.toString()
+      }
+    }
+
+    $('.phrase').html(phrase)
+  </script>
+
+  <!-- d3 Script -->
+
+  <script>
+    d3.json(API_HOST + "/key-phrase-trends?" + searchParams.toString(), function (error, data) {
+      /**
+       * Process data
+       */
+
+      data = Object.keys(data).map((year) => {
+        return {
+          year: year,
+          count: data[year].count
+        }
+      });
+
+      // set the dimensions and margins of the graph
+      const margin = {
+        top: 20,
+        right: 70,
+        bottom: 70,
+        left: 70
+      };
+
+      const width = 960 - margin.left - margin.right;
+      const height = 500 - margin.top - margin.bottom;
+      const padding = 100;
+
+      // parse the date / time
+      const parseTime = d3.timeParse("%Y");
+
+      // set the ranges
+      const x = d3.scaleTime().range([0, width]);
+      const y = d3.scaleLinear().range([height, 0]);
+
+      // define the line
+      const valueline = d3.line()
+        .x(function (d) {
+          return x(d.year);
+        })
+        .y(function (d) {
+          return y(d.count);
+        });
+
+      const svg = d3.select("#graph").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+      data.forEach(function (d) {
+        d.year = parseTime(d.year);
+        d.count = +d.count;
+      });
+
+      const countMax = d3.max(data, function (d) {
+        return d.count;
+      });
+
+      // scale the range of the data
+      x.domain(d3.extent(data, function (d) {
+        return d.year;
+      }));
+
+      y.domain([0, countMax + 10]);
+
+      // add the value line path.
+      svg.append("path")
+        .data([data])
+        .attr("class", "line")
+        .attr("d", valueline);
+
+      const curtain = svg.append("rect")
+        .attr("x", -1 * width)
+        .attr("y", -1 * height)
+        .attr("height", height)
+        .attr("width", width)
+        .attr("class", "curtain")
+        .attr("transform", "rotate(180)")
+        .style("fill", "#ffffff");
+
+      curtain.transition()
+        .duration(1500)
+        .ease(d3.easeLinear)
+        .attr("x", -2 * width);
+
+      // add the x-axis
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+      // add the y-aixs
+      svg.append("g")
+        .attr("class", "axis")
+        .call(d3.axisLeft(y));
+
+      // add the y-axis title
+      svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + (-padding / 2) + "," + (height / 2) + ")rotate(-90)")
+        .text("Number of Publications");
+
+      // add the x-aixs title
+      svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + (width / 2) + "," + (height - (-padding / 2)) + ")") // centre below axis
+        .text("Year");
+    })
+  </script>
+
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="./js/jquery-3.2.1.slim.min.js"></script>
+  <script src="./js/popper.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
+</body>
+
+</html>
