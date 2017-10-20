@@ -3,7 +3,7 @@ const express = require("express");
 const Parser = require("./Parser.js");
 const PapersController = require("./controllers/PapersController.js");
 const readline = require("readline");
-const _ = require('lodash')
+const _ = require("lodash");
 
 const app = express();
 const papersController = new PapersController();
@@ -144,7 +144,7 @@ function getInCitationsGraph(options) {
   function minimizePaper(paper, level) {
     return {
       id: paper.getId(),
-      level: level + 1,
+      level: level,
       title: paper.getTitle()
     };
   }
@@ -155,19 +155,20 @@ function getInCitationsGraph(options) {
   var links = [];
 
   function dig(paper, level, maxLevel) {
-    if (level > maxLevel || !paper) {
+    nodes.push(minimizePaper(paper, level));    
+    if (level > maxLevel) {
       return;
     } else {
-      nodes.push(minimizePaper(paper, level));
       let inCitations = paper.getInCitations();
       inCitations.forEach(inCitation => {
-        if (!inCitation) return;
         var inCitationId = inCitation.getId ? inCitation.getId() : inCitation;
-        links.push({
-          source: paper.getId(),
-          target: inCitationId
-        });
-        dig(allPapers[inCitationId], level + 1, maxLevel);
+        if (allPapers[inCitationId]) {
+          links.push({
+            source: paper.getId(),
+            target: inCitationId
+          });
+          dig(allPapers[inCitationId], level + 1, maxLevel);
+        }
       });
     }
   }

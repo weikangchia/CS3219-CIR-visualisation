@@ -41,10 +41,10 @@
      * Parse url params and redirect if need be
      */
     const searchParams = new URLSearchParams(window.location.search);
-    let title = searchParams.get("venue");
+    let title = searchParams.get("title");
     if (!title) {
       title = prompt("Please enter title", "Low-density parity check codes over GF(q)");
-      if (venue) {
+      if (title) {
         searchParams.set('title', title);
         window.location.search = searchParams.toString();
       }
@@ -79,12 +79,12 @@
           .strength(-2000))
         .force("center", d3.forceCenter(width / 2, height / 2));
 
-      const link = svg.append("g")
+        const link = svg.append("g")
         .attr("class", "links")
         .selectAll("line")
         .data(data.links)
         .enter().append("line");
-
+        
       const node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
