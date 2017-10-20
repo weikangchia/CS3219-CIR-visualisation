@@ -185,16 +185,16 @@
       d3.selectAll('g.tick')
         .style('cursor', 'pointer')
         .on('click', (e) => {
-          $('author .author').html(e)
+          $('author .author').html(e);
 
-          $('publications').empty()
+          $('publications').empty();
           authorsDict[e].papers.forEach((paper) => {
             var $paper = $("<p>").append('<a target="_blank" href="' + googleScholarSearchUrl(paper.title) +
               '">' + paper.title + '</a>')
             $('publications').append($paper)
-          })
+          });
 
-          location.href = "#author"
+          location.href = "#author";
         })
     });
 
