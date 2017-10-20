@@ -66,7 +66,7 @@ function getTopAuthors(options) {
   topAuthors = Object.keys(topAuthors)
     .sort(
       (author1, author2) =>
-        topAuthors[author2].length - topAuthors[author1].length
+      topAuthors[author2].length - topAuthors[author1].length
     )
     .slice(0, topN)
     .map(authorId => {
@@ -97,7 +97,7 @@ function getTopPapers(options) {
   topPapers = topPapers
     .sort(
       (paper1, paper2) =>
-        paper2.getInCitations().length - paper1.getInCitations().length
+      paper2.getInCitations().length - paper1.getInCitations().length
     )
     .slice(0, topN);
   topPapers.forEach(paper =>
@@ -110,9 +110,6 @@ function getTopPapers(options) {
   return topPapers;
 }
 
-/**
- * @param {integer} topN number of authors (default is 10)
- */
 function getPublicationTrends(options) {
   options = options || {};
   let topN = options.topN || 10;
@@ -122,9 +119,67 @@ function getPublicationTrends(options) {
   });
 
   for (var key in publicationsByYear) {
-    publicationsByYear[key] = { count: publicationsByYear[key].length };
+    publicationsByYear[key] = {
+      count: publicationsByYear[key].length
+    };
   }
   return publicationsByYear;
+}
+
+function getInCitationsGraph(options) {
+  function minimizePaper(paper, level) {
+    return {
+      id: paper.getId(),
+      level: level + 1,
+      title: paper.getTitle()
+    };
+  }
+
+  var allPapers = papersController.getPapersObject();
+
+  var nodes = [];
+  var links = [];
+
+  function dig(paper, level, maxLevel) {
+    if (level > maxLevel || !paper) {
+      return;
+    } else {
+      nodes.push(minimizePaper(paper, level));
+      let inCitations = paper.getInCitations();
+      inCitations.forEach(inCitation => {
+        if (!inCitation) return;
+        var inCitationId = inCitation.getId ? inCitation.getId() : inCitation;
+        links.push({
+          source: paper.getId(),
+          target: inCitationId
+        });
+        dig(allPapers[inCitationId], level + 1, maxLevel);
+      });
+    }
+  }
+
+  options = options || {};
+  options.levels = options.levels || 3;
+
+  var paperId = options.title ?
+    _.find(
+      Object.keys(allPapers),
+      paperId =>
+      allPapers[paperId].getTitle().toLowerCase() ==
+      options.title.toLowerCase()
+    ) :
+    _.maxBy(
+      Object.keys(allPapers),
+      paperId => allPapers[paperId].getInCitations().length
+    );
+
+  var paper = allPapers[paperId];
+  dig(paper, 1, options.levels);
+
+  return {
+    nodes,
+    links
+  };
 }
 
 /**
