@@ -138,6 +138,7 @@ function getInCitationsGraph(options) {
     return {
       id: paper.getId(),
       level,
+      authors : paper.getAuthors(),
       title: paper.getTitle()
     };
   }

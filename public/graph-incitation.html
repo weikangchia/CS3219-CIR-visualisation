@@ -112,7 +112,7 @@
               .map((match) => {
                 return "(Level " + match.source.level + ")\t" + match.source.title;
               });
-            htmlText = htmlText.concat(`<br><h6>In citations (${sources.length})</h6>${sources.join("<br>")}`);
+            htmlText = htmlText.concat(`${d.authors.map(author => author.name).join(", ")}<h6>In citations (${sources.length})</h6>${sources.join("<br>")}`);
           }
 
           d.htmlText = htmlText;
