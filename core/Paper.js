@@ -6,7 +6,7 @@ class Paper {
     this.inCitations = [];
     this.outCitations = [];
     this.year = null;
-    this.abstract = '';
+    this.abstract = "";
     this.keyPhrases = [];
   }
 

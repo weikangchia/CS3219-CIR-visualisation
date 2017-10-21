@@ -5,6 +5,9 @@ class PapersController {
     this.authorsObject = null;
   }
 
+  /**
+   * Returns the authors object.
+   */
   getAuthorsObject() {
     if (this.authorsObject == null) {
       const obj = {};
@@ -18,6 +21,9 @@ class PapersController {
     return this.authorsObject;
   }
 
+  /**
+   * Returns the papers object.
+   */
   getPapersObject() {
     if (this.papersObject == null) {
       const obj = {};
@@ -29,12 +35,20 @@ class PapersController {
     return this.papersObject;
   }
 
+  /**
+   * Set the papers.
+   *
+   * @param {*} papers
+   */
   setPapers(papers) {
     this.papersObject = null;
     this.authorsObject = null;
     this.papers = papers;
   }
 
+  /**
+   * Returns all the papers.
+   */
   getPapers() {
     return this.papers;
   }
@@ -64,16 +78,16 @@ class PapersController {
 
     options.groupsFromPaper =
       options.groupsFromPaper ||
-      ((paper) => {
+      (paper => {
         [JSON.stringify(paper)];
       });
 
     const groups = {};
-    this.papers.forEach((paper) => {
+    this.papers.forEach(paper => {
       if (options.paperFilter && !options.paperFilter(paper, groups)) {
         return;
       }
-      options.groupsFromPaper(paper).forEach((key) => {
+      options.groupsFromPaper(paper).forEach(key => {
         groups[key] = groups[key] || [];
         groups[key].push(paper);
       });
