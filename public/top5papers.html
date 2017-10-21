@@ -183,11 +183,11 @@
 
       data.forEach(function (paper) {
         const lines = [
-          "Title: " + (paper.title),
-          "Number citations: " + (paper.inCitations.length),
-          "Authors: " + paper.authors.map(author => author.name).join(", ")
+          `<h6>${paper.title}</h6>`,
+          `Number citations: ${paper.inCitations.length}<br/>`,
+          `Authors: ${paper.authors.map(author => author.name).join(", ")}`
         ]
-        paper.toolTipString = lines.join("<br>")
+        paper.toolTipString = lines.join("");
       }, this);
 
       var barDefaultFill = '#6baed6',

@@ -108,8 +108,7 @@
       .range([0, width]);
 
     const tip = d3.tip().attr('class', 'd3-tip').html(function (d) {
-      return "Author: " + (authorIdentifier(d)) +
-        "<br>" + "Number publications: " + (d.count);
+      return `<h5>${authorIdentifier(d)}</h5>Number publications: ${d.count}`;
     });
 
     // append the svg object to the body of the page
