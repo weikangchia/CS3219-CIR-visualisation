@@ -113,14 +113,14 @@
           return d3.schemeCategory20c[d.level * 2];
         })
         .on("mouseover", function (d) {
-          let htmlText = `<h5>${d.title}</h5>`
+          let htmlText = `<h5>${d.title}</h5>${d.authors.map(author => author.name).join(", ")}`;
 
           if (d.level > 1) {
             const sources = _.filter(data.links, (link) => link.target.id == d.id)
               .map((match) => {
                 return "(Level " + match.source.level + ")\t" + match.source.title;
               });
-            htmlText = htmlText.concat(`${d.authors.map(author => author.name).join(", ")}<h6>In citations (${sources.length})</h6>${sources.join("<br>")}`);
+            htmlText = htmlText.concat(`<br><br><h6>In citations (${sources.length})</h6>${sources.join("<br>")}`);
           }
 
           d.htmlText = htmlText;
