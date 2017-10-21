@@ -26,8 +26,9 @@
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
-    <h1>Keyword Phrase Trends (
-      <span class="phrase"></span>)</h1>
+    <h1>Publication Trends for Venue
+      <span class="venue"></span>
+    </h1>
 
     <div class="row">
       <div class="col">
@@ -37,21 +38,21 @@
   </div>
 
   <!-- params processing -->
-  <script type="text/javascript">
+  <script>
     /**
      * Parse url params and redirect if need be
      */
-    const searchParams = new URLSearchParams(window.location.search);
-    let phrase = searchParams.get("phrase");
-    if (!phrase) {
-      phrase = prompt("Please enter keyword phrase", "Machine Translation");
-      if (phrase) {
-        searchParams.set('phrase', phrase);
-        window.location.search = searchParams.toString();
+    var searchParams = new URLSearchParams(window.location.search)
+    var venue = searchParams.get("venue")
+    if (!venue) {
+      var venue = prompt("Please enter venue", "icse");
+      if (venue) {
+        searchParams.set('venue', venue);
+        window.location.search = searchParams.toString()
       }
     }
 
-    $('.phrase').html(phrase);
+    $('.venue').html(venue)
 
   </script>
 
@@ -64,7 +65,8 @@
       bgColor: "#2ecc71"
     });
 
-    d3.json(API_HOST + "/key-phrase-trends?" + searchParams.toString(), function (error, data) {
+    d3.json(API_HOST + "/trends/publication?" + searchParams.toString(), function (error, data) {
+      if (error) return showError(error)
       $("#fakeLoader").hide();
 
       /**
@@ -155,7 +157,7 @@
       focus.append("circle")
         .attr("r", 5);
 
-        focus.append("text")
+      focus.append("text")
         .attr("x", -40)
         .attr("dy", "-.6em");
 

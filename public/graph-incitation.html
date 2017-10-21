@@ -69,7 +69,7 @@
       return d.htmlText;
     });
 
-    d3.json(API_HOST + "/incitation-graph?" + searchParams.toString(), function (error, data) {
+    d3.json(API_HOST + "/graph/incitation?" + searchParams.toString(), function (error, data) {
       if (error) return showError('Server Error')
       $("#fakeLoader").hide();
 

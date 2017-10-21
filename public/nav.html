@@ -6,20 +6,34 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="top10authors.html">Top 10 Authors</a>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="http://localhost.com:9000" id="navbarTopChartsDropdownMenuLink" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Top Charts
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarTopChartsDropdownMenuLink">
+          <a class="dropdown-item" href="top10-authors.html">Top-10 Authors</a>
+          <a class="dropdown-item" href="top5-papers.html">Top-5 Papers</a>
+        </div>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="top5papers.html">Top 5 Papers</a>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="http://localhost.com:9000" id="navbarTrendsDropdownMenuLink" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Trends Charts
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarTrendsDropdownMenuLink">
+          <a class="dropdown-item" href="trends-publication.html">Trends Publication</a>
+          <a class="dropdown-item" href="trends-keyphrase.html">Trends KeyPhrase</a>
+        </div>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="publicationtrend.html">Publication Trend</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="keyphrasetrend.html">Keyword Phrase Trend</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="web.html">Citation Web</a>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="http://localhost.com:9000" id="navbarGraphDropdownMenuLink" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Graph
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarGraphDropdownMenuLink">
+          <a class="dropdown-item" href="graph-incitation.html">Graph In-Citation</a>
+        </div>
       </li>
     </ul>
   </div>
@@ -32,4 +46,5 @@
       }
     })
   })
+
 </script>

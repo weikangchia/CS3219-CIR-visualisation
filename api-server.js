@@ -66,10 +66,8 @@ function getTopAuthors(options) {
   });
 
   topAuthors = Object.keys(topAuthors)
-    .sort(
-      (author1, author2) =>
-        topAuthors[author2].length - topAuthors[author1].length
-    )
+    .sort((author1, author2) =>
+      topAuthors[author2].length - topAuthors[author1].length)
     .slice(0, topN)
     .map(authorId => {
       return {
@@ -99,18 +97,13 @@ function getTopPapers(options) {
     topPapers = topPapers.filter(options.paperFilter);
   }
   topPapers = topPapers
-    .sort(
-      (paper1, paper2) =>
-        paper2.getInCitations().length - paper1.getInCitations().length
-    )
+    .sort((paper1, paper2) =>
+      paper2.getInCitations().length - paper1.getInCitations().length)
     .slice(0, topN);
   topPapers.forEach(paper =>
-    paper.setInCitations(
-      paper.getInCitations().map(inCitationId => {
-        return papersDict[inCitationId] || inCitationId;
-      })
-    )
-  );
+    paper.setInCitations(paper.getInCitations().map(inCitationId => {
+      return papersDict[inCitationId] || inCitationId;
+    })));
 
   return topPapers;
 }
@@ -144,24 +137,22 @@ function getInCitationsGraph(options) {
   function minimizePaper(paper, level) {
     return {
       id: paper.getId(),
-      level: level,
+      level,
       title: paper.getTitle()
     };
   }
 
-  var allPapers = papersController.getPapersObject();
+  const allPapers = papersController.getPapersObject();
 
-  var nodes = [];
-  var links = [];
+  const nodes = [];
+  const links = [];
 
   function dig(paper, level, maxLevel) {
     nodes.push(minimizePaper(paper, level));
-    if (level >= maxLevel) {
-      return;
-    } else {
-      let inCitations = paper.getInCitations();
+    if (level < maxLevel) {
+      const inCitations = paper.getInCitations();
       inCitations.forEach(inCitation => {
-        var inCitationId = inCitation.getId ? inCitation.getId() : inCitation;
+        const inCitationId = inCitation.getId ? inCitation.getId() : inCitation;
         if (allPapers[inCitationId]) {
           links.push({
             source: paper.getId(),
@@ -177,10 +168,10 @@ function getInCitationsGraph(options) {
   options.levels = options.levels || 3;
   options.title = options.title || "";
 
-  var paperId = _.find(
+  let paperId = _.find(
     Object.keys(allPapers),
     paperId =>
-      allPapers[paperId].getTitle().toLowerCase() == options.title.toLowerCase()
+    allPapers[paperId].getTitle().toLowerCase() === options.title.toLowerCase()
   );
   paperId =
     paperId ||
@@ -189,12 +180,12 @@ function getInCitationsGraph(options) {
       paperId => allPapers[paperId].getInCitations().length
     );
 
-  var paper = allPapers[paperId];
+  const paper = allPapers[paperId];
   dig(paper, 1, options.levels);
 
   return {
-    nodes: nodes,
-    links: links
+    nodes,
+    links
   };
 }
 
@@ -235,11 +226,9 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(
-    JSON.stringify({
-      mode: "test"
-    })
-  );
+  res.send(JSON.stringify({
+    mode: "test"
+  }));
 });
 
 app.get("/top-authors", (req, res) => {
@@ -249,9 +238,7 @@ app.get("/top-authors", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(
-      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
-    );
+    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
   }
 
   if (paperFilters.length > 0) {
@@ -269,9 +256,7 @@ app.get("/top-papers", (req, res) => {
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(
-      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
-    );
+    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
   }
 
   if (paperFilters.length > 0) {
@@ -281,16 +266,14 @@ app.get("/top-papers", (req, res) => {
   res.send(JSON.stringify(getTopPapers(options)));
 });
 
-app.get("/publication-trends", (req, res) => {
+app.get("/trends/publication", (req, res) => {
   const params = req.query;
 
   const options = {};
   const paperFilters = [];
 
   if (params.venue) {
-    paperFilters.push(
-      paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase()
-    );
+    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
   }
 
   if (paperFilters.length > 0) {
@@ -301,7 +284,7 @@ app.get("/publication-trends", (req, res) => {
   res.send(JSON.stringify(getPublicationTrends(options)));
 });
 
-app.get("/key-phrase-trends", (req, res) => {
+app.get("/trends/keyphrase", (req, res) => {
   const params = req.query;
 
   const options = {};
@@ -321,7 +304,7 @@ app.get("/key-phrase-trends", (req, res) => {
   res.send(JSON.stringify(getKeyPhrasesTrends(options)));
 });
 
-app.get("/incitation-graph", (req, res) => {
+app.get("/graph/incitation", (req, res) => {
   const params = req.query;
 
   const options = {};
