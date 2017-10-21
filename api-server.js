@@ -175,18 +175,19 @@ function getInCitationsGraph(options) {
 
   options = options || {};
   options.levels = options.levels || 3;
+  options.title = options.title || "";
 
-  var paperId = options.title
-    ? _.find(
-        Object.keys(allPapers),
-        paperId =>
-          allPapers[paperId].getTitle().toLowerCase() ==
-          options.title.toLowerCase()
-      )
-    : _.maxBy(
-        Object.keys(allPapers),
-        paperId => allPapers[paperId].getInCitations().length
-      );
+  var paperId = _.find(
+    Object.keys(allPapers),
+    paperId =>
+      allPapers[paperId].getTitle().toLowerCase() == options.title.toLowerCase()
+  );
+  paperId =
+    paperId ||
+    _.maxBy(
+      Object.keys(allPapers),
+      paperId => allPapers[paperId].getInCitations().length
+    );
 
   var paper = allPapers[paperId];
   dig(paper, 1, options.levels);
