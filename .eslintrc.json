@@ -9,6 +9,10 @@
       "no-plusplus": 0,
       "wrap-iife": [2, "inside"],
       "no-unused-vars": [1, {"vars": "local", "args": "none"}],
-      "comma-dangle": ["error", "never"]
+      "comma-dangle": ["error", "never"],
+      "arrow-parens": [
+        "error",
+        "as-needed"
+      ]
     }
 }
