@@ -18,6 +18,7 @@
   <script src="./js/utils.js"></script>
   <script src="./js/angular.min.js"></script>
   <script src="./js/fakeLoader.min.js"></script>
+  <script src="./js/d3-tip.js"></script>
 
 </head>
 
@@ -41,7 +42,6 @@
     <div class="row">
       <div class="col">
         <div id="graphHorizontal"></div>
-        <div class="toolTip"></div>
       </div>
     </div>
 
@@ -80,6 +80,7 @@
     }
 
     $('.venue').html(venue)
+
   </script>
 
   <!-- d3 Script -->
@@ -160,7 +161,9 @@
       const y = d3.scaleLinear()
         .range([barHeight, 0]);
 
-      const toolTip = d3.select(".toolTip");
+      const tip = d3.tip().attr('class', 'd3-tip').html(function (paper) {
+        return paper.toolTipString;
+      });
 
       // append the svg object to the body of the page
       // append a 'group' element to 'svg'
@@ -169,7 +172,8 @@
         .attr("width", barWidth + barMargin.left + barMargin.right)
         .attr("height", barHeight + barMargin.top + barMargin.bottom)
         .append("g")
-        .attr("transform", "translate(" + barMargin.left + "," + barMargin.top + ")");
+        .attr("transform", "translate(" + barMargin.left + "," + barMargin.top + ")")
+        .call(tip);
 
       // scale the range of the data in the domains
       y.domain([0, countMax]);
@@ -179,10 +183,9 @@
 
       data.forEach(function (paper) {
         const lines = [
-          (paper.title),
-          (paper.inCitations.length) + " citations",
-          "Authors:",
-          paper.authors.map(author => author.name).join(", ")
+          "Title: " + (paper.title),
+          "Number citations: " + (paper.inCitations.length),
+          "Authors: " + paper.authors.map(author => author.name).join(", ")
         ]
         paper.toolTipString = lines.join("<br>")
       }, this);
@@ -210,17 +213,12 @@
           d3.select(rects[index])
             .attr('cursor', 'pointer')
             .style("fill", barHoverFill);
-
-          toolTip
-            .style("left", (d3.event.pageX - 100) + "px")
-            .style("top", (d3.event.pageY - 100) + "px")
-            .style("display", "inline-block")
-            .html(paper.toolTipString);
+          tip.show(paper);
         })
         .on("mouseout", (paper, index, rects) => {
           d3.select(rects[index])
             .attr("style", '');
-          toolTip.style("display", "none");
+          tip.hide();
         })
         .on("click", (paper) => {
           displayPaper(paper)
@@ -259,6 +257,7 @@
       /** 
        * Bubble Chart
        */
+
       const colors = d3.schemeCategory20c;
       const bubbleWidth = 500;
       const bubbleHeight = 500;
@@ -267,7 +266,8 @@
         .append("svg")
         .attr("height", bubbleHeight)
         .attr("width", bubbleWidth)
-        .append("g").attr("transform", "translate(" + bubbleWidth / 2 + "," + bubbleHeight / 2 + ")");
+        .append("g").attr("transform", "translate(" + bubbleWidth / 2 + "," + bubbleHeight / 2 + ")")
+        .call(tip);
 
       const radiusScale = d3.scaleSqrt()
         .domain([countMin, countMax]).range([50, 80]);
@@ -285,11 +285,13 @@
         .attr("class", "paper")
         .attr("r", paper => radiusScale(paper.inCitations.length))
         .attr("fill", (d, i) => colors[i])
-        .on('mouseover', function () {
-          d3.select(this).style('opacity', '0.5').attr('cursor', 'pointer')
+        .on('mouseover', function (d) {
+          d3.select(this).style('opacity', '0.5').attr('cursor', 'pointer');
+          tip.show(d);
         })
         .on('mouseleave', function () {
-          d3.select(this).style('opacity', '1')
+          d3.select(this).style('opacity', '1');
+          tip.hide();
         })
         .on("click", displayPaper)
         .call(d3.drag()
@@ -345,6 +347,7 @@
         d.fy = null;
       }
     });
+
   </script>
 
   <style>
@@ -357,6 +360,7 @@
     #graphBubble .label {
       font-size: 15px;
     }
+
   </style>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->

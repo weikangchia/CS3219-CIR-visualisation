@@ -18,6 +18,7 @@
   <script src="./js/utils.js"></script>
   <script src="./js/angular.min.js"></script>
   <script src="./js/fakeLoader.min.js"></script>
+  <script src="./js/d3-tip.js"></script>
 
 </head>
 
@@ -41,7 +42,6 @@
     <div class="row">
       <div class="col">
         <div id="graph"></div>
-        <div class="toolTip"></div>
       </div>
     </div>
 
@@ -107,7 +107,10 @@
     const x = d3.scaleLinear()
       .range([0, width]);
 
-    const toolTip = d3.select(".toolTip");
+    const tip = d3.tip().attr('class', 'd3-tip').html(function (d) {
+      return "Author: " + (authorIdentifier(d)) +
+        "<br>" + "Number publications: " + (d.count);
+    });
 
     // append the svg object to the body of the page
     // append a 'group' element to 'svg'
@@ -117,7 +120,8 @@
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
       .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+        "translate(" + margin.left + "," + margin.top + ")")
+      .call(tip);
 
     function authorIdentifier(author) {
       author = author.author || author
@@ -144,16 +148,14 @@
         .attr("y", function (topAuthor) {
           return y(authorIdentifier(topAuthor.author));
         })
+        .attr("x", 0)
         .attr("height", y.bandwidth())
         .attr("transform", "translate(" + margin.left / 2 + ", 0)")
         .on("mousemove", function (topAuthor) {
-          toolTip.style("left", (d3.event.pageX - 50) + "px");
-          toolTip.style("top", (d3.event.pageY - 140) + "px");
-          toolTip.style("display", "inline-block");
-          toolTip.html((authorIdentifier(topAuthor)) + "<br>" + (topAuthor.count) + " publications");
+          tip.show(topAuthor);
         })
-        .on("mouseout", function (d) {
-          toolTip.style("display", "none");
+        .on("mouseout", function () {
+          tip.hide();
         })
         .transition().duration(1000)
         .attr("width", function (topAuthor) {
