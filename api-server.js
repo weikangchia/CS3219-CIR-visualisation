@@ -111,12 +111,10 @@ function getTopPapers(options) {
 /**
  * Returns the publication trends information.
  *
- * @param {integer}
+ * @param {*} options
  */
 function getPublicationTrends(options) {
   options = options || {};
-
-  const topN = options.topN || 10;
 
   const publicationsByYear = papersController.group({
     groupsFromPaper: paper => [paper.getYear() || 0],
@@ -138,7 +136,7 @@ function getInCitationsGraph(options) {
     return {
       id: paper.getId(),
       level,
-      authors : paper.getAuthors(),
+      authors: paper.getAuthors(),
       title: paper.getTitle()
     };
   }
@@ -242,6 +240,10 @@ app.get("/top-authors", (req, res) => {
     paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
   }
 
+  if (params.topN) {
+    options.topN = params.topN;
+  }
+
   if (paperFilters.length > 0) {
     options.paperFilter = paper =>
       paperFilters.every(paperFilter => paperFilter(paper));
@@ -258,6 +260,10 @@ app.get("/top-papers", (req, res) => {
 
   if (params.venue) {
     paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
+  }
+
+  if (params.topN) {
+    options.topN = params.topN;
   }
 
   if (paperFilters.length > 0) {
