@@ -1,3 +1,6 @@
+/**
+ * Keeps all papers and provides some generic functions to access them
+ */
 class PapersController {
   constructor() {
     this.papers = [];
@@ -60,12 +63,12 @@ class PapersController {
    *
    * @callback paperFilter
    * @param {Paper} paper
-   * @param {PaperGroups} already grouped papers
-   * @returns true if paper is to be included
+   * @param {PaperGroups} groups already grouped papers
+   * @returns {boolean} true if paper is to be processed
    *
    * @callback groupsFromPaper
    * @param {Paper} paper
-   * @returns groups that paper belongs in
+   * @returns {string[]} groups that paper belongs in
 
   * @typedef {Object} GroupingOptions
   * @property {groupsFromPaper} groupsFromPaper default a function that returns JSON.stringify(paper)
