@@ -17,7 +17,12 @@ class PapersController {
 
       this.papers.forEach(paper =>
         // eslint-disable-next-line no-return-assign
-        paper.getAuthors().forEach(author => (obj[author.getId()] = obj[author.getId()] || author)));
+        paper
+          .getAuthors()
+          .forEach(
+            author => (obj[author.getId()] = obj[author.getId()] || author)
+          )
+      );
       this.authorsObject = obj;
     }
 
@@ -31,7 +36,9 @@ class PapersController {
     if (this.papersObject == null) {
       const obj = {};
       // eslint-disable-next-line no-return-assign
-      this.papers.forEach(paper => (obj[paper.getId()] = obj[paper.getId()] || paper));
+      this.papers.forEach(
+        paper => (obj[paper.getId()] = obj[paper.getId()] || paper)
+      );
       this.papersObject = obj;
     }
 
@@ -57,7 +64,7 @@ class PapersController {
   }
 
   /**
-   * Group paper based on the options.
+   * Group paper based on the options. A paper can belong to more than one group.
    *
    * @typedef {Object.<string, Paper[]>} PaperGroups
    *
@@ -75,6 +82,7 @@ class PapersController {
   * @property {paperFilter} paperFilter if not specified all papers will be included
   *
   * @param {GroupingOptions} options
+  * @returns {PaperGroups} groups of papers
   */
   group(options) {
     options = options || {};
