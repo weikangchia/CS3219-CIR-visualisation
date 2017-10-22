@@ -156,8 +156,8 @@ function getInCitationsGraph(options) {
         const inCitationId = inCitation.getId ? inCitation.getId() : inCitation;
         if (allPapers[inCitationId]) {
           links.push({
-            source: paper.getId(),
-            target: inCitationId
+            source: inCitationId,
+            target: paper.getId()
           });
           dig(allPapers[inCitationId], level + 1, maxLevel);
         }
