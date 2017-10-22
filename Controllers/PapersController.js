@@ -76,13 +76,13 @@ class PapersController {
    * @callback groupsFromPaper
    * @param {Paper} paper
    * @returns {string[]} groups that paper belongs in
-
-  * @typedef {Object} GroupingOptions
-  * @property {groupsFromPaper} groupsFromPaper default a function that returns JSON.stringify(paper)
-  * @property {paperFilter} paperFilter if not specified all papers will be included
-  *
-  * @param {GroupingOptions} options
-  * @returns {PaperGroups} groups of papers
+   *
+   * @typedef {Object} GroupingOptions
+   * @property {groupsFromPaper} groupsFromPaper default a function that returns JSON.stringify(paper)
+   * @property {paperFilter} paperFilter if not specified all papers will be included
+   *
+   * @param {GroupingOptions} options
+   * @returns {PaperGroups} groups of papers
   */
   group(options) {
     options = options || {};
