@@ -1,6 +1,7 @@
 const express = require("express");
-const morgan = require("morgan");
 const path = require("path");
+
+const morgan = require("morgan");
 const compression = require("compression");
 const logger = require('./logger');
 

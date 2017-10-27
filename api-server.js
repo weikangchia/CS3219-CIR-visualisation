@@ -5,7 +5,13 @@ const PapersController = require("./controllers/PapersController.js");
 const readline = require("readline");
 const _ = require("lodash");
 
+const morgan = require("morgan");
+const logger = require('./logger');
+
 const app = express();
+
+app.use(morgan("dev"));
+
 const papersController = new PapersController();
 
 commander
@@ -22,27 +28,20 @@ commander
 
 const verbose = !commander.silent;
 
-function log(...args) {
-  if (verbose) {
-    // eslint-disable-next-line no-console
-    console.log(...args);
-  }
-}
-
 // eslint-disable-next-line prefer-destructuring
 let port = commander.port;
 if (!port) {
   port = 3000;
-  log("Using default port:", port);
+  logger.info("Using default port:", port);
 } else {
-  log("Using port:", port);
+  logger.info("Using port:", port);
 }
 
 if (!commander.directory) {
   commander.directory = "./data";
-  log("Using default data directory: ", commander.directory);
+  logger.info("Using default data directory:", commander.directory);
 } else {
-  log("Using data directory: ", commander.directory);
+  logger.info("Using data directory:", commander.directory);
 }
 
 /**
@@ -216,7 +215,6 @@ function getKeyPhrasesTrends(options) {
  */
 
 app.use((req, res, next) => {
-  log("Incoming request:", req.path, req.query);
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   res.setHeader("Content-Type", "application/json");
@@ -322,8 +320,8 @@ app.get("/graph/incitation", (req, res) => {
 });
 
 function startServer() {
-  app.listen(port, () => {
-    log("API serving on port 3000!");
+  const server = app.listen(port, () => {
+    logger.info(`Listening on port ${server.address().port}`);
   });
 }
 
