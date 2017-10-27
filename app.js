@@ -3,7 +3,7 @@ const path = require("path");
 
 const morgan = require("morgan");
 const compression = require("compression");
-const logger = require('./logger');
+const logger = require('./app/middleware/logger');
 
 const app = express();
 
@@ -13,6 +13,8 @@ app.use(compression());
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 app.use('/top-authors', (req, res) => {
+  logger.info('hello');
+  logger.info(__dirname);
   res.sendFile('/public/top10-authors.html', {
     root: __dirname
   });

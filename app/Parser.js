@@ -3,10 +3,10 @@ const readline = require("readline");
 const walk = require("walk");
 const _ = require("lodash");
 
-const logger = require('./logger');
+const logger = require('./middleware/logger');
 
-const Paper = require("./core/Paper.js");
-const Author = require("./core/Author.js");
+const Paper = require("./paper/Paper.js");
+const Author = require("./author/Author.js");
 
 /**
  * Resolves a Paper object.

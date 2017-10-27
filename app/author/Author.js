@@ -1,3 +1,6 @@
+/**
+ * Represents an author.
+ */
 class Author {
   constructor() {
     this.id = "";

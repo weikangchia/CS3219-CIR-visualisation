@@ -1,12 +1,13 @@
 const commander = require("commander");
 const express = require("express");
-const Parser = require("./Parser.js");
-const PapersController = require("./controllers/PapersController.js");
 const readline = require("readline");
 const _ = require("lodash");
 
 const morgan = require("morgan");
-const logger = require('./logger');
+const logger = require('./app/middleware/logger');
+
+const Parser = require("./app/Parser.js");
+const PapersController = require("./app/controllers/PapersController.js");
 
 const app = express();
 
