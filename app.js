@@ -1,17 +1,46 @@
-const express = require('express');
-const path = require('path');
-const serveIndex = require('serve-index');
+const express = require("express");
+const morgan = require("morgan");
+const path = require("path");
+const compression = require("compression");
+const logger = require('./logger');
 
 const app = express();
 
-// Serve index at /
-app.use('/', express.static('public/'), serveIndex('public', {
-  icons: true
-}));
+app.use(morgan("dev"));
+app.use(compression());
 
-app.use("/public", express.static(path.join(__dirname, "public")));
+app.use('/', express.static(path.join(__dirname, 'public')));
+
+app.use('/top-authors', (req, res) => {
+  res.sendFile('/public/top10-authors.html', {
+    root: __dirname
+  });
+});
+
+app.use('/top-papers', (req, res) => {
+  res.sendFile('/public/top5-papers.html', {
+    root: __dirname
+  });
+});
+
+app.use('/trends-publications', (req, res) => {
+  res.sendFile('/public/trends-publication.html', {
+    root: __dirname
+  });
+});
+
+app.use('/trends-keyphrases', (req, res) => {
+  res.sendFile('/public/trends-keyphrase.html', {
+    root: __dirname
+  });
+});
+
+app.use('/graphs-incitations', (req, res) => {
+  res.sendFile('/public/graph-incitation.html', {
+    root: __dirname
+  });
+});
 
 const server = app.listen(9000, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Listening on port ${server.address().port}`);
+  logger.info(`Listening on port ${server.address().port}`);
 });
