@@ -2,6 +2,9 @@ const fs = require("fs");
 const readline = require("readline");
 const walk = require("walk");
 const _ = require("lodash");
+
+const logger = require('./logger');
+
 const Paper = require("./core/Paper.js");
 const Author = require("./core/Author.js");
 
@@ -16,7 +19,7 @@ function parseLine(line) {
 
     const paper = new Paper();
 
-    obj.authors.forEach((authorObj) => {
+    obj.authors.forEach(authorObj => {
       const author = new Author();
       author.setId(authorObj.ids[0]);
       author.setName(authorObj.name);
@@ -32,6 +35,7 @@ function parseLine(line) {
     paper.setYear(obj.year);
     paper.setAbstract(obj.paperAbstract);
     paper.setKeyPhrases(obj.keyPhrases);
+
     resolve(paper);
   });
 }
@@ -98,13 +102,12 @@ class Parser {
       });
 
       walker.on("errors", (root, nodeStatsArray, next) => {
-        // eslint-disable-next-line no-console
-        console.error(nodeStatsArray);
+        logger.error(nodeStatsArray);
         next();
       });
 
       walker.on("end", () => {
-        Promise.all(walks).then((arrayOfPapers) => {
+        Promise.all(walks).then(arrayOfPapers => {
           resolve(_.flatten(arrayOfPapers));
         }, reject);
       });
@@ -122,12 +125,12 @@ class Parser {
         input: fs.createReadStream(filePath)
       });
 
-      lineReader.on("line", (line) => {
+      lineReader.on("line", line => {
         parseLines.push(parseLine(line).then(this.generateHandleEvent("onLineParsed")));
       });
 
       lineReader.on("close", () => {
-        Promise.all(parseLines).then((papers) => {
+        Promise.all(parseLines).then(papers => {
           resolve(papers);
         });
       });

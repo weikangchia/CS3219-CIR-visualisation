@@ -348,7 +348,6 @@ parser.parseDirectory(commander.directory).then(
     startServer();
   },
   err => {
-    // eslint-disable-next-line no-console
-    console.error(err);
+    logger.error(err);
   }
 );

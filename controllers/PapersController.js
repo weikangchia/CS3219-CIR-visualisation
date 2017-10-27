@@ -17,12 +17,7 @@ class PapersController {
 
       this.papers.forEach(paper =>
         // eslint-disable-next-line no-return-assign
-        paper
-          .getAuthors()
-          .forEach(
-            author => (obj[author.getId()] = obj[author.getId()] || author)
-          )
-      );
+        paper.getAuthors().forEach(author => (obj[author.getId()] = obj[author.getId()] || author)));
       this.authorsObject = obj;
     }
 
@@ -36,9 +31,7 @@ class PapersController {
     if (this.papersObject == null) {
       const obj = {};
       // eslint-disable-next-line no-return-assign
-      this.papers.forEach(
-        paper => (obj[paper.getId()] = obj[paper.getId()] || paper)
-      );
+      this.papers.forEach(paper => (obj[paper.getId()] = obj[paper.getId()] || paper));
       this.papersObject = obj;
     }
 
@@ -83,7 +76,7 @@ class PapersController {
    *
    * @param {GroupingOptions} options
    * @returns {PaperGroups} groups of papers
-  */
+   */
   group(options) {
     options = options || {};
 
