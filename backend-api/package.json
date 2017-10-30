@@ -4,8 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-frontend": "nodemon app.js",
-    "start-api-server": "nodemon --ignore public/ --ignore app.js api-server.js"
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",

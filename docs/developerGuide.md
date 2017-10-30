@@ -41,15 +41,15 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    db.papers.createIndex({"year": 1})
    ```
 ### Run frontend server
-To run frontend server, execute:
+To run frontend server, go to `/frontend` folder and execute:
 ```
-npm run start-frontend
+npm start
 ```
 
 ### Run backend API server
-To run backend API server, execute:
+To run backend API server, go to `/backend-api` folder and execute:
 ```
-npm run start-api-server
+npm start
 ```
 
 ### Test
