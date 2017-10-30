@@ -1,3 +1,6 @@
+/**
+ * Represents a paper.
+ */
 class Paper {
   constructor() {
     this.title = "";

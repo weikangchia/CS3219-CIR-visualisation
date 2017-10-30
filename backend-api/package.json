@@ -2,11 +2,9 @@
   "name": "cs3219-cir-visualization",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-frontend": "nodemon --ignore controllers/ --ignore api-server.js --ignore Parser.js --ignore core/ app.js",
-    "start-api-server": "nodemon --ignore public/ api-server.js"
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
