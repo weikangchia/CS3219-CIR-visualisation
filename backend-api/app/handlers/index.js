@@ -1,5 +1,5 @@
 module.exports = function(option) {
   return { 
-    topAuthorHandler: require("../topAuthorHandler.js")(options)
+    topAuthorHandler: require("./topAuthorHandler.js")(option)
   };
 };
