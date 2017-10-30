@@ -17,14 +17,32 @@ app.use(morgan("dev"));
 
 // TODO connect to DB here
 mongoose.connect('mongodb://localhost/cs3219');
+connect = mongoose.connection
+connect.on('error', console.error.bind(console, 'connection error:'));
+connect.once('open', function() {
+  logger.info("mongoose connected");
+});
+
+var paperSchema = mongoose.Schema({
+  title: String,
+  authors: Array,//[Schema.Types.ObjectId],
+  venue: String,
+  inCitations: [String],
+  outCitations: [String],
+  year: Number,
+  abstract: String,
+  keyPhrases: [String]
+});
+var Paper = mongoose.model('papers', paperSchema);
+
+const papersController = new PapersController();
 
 // Init handlers
 const handlers = require('./app/handlers/index.js')({
   logger: logger,
-  db : mongoose
+  db : Paper,
+  papersController : papersController
 })
-
-const papersController = new PapersController();
 
 commander
   .version("0.1.0")
@@ -239,6 +257,8 @@ app.get("/", (req, res) => {
     mode: "test"
   }));
 });
+
+app.get("/top-X-of-Y", handlers.topNXofYHandler);
 
 app.get("/top-authors", handlers.topAuthorHandler);
 
