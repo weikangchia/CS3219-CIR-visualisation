@@ -13,7 +13,7 @@
 3. [**MongoDB**](https://www.mongodb.com/download-center#community)
 
 ### Install dependencies
-To install dependencies enter project folder and run following command:
+To install dependencies enter each project folder (`/backend-api` and `/frontend`) and run following command:
 ``` 
 npm install
 ```
