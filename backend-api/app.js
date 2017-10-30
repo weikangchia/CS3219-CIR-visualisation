@@ -2,6 +2,8 @@ const commander = require("commander");
 const express = require("express");
 const readline = require("readline");
 const _ = require("lodash");
+const mongoose = require('mongoose');
+const mongoimport = require('mongoimport');
 
 const morgan = require("morgan");
 const logger = require('./app/middleware/logger');
@@ -12,6 +14,15 @@ const PapersController = require("./app/controllers/PapersController.js");
 const app = express();
 
 app.use(morgan("dev"));
+
+// TODO connect to DB here
+mongoose.connect('mongodb://localhost/cs3219');
+
+// Init handlers
+const handlers = require('app/handlers/index.js')({
+  logger: logger,
+  db : mongoose
+})
 
 const papersController = new PapersController();
 
@@ -229,27 +240,7 @@ app.get("/", (req, res) => {
   }));
 });
 
-app.get("/top-authors", (req, res) => {
-  const params = req.query;
-
-  const options = {};
-  const paperFilters = [];
-
-  if (params.venue) {
-    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
-  }
-
-  if (params.topN) {
-    options.topN = params.topN;
-  }
-
-  if (paperFilters.length > 0) {
-    options.paperFilter = paper =>
-      paperFilters.every(paperFilter => paperFilter(paper));
-  }
-
-  res.send(JSON.stringify(getTopAuthors(options)));
-});
+app.get("/top-authors", handlers.topAuthorsHandler);
 
 app.get("/top-papers", (req, res) => {
   const params = req.query;
