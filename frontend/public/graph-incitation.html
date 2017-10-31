@@ -37,6 +37,30 @@
         <p>A citation web for a base paper. Up to 2 levels of base paper citation is created (i.e. if the base paper is A, capture
           up to C: A is cited by B, and B is cited by C, so A
           <- B <- C) </p>
+        Levels: <span class="levels"></span>
+          
+        <div class="slider">
+          <input type="range" min="2" max="6" class="slider" id="level-slider">
+        </div>
+        <style>
+        .slider{
+          margin: auto;
+        }
+        </style>
+        <script>
+          $(()=>{
+            const searchParams = new URLSearchParams(window.location.search);
+            var levels = searchParams.get('levels');
+            $("#level-slider").val(levels);
+            $(".levels").html(levels);
+            $("#level-slider").on('change', (e)=>{
+              var newLevels = e.currentTarget.value
+              const searchParams = new URLSearchParams(window.location.search);
+              searchParams.set('levels', newLevels);
+              window.location.search = searchParams.toString();
+            })
+          })
+        </script>
       </div>
     </div>
 
@@ -58,6 +82,10 @@
       title = prompt("Please enter title", "Low-density parity check codes over GF(q)");
       if (title) {
         searchParams.set('title', title);
+        var levels = searchParams.get('levels');
+        if(!levels){
+          searchParams.set('levels', 3);
+        }
         window.location.search = searchParams.toString();
       }
     }
