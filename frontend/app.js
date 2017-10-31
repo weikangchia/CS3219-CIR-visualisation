@@ -42,6 +42,12 @@ app.use('/trends-keyphrases', (req, res) => {
   });
 });
 
+app.use('/trends', (req, res) => {
+  res.sendFile('/public/trends.html', {
+    root: __dirname
+  });
+});
+
 app.use('/graphs-incitations', (req, res) => {
   res.sendFile('/public/graph-incitation.html', {
     root: __dirname
