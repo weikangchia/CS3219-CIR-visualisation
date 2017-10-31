@@ -3,7 +3,6 @@ const express = require("express");
 const readline = require("readline");
 const _ = require("lodash");
 const mongoose = require('mongoose');
-//const mongoimport = require('mongoimport');
 
 const morgan = require("morgan");
 const logger = require('./app/middleware/logger');
@@ -18,11 +17,11 @@ app.use(morgan("dev"));
 // TODO connect to DB here
 mongoose.connect('mongodb://localhost/cs3219');
 
-// Init handlers
+// init handlers
 const handlers = require('./app/handlers/index.js')({
-  logger: logger,
-  db : mongoose
-})
+  logger,
+  db: mongoose
+});
 
 const papersController = new PapersController();
 
