@@ -139,6 +139,16 @@ body {
   left: 100%;
 }
 
+/* Slider */
+
+#slider {
+  margin: 10px 15px;
+}
+
+.slider-label {
+  margin-top: 8px;
+  font-size: 14px;
+
 /* The slider itself 
 https://www.w3schools.com/howto/howto_js_rangeslider.asp
 */
