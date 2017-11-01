@@ -54,6 +54,12 @@ app.use('/graphs-incitations', (req, res) => {
   });
 });
 
+app.use('/graphs-coAuthors', (req, res) => {
+  res.sendFile('/public/graph-coAuthors.html', {
+    root: __dirname
+  });
+});
+
 const server = app.listen(9000, () => {
   logger.info(`Listening on port ${server.address().port}`);
 });

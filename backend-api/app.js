@@ -199,6 +199,100 @@ function getInCitationsGraph(options) {
 }
 
 /**
+ * Returns co-Authors Information
+ *
+ * @param {*} options
+ */
+function getCoAuthorsGraph(options) {
+  const allAuthors = papersController.getAuthorsObject();
+  const allPapers = papersController.getPapersObject();
+
+  const nodes = [];
+  const links = [];
+  let set = new Set();
+  let setPapers = new Set();
+
+  function minimizeAuthor(author, paper, level) {
+    return {
+      id: author,
+      level: level,
+      author: allAuthors[author]? allAuthors[author].getName() : "undefined",
+      title: paper? paper.getTitle() : "undefined"
+      };
+  }
+
+  function dig(paper, level, maxLevel, source) {
+    if(!set.has(source)) {
+      nodes.push(minimizeAuthor(source, paper, level));
+    }
+    set.add(source);
+    if (level < maxLevel && paper != undefined && !setPapers.has(paper.getId())) {
+      setPapers.add(paper.getId());
+      const authors = paper.getAuthors();
+      authors.forEach(author => {
+        const authorId = author.getId ? author.getId() : author;
+        if (allAuthors[authorId] && (authorId != source)) {
+          links.push({
+            source: authorId,
+            target: source
+          });
+          const papersId = paperBasedOnName(allAuthors[authorId].getName());
+          papersId.forEach(paper => {
+            dig(allPapers[paper], level + 1, maxLevel, authorId)
+          });
+        }
+      });
+    }
+  }
+
+  function paperBasedOnName(authorName) {
+    const paperId = _.filter(
+    Object.keys(allPapers),
+    paperId => {
+      if(allPapers[paperId]) {
+        let authorObj = _.find(allPapers[paperId].getAuthors(),
+        author => 
+          author.name.toLowerCase() === authorName.toLowerCase()
+        )
+        return authorObj;
+      }
+    });
+    return paperId;
+  }
+
+  options = options || {};
+  options.levels = options.levels || 3;
+  options.author = options.author || "";
+
+  let authorId = _.find(
+    Object.keys(allAuthors),
+    authorId =>
+    allAuthors[authorId].getName().toLowerCase() === options.author.toLowerCase()
+  );
+
+  const author = allAuthors[authorId]; //id=??, name=??
+  logger.info(options.author + " compare " + author.name + "," + author.id);
+  const papersId = paperBasedOnName(options.author); //whole paper
+  logger.info("Author: " + author.name + ", Paper: " + papersId);
+
+  //authorId not found
+  if(authorId == undefined) {
+    nodes.push({
+      id : authorId,
+      level: 1,
+      author : options.author,
+      title : allPapers[papersId[0]]?allPapers[papersId[0]].getTitle():"undefined"
+    })
+  }
+
+  papersId.forEach(paperId => dig(allPapers[paperId], 1, options.levels, authorId));
+  return {
+    nodes,
+    links
+  };
+}
+
+/**
  * Returns the key phrases trends information.
  *
  * @param {*} options
@@ -308,6 +402,16 @@ app.get("/graph/incitation", (req, res) => {
   options.levels = params.levels;
 
   res.send(JSON.stringify(getInCitationsGraph(options)));
+});
+
+app.get("/graph/co-Authors", (req, res) => {
+  const params = req.query;
+
+  const options = {};
+  options.author = params.author;
+  options.levels = params.levels;
+
+  res.send(JSON.stringify(getCoAuthorsGraph(options)));
 });
 
 function startServer() {
