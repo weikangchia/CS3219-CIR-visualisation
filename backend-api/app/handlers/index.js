@@ -1,5 +1,7 @@
-module.exports = function(option) {
-  return { 
-    topAuthorHandler: require("./topAuthorHandler.js")(option)
+const topAuthorHandler = require("./topAuthorHandler.js");
+
+module.exports = function (option) {
+  return {
+    topAuthorHandler: topAuthorHandler(option)
   };
 };
