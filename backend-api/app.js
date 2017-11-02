@@ -2,7 +2,8 @@ const commander = require("commander");
 const express = require("express");
 const readline = require("readline");
 const _ = require("lodash");
-const mongoose = require('mongoose');
+const db = require('mongoose');
+//const mongoimport = require('mongoimport');
 
 const morgan = require("morgan");
 const logger = require('./app/middleware/logger');
@@ -15,15 +16,36 @@ const app = express();
 app.use(morgan("dev"));
 
 // TODO connect to DB here
-mongoose.connect('mongodb://localhost/cs3219');
+db.connect('mongodb://localhost/cs3219');
+connect =  db.connection
+connect.on('error', console.error.bind(console, 'connection error:'));
+connect.once('open', function() {
+  logger.info("mongoose connected");
+});
+
+var paperSchema = db.Schema({
+  title: String,
+  authors: Array,//[Schema.Types.ObjectId],
+  venue: String,
+  inCitations: [String],
+  outCitations: [String],
+  year: Number,
+  abstract: String,
+  keyPhrases: [String]
+});
+var Paper = db.model('papers', paperSchema);
+
+const papersController = new PapersController();
 
 // init handlers
 const handlers = require('./app/handlers/index.js')({
-  logger,
-  db: mongoose
-});
-
-const papersController = new PapersController();
+  logger: logger,
+  db : db,
+  models : {
+    Paper
+  },
+  papersController : papersController
+})
 
 commander
   .version("0.1.0")
@@ -238,6 +260,8 @@ app.get("/", (req, res) => {
     mode: "test"
   }));
 });
+
+app.get("/top-X-of-Y", handlers.topNXofYHandler);
 
 app.get("/top-authors", handlers.topAuthorHandler);
 
