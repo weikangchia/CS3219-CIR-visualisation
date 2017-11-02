@@ -120,8 +120,7 @@ function getTopAuthors(options) {
 module.exports = function (options) {
   logger = options.logger
   papersController = options.papersController
-  db = options.db
-  Paper = options.models.Paper;
+  Paper = options.db.model("Paper");
 
   return (req, res) => {
     const params = req.query;
