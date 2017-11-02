@@ -37,7 +37,7 @@ var Paper = db.model('papers', paperSchema);
 
 const papersController = new PapersController();
 
-// Init handlers
+// init handlers
 const handlers = require('./app/handlers/index.js')({
   logger: logger,
   db : db,

@@ -12,9 +12,13 @@ app.use(compression());
 
 app.use('/', express.static(path.join(__dirname, 'public')));
 
+app.use('/home', (req, res) => {
+  res.sendFile('/public/index.html', {
+    root: __dirname
+  });
+});
+
 app.use('/top-authors', (req, res) => {
-  logger.info('hello');
-  logger.info(__dirname);
   res.sendFile('/public/top10-authors.html', {
     root: __dirname
   });
@@ -34,6 +38,12 @@ app.use('/trends-publications', (req, res) => {
 
 app.use('/trends-keyphrases', (req, res) => {
   res.sendFile('/public/trends-keyphrase.html', {
+    root: __dirname
+  });
+});
+
+app.use('/trends', (req, res) => {
+  res.sendFile('/public/trends.html', {
     root: __dirname
   });
 });

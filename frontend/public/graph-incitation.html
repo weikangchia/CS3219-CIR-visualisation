@@ -15,6 +15,8 @@
 
   <link rel="stylesheet" href="css/fakeLoader.css">
 
+  <link rel="stylesheet" href="./css/nouislider.min.css">
+
   <script src="./js/d3.v4.min.js"></script>
   <script src="./js/jquery.min.js"></script>
   <script src="./js/utils.js"></script>
@@ -22,6 +24,8 @@
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/d3-tip.js"></script>
   <script src="./bower_components/lodash/dist/lodash.min.js"></script>
+  <script src="./js/nouislider.min.js"></script>
+  <script src="./js/wNumb.js"></script>
 </head>
 
 <body ng-app="">
@@ -30,13 +34,21 @@
 
   <div class="container">
     <div class="row">
-      <div class="col">
+      <div class="col-12">
         <h1>Citation Web</h1>
         <h2 id="title"></h2>
 
         <p>A citation web for a base paper. Up to 2 levels of base paper citation is created (i.e. if the base paper is A, capture
           up to C: A is cited by B, and B is cited by C, so A
           <- B <- C) </p>
+      </div>
+      <div class="col-3 col-md-2 col-lg-1">
+        <p>Level:
+          <span class="levels"></span>
+        </p>
+      </div>
+      <div class="col-9 col-md-6">
+        <div id="slider"></div>
       </div>
     </div>
 
@@ -49,6 +61,36 @@
 
   <!-- params processing -->
   <script>
+    $(() => {
+      const searchParams = new URLSearchParams(window.location.search);
+      const currentLevel = searchParams.get('levels');
+      $(".levels").html(currentLevel);
+
+      const slider = document.getElementById('slider');
+      noUiSlider.create(slider, {
+        start: [currentLevel],
+        padding: 0,
+        range: {
+          'min': 1,
+          'max': 5
+        },
+        step: 1,
+        format: wNumb({
+          decimals: 0
+        })
+      });
+
+      slider.noUiSlider.on('change', function () {
+        const levelSliderValue = slider.noUiSlider.get();
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set('levels', levelSliderValue[0]);
+        window.location.search = searchParams.toString();
+      });
+    });
+
+  </script>
+
+  <script>
     /**
      * Parse url params and redirect if need be
      */
@@ -58,6 +100,10 @@
       title = prompt("Please enter title", "Low-density parity check codes over GF(q)");
       if (title) {
         searchParams.set('title', title);
+        var levels = searchParams.get('levels');
+        if (!levels) {
+          searchParams.set('levels', 3);
+        }
         window.location.search = searchParams.toString();
       }
     }

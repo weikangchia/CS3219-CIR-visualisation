@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="shortcut icon" href="./image/favicon.ico">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="./css/custom.css">
+
+  <link rel="stylesheet" href="./css/fakeLoader.css">
+
+  <link rel="stylesheet" href="./css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="./css/nouislider.min.css">
+
+  <script src="./js/d3.min.js"></script>
+  <script src="./js/d3plus.full.min.js"></script>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/angular.min.js"></script>
+  <script src="./js/fakeLoader.min.js"></script>
+  <script src="./js/nouislider.min.js"></script>
+  <script src="./js/wNumb.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+
+<body ng-app="">
+  <div id="fakeLoader"></div>
+  <div ng-include="'nav.html'"></div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h1>Trends</h1>
+        <p>Visualization of the trends of the amount of publications across all available years for a venue.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col col-12 col-md-8 order-2 order-md-1">
+        <div id="graph"></div>
+      </div>
+      <div class="col col-12 col-md-4 order-1 order-md-2">
+        <h5>Filtering</h5>
+        <h6>Conferences</h6>
+
+        <form id="filterForm">
+
+          <div class="form-group row">
+            <div class="col-10">
+              <label class="sr-only" for="inlineFormInputGroup">Conference</label>
+              <div class="input-group mb-2 mb-sm-0">
+                <div class="input-group-addon">@</div>
+                <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Conference" name="conferences" value="arxiv">
+              </div>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-success addButton">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- template for confenrence input -->
+          <div class="form-group row" id="optionTemplate" hidden>
+            <div class="col-10">
+              <label class="sr-only" for="inlineFormInputGroup">Conference</label>
+              <div class="input-group mb-2 mb-sm-0">
+                <div class="input-group-addon">@</div>
+                <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Conference" name="conferences">
+              </div>
+            </div>
+            <div class="col-2">
+              <button type="button" class="btn btn-danger removeButton" onclick="deleteSelf(this)">
+                <i class="fa fa-minus"></i>
+              </button>
+            </div>
+          </div>
+
+          <h6>Year Range</h6>
+          <div class="form-group row">
+            <div class="col-12">
+              <div id="slider"></div>
+            </div>
+            <div class="col-4">
+              <p id="yearStart" class="slider-label"></p>
+            </div>
+            <div class="col-4">
+              <p class="slider-label text-center">to</p>
+            </div>
+            <div class="col-4">
+              <p id="yearEnd" class="slider-label text-right"></p>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-10">
+              <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- filter script -->
+  <script>
+    // scripts for year slider
+    const slider = document.getElementById('slider');
+
+    noUiSlider.create(slider, {
+      start: [1800, 2017],
+      connect: true,
+      padding: 0,
+      range: {
+        'min': 1800,
+        'max': 2017
+      },
+      step: 1,
+      format: wNumb({
+        decimals: 0
+      })
+    });
+
+    slider.noUiSlider.on('update', function () {
+      const yearSliderValue = slider.noUiSlider.get();
+      $("#yearStart").text(yearSliderValue[0]);
+      $("#yearEnd").text(yearSliderValue[1]);
+    });
+
+    // scripts for the conference input
+    const maxFields = 5;
+    let currentNumFields = 1;
+
+    const template = $("#optionTemplate");
+
+    function deleteSelf(conferenceInputObj) {
+      $(".addButton").removeAttr("disabled");
+      $(conferenceInputObj).closest(".form-group.row").remove();
+      currentNumFields--;
+    }
+
+    $("#filterForm")
+      .on("click", ".addButton", () => {
+        if (currentNumFields < maxFields) {
+          const clone = template.clone()
+            .removeAttr("hidden")
+            .removeAttr("id")
+            .insertBefore(template);
+
+          currentNumFields++;
+        }
+
+        if (currentNumFields === maxFields) {
+          $(".addButton").attr("disabled", "disabled");
+        }
+      })
+      .submit(() => {
+        let conferences = new Array();
+        conferences = $("#filterForm").serializeArray();
+        conferences.pop();
+
+        const yearRange = slider.noUiSlider.get();
+
+        const requests = [];
+        conferences.forEach((conference) => {
+          requests.push(axios.get(`http://localhost:3000/trends/publication?venue=${conference.value}`))
+        });
+
+        axios.all(requests)
+          .then(axios.spread((...allData) => {
+            const parseData = [];
+
+            allData.forEach((data, i) => {
+              Object.keys(data.data).forEach((year) => {
+                parseData.push({
+                  conference: conferences[i].value,
+                  year,
+                  count: data.data[year].count
+                })
+              });
+            });
+
+            updateVisualization(parseData);
+          }));
+      });
+
+  </script>
+
+  <!-- d3 Script -->
+  <script>
+    function updateVisualization(data) {
+      $("#graph").empty();
+      var visualization = d3plus.viz()
+        .container("#graph") // container DIV to hold the visualization
+        .data(data) // data to use with the visualization
+        .type("line") // visualization type
+        .id("conference") // key for which our data is unique on
+        .text("conference") // key to use for display text
+        .width({
+          value: $("#graph").width()
+        })
+        .height({
+          value: 300
+        })
+        .y({
+          "value": "count",
+          "label": "No. of Publications"
+        }) // key to use for y-axis
+        .x("year") // key to use for x-axis
+        .format({
+          "text": (text, params) => {
+            if (text === "count") {
+              return "Number of Publications";
+            } else {
+              return d3plus.string.title(text, params);
+            }
+          }
+        })
+        .time("year")
+        .timing({
+          "transitions": 1000
+        })
+        .draw() // finally, draw the visualization!
+    }
+
+  </script>
+
+  <!-- Optional JavaScript -->
+  <script src="./js/popper.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
+</body>
+
+</html>

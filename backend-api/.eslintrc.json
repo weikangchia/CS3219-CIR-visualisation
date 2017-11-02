@@ -5,6 +5,7 @@
       "quote-props": [1, "consistent-as-needed"],
       "no-param-reassign": 0,
       "arrow-body-style": 0,
+      "func-names": ["error", "never"],
       "quotes": 0,
       "no-plusplus": 0,
       "wrap-iife": [2, "inside"],
