@@ -2,7 +2,7 @@ const commander = require("commander");
 const express = require("express");
 const readline = require("readline");
 const _ = require("lodash");
-const mongoose = require('mongoose');
+const db = require('mongoose');
 //const mongoimport = require('mongoimport');
 
 const morgan = require("morgan");
@@ -16,14 +16,14 @@ const app = express();
 app.use(morgan("dev"));
 
 // TODO connect to DB here
-mongoose.connect('mongodb://localhost/cs3219');
-connect = mongoose.connection
+db.connect('mongodb://localhost/cs3219');
+connect =  db.connection
 connect.on('error', console.error.bind(console, 'connection error:'));
 connect.once('open', function() {
   logger.info("mongoose connected");
 });
 
-var paperSchema = mongoose.Schema({
+var paperSchema = db.Schema({
   title: String,
   authors: Array,//[Schema.Types.ObjectId],
   venue: String,
@@ -33,14 +33,17 @@ var paperSchema = mongoose.Schema({
   abstract: String,
   keyPhrases: [String]
 });
-var Paper = mongoose.model('papers', paperSchema);
+var Paper = db.model('papers', paperSchema);
 
 const papersController = new PapersController();
 
 // Init handlers
 const handlers = require('./app/handlers/index.js')({
   logger: logger,
-  db : Paper,
+  db : db,
+  models : {
+    Paper
+  },
   papersController : papersController
 })
 
