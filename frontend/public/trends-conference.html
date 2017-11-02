@@ -37,7 +37,7 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        <h1>Trends</h1>
+        <h1>Conference Trends</h1>
         <p>Visualization of the trends of the amount of publications across all available years for a venue.</p>
       </div>
     </div>
@@ -171,20 +171,21 @@
 
         const requests = [];
         conferences.forEach((conference) => {
-          requests.push(axios.get(`http://localhost:3000/trends/publication?venue=${conference.value}`))
+          requests.push(axios.get(
+            `http://localhost:3000/trends/publication?venue=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
         });
 
         axios.all(requests)
           .then(axios.spread((...allData) => {
             const parseData = [];
 
-            allData.forEach((data, i) => {
-              Object.keys(data.data).forEach((year) => {
+            allData.forEach((conference, i) => {
+              conference.data.forEach(data => {
                 parseData.push({
                   conference: conferences[i].value,
-                  year,
-                  count: data.data[year].count
-                })
+                  year: data.year,
+                  count: data.count
+                });
               });
             });
 
@@ -199,11 +200,11 @@
     function updateVisualization(data) {
       $("#graph").empty();
       var visualization = d3plus.viz()
-        .container("#graph") // container DIV to hold the visualization
-        .data(data) // data to use with the visualization
-        .type("line") // visualization type
-        .id("conference") // key for which our data is unique on
-        .text("conference") // key to use for display text
+        .container("#graph")
+        .data(data)
+        .type("line")
+        .id("conference")
+        .text("conference")
         .width({
           value: $("#graph").width()
         })
@@ -228,7 +229,7 @@
         .timing({
           "transitions": 1000
         })
-        .draw() // finally, draw the visualization!
+        .draw();
     }
 
   </script>
