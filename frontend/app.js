@@ -52,5 +52,5 @@ app.use('/graphs-incitations', (req, res) => {
 });
 
 const server = app.listen(process.env.PORT, () => {
-  logger.info(`Listening on port ${server.address().process.env.PORT}`);
+  logger.info(`Listening on port ${server.address().port}`);
 });
