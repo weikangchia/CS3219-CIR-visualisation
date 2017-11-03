@@ -266,7 +266,7 @@ app.get("/graph/incitation", (req, res) => {
 
 function startServer() {
   const server = app.listen(process.env.PORT, () => {
-    logger.info(`Listening on port ${server.address().process.env.PORT}`);
+    logger.info(`Listening on port ${server.address().port}`);
   });
 }
 
