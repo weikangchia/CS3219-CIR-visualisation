@@ -35,4 +35,5 @@ deploy:
           cd frontend
     - script:
         name: ls test
+        code: |
           ls
