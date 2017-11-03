@@ -26,7 +26,7 @@ build:
           echo "hello world!"
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
-deploy:
+deploy-frontend:
   steps:
     - heroku-deploy:
         key: $HEROKU_KEY
@@ -34,3 +34,11 @@ deploy:
         user: $HEROKU_USER
         app-name: $HEROKU_APP_NAME
         source_dir: frontend
+deploy-api-server:
+  steps:
+    - heroku-deploy:
+        key: $HEROKU_KEY
+        key-name: HEROKU_KEY_PAIR
+        user: $HEROKU_USER
+        app-name: $HEROKU_APP_NAME
+        source_dir: backend-api
