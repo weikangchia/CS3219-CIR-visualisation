@@ -40,6 +40,7 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    db.papers.createIndex({venue: 1})
    db.papers.createIndex({"authors.name": 1})
    db.papers.createIndex({"year": 1})
+   db.papers.createIndex({keyPhrases: 1})
    ```
 ### Run frontend server
 To run frontend server, go to `/frontend` folder and execute:
