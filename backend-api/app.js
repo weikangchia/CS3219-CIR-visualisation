@@ -3,6 +3,7 @@ const express = require("express");
 const readline = require("readline");
 const _ = require("lodash");
 const mongoose = require('mongoose');
+const dotenv = require("dotenv");
 
 const morgan = require("morgan");
 const logger = require('./app/middleware/logger');
@@ -14,16 +15,21 @@ const PaperSchema = require("./app/models/PaperSchema");
 
 const app = express();
 
+dotenv.load();
+
 app.use(morgan("dev"));
 
 // init database connection
-mongoose.connect('mongodb://localhost/cs3219', {
+logger.info(process.env.NODE_ENV);
+const dbUri = process.env.NODE_ENV === "production" ? "mongodb://ec2-52-41-48-154.us-west-2.compute.amazonaws.com:27017/cs3219" : "mongodb://localhost/cs3219";
+
+mongoose.connect(dbUri, {
   useMongoClient: true
 }, err => {
   if (err) {
     logger.error(`Could not connect to database: ${err}`);
   } else {
-    logger.info(`Connected to database: cs3219`);
+    logger.info(`Connected to database: ${dbUri}`);
   }
 });
 
@@ -273,7 +279,9 @@ function startServer() {
 const parser = new Parser();
 let i = 0;
 
-if (verbose) {
+startServer();
+
+/* if (verbose) {
   parser.setEventHandler("onLineParsed", line => {
     readline.cursorTo(process.stdout, 0);
     process.stdout.write(`Parsed lines: ${++i}`);
@@ -292,4 +300,4 @@ parser.parseDirectory(commander.directory).then(
   err => {
     logger.error(err);
   }
-);
+); */
