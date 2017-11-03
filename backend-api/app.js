@@ -268,8 +268,9 @@ app.get("/graph/incitation", (req, res) => {
 });
 
 function startServer() {
-  const server = app.listen(port, () => {
-    logger.info(`Listening on port ${server.address().port}`);
+  const port2 = process.env.PORT || 3000;
+  const server = app.listen(port2, () => {
+    logger.info(`Listening on port ${server.address().port2}`);
   });
 }
 
