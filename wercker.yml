@@ -28,12 +28,9 @@ build:
           echo "npm version $(npm -v) running"
 deploy:
   steps:
-    - script:
-        name: cd test
-        code: |
-          ls
-          cd frontend
-    - script:
-        name: ls test
-        code: |
-          ls
+    - heroku-deploy:
+        key: $HEROKU_KEY
+        key-name: HEROKU_KEY_PAIR
+        user: $HEROKU_USER
+        app-name: $HEROKU_APP_NAME
+        source_dir: frontend
