@@ -26,5 +26,6 @@ build:
           echo "hello world!"
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
-          cd backend-api/
+          cd backend-api
+          ls
           npm install
