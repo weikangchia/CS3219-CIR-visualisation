@@ -26,7 +26,6 @@
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/nouislider.min.js"></script>
   <script src="./js/wNumb.js"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 </head>
 
@@ -172,7 +171,7 @@
         const requests = [];
         conferences.forEach((conference) => {
           requests.push(axios.get(
-            `http://localhost:3000/trends/publication?venue=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
+            `${API_HOST}/trends/publication?venue=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
         });
 
         axios.all(requests)
@@ -235,8 +234,11 @@
   </script>
 
   <!-- Optional JavaScript -->
+  <script src="./js/axios.min.js"></script>
   <script src="./js/popper.min.js"></script>
   <script src="./js/bootstrap.min.js"></script>
+  <script src="./js/utils.js"></script>
+
 </body>
 
 </html>
