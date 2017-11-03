@@ -172,7 +172,7 @@
         const requests = [];
         conferences.forEach((conference) => {
           requests.push(axios.get(
-            `http://localhost:3000/trends/publication?venue=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
+            `https://cs3219-api-server.herokuapp.com/trends/publication?venue=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
         });
 
         axios.all(requests)
