@@ -26,19 +26,21 @@ build:
           echo "hello world!"
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
+
 deploy-frontend:
   steps:
     - script:
         name: replace api host
         code: |
           cd frontend
-          ls
+          sed -i -e 's/localhost:3000/cs3219-api-server.herokuapp.com/g' public/js/utils.js
     - heroku-deploy:
         key: $HEROKU_KEY
         key-name: HEROKU_KEY_PAIR
         user: $HEROKU_USER
         app-name: $HEROKU_APP_NAME
         source_dir: frontend
+
 deploy-api-server:
   steps:
     - heroku-deploy:
