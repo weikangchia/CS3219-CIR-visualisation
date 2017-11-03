@@ -19,17 +19,14 @@ dotenv.load();
 
 app.use(morgan("dev"));
 
-// init database connection
-logger.info(process.env.NODE_ENV);
-const dbUri = process.env.NODE_ENV === "production" ? "mongodb://ec2-52-41-48-154.us-west-2.compute.amazonaws.com:27017/cs3219" : "mongodb://localhost/cs3219";
-
-mongoose.connect(dbUri, {
+// Init database connection
+mongoose.connect(process.env.MONGO_DB_URI, {
   useMongoClient: true
 }, err => {
   if (err) {
     logger.error(`Could not connect to database: ${err}`);
   } else {
-    logger.info(`Connected to database: ${dbUri}`);
+    logger.info(`Connected to database: ${process.env.MONGO_DB_URI}`);
   }
 });
 
@@ -268,9 +265,8 @@ app.get("/graph/incitation", (req, res) => {
 });
 
 function startServer() {
-  const port2 = process.env.PORT || 3000;
-  const server = app.listen(port2, () => {
-    logger.info(`Listening on port ${server.address().port2}`);
+  const server = app.listen(process.env.PORT, () => {
+    logger.info(`Listening on port ${server.address().process.env.PORT}`);
   });
 }
 

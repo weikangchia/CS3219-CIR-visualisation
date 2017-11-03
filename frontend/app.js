@@ -1,12 +1,14 @@
 const express = require("express");
 const path = require("path");
+const dotenv = require("dotenv");
 
 const morgan = require("morgan");
 const compression = require("compression");
 const logger = require('./app/middleware/logger');
 
 const app = express();
-const port = process.env.PORT || 9000;
+
+dotenv.load();
 
 app.use(morgan("dev"));
 app.use(compression());
