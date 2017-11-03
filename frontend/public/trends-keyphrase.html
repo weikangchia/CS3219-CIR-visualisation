@@ -19,15 +19,6 @@
 
   <link rel="stylesheet" href="./css/nouislider.min.css">
 
-  <script src="./js/d3.min.js"></script>
-  <script src="./js/d3plus.full.min.js"></script>
-  <script src="./js/jquery.min.js"></script>
-  <script src="./js/angular.min.js"></script>
-  <script src="./js/fakeLoader.min.js"></script>
-  <script src="./js/nouislider.min.js"></script>
-  <script src="./js/wNumb.js"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
 </head>
 
 <body ng-app="">
@@ -172,7 +163,7 @@
         const requests = [];
         keyphrases.forEach((keyphrase) => {
           requests.push(axios.get(
-            `https://cs3219-api-server.herokuapp.com/trends/keyphrase?phrase=${keyphrase.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
+            `${API_HOST}/trends/keyphrase?phrase=${keyphrase.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
         });
 
         axios.all(requests)
@@ -235,8 +226,18 @@
   </script>
 
   <!-- Optional JavaScript -->
+  <script src="./js/d3.min.js"></script>
+  <script src="./js/d3plus.full.min.js"></script>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/angular.min.js"></script>
+  <script src="./js/fakeLoader.min.js"></script>
+  <script src="./js/nouislider.min.js"></script>
+  <script src="./js/wNumb.js"></script>
+  <script src="./js/axios.min.js"></script>
   <script src="./js/popper.min.js"></script>
   <script src="./js/bootstrap.min.js"></script>
+  <script src="./js/utils.js"></script>
+
 </body>
 
 </html>
