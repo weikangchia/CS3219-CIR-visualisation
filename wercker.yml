@@ -26,9 +26,13 @@ build:
           echo "hello world!"
           echo "node version $(node -v) running"
           echo "npm version $(npm -v) running"
-build-api-server:
+deploy:
   steps:
     - script:
-        name: ls
+        name: cd test
         code: |
+          ls
+          cd frontend
+    - script:
+        name: ls test
           ls
