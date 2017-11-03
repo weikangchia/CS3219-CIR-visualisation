@@ -6,6 +6,7 @@ const compression = require("compression");
 const logger = require('./app/middleware/logger');
 
 const app = express();
+const port = process.env.PORT || 9000;
 
 app.use(morgan("dev"));
 app.use(compression());
@@ -48,6 +49,6 @@ app.use('/graphs-incitations', (req, res) => {
   });
 });
 
-const server = app.listen(9000, () => {
+const server = app.listen(port, () => {
   logger.info(`Listening on port ${server.address().port}`);
 });
