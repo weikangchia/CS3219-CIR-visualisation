@@ -212,11 +212,25 @@
         })
         .y({
           "value": "count",
-          "label": "No. of publications"
+          "label": "No. of Publications"
         }) // key to use for y-axis
         .x("year") // key to use for x-axis
+        .format({
+          "text": (text, params) => {
+            if (text === "count") {
+              return "Number of Publications";
+            } else {
+              return d3plus.string.title(text, params);
+            }
+          }
+        })
+        .time("year")
+        .timing({
+          "transitions": 1000
+        })
         .draw() // finally, draw the visualization!
     }
+
   </script>
 
   <!-- Optional JavaScript -->

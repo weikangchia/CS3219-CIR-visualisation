@@ -2,7 +2,8 @@ const commander = require("commander");
 const express = require("express");
 const readline = require("readline");
 const _ = require("lodash");
-const mongoose = require('mongoose');
+const db = require('mongoose');
+//const mongoimport = require('mongoimport');
 
 const morgan = require("morgan");
 const logger = require('./app/middleware/logger');
@@ -15,15 +16,36 @@ const app = express();
 app.use(morgan("dev"));
 
 // TODO connect to DB here
-mongoose.connect('mongodb://localhost/cs3219');
+db.connect('mongodb://localhost/cs3219');
+connect =  db.connection
+connect.on('error', console.error.bind(console, 'connection error:'));
+connect.once('open', function() {
+  logger.info("mongoose connected");
+});
+
+var paperSchema = db.Schema({
+  title: String,
+  authors: Array,//[Schema.Types.ObjectId],
+  venue: String,
+  inCitations: [String],
+  outCitations: [String],
+  year: Number,
+  abstract: String,
+  keyPhrases: [String]
+});
+var Paper = db.model('papers', paperSchema);
+
+const papersController = new PapersController();
 
 // init handlers
 const handlers = require('./app/handlers/index.js')({
-  logger,
-  db: mongoose
-});
-
-const papersController = new PapersController();
+  logger: logger,
+  db : db,
+  models : {
+    Paper
+  },
+  papersController : papersController
+})
 
 commander
   .version("0.1.0")
@@ -201,23 +223,22 @@ function getInCitationsGraph(options) {
 /**
  * Returns co-Authors Information
  *
- * @param {*} options
+ * @param {*, function} options, callback function
  */
-function getCoAuthorsGraph(options) {
-  const allAuthors = papersController.getAuthorsObject();
-  const allPapers = papersController.getPapersObject();
+function getCoAuthorsGraph(options, callback) {
 
-  const nodes = [];
-  const links = [];
+  var nodes = [];
+  var links = [];
   let set = new Set();
   let setPapers = new Set();
 
   function minimizeAuthor(author, paper, level) {
+    var authorObj = paper.authors.find(authorObj => authorObj.ids[0] === author);
     return {
-      id: author,
-      level: level,
-      author: allAuthors[author]? allAuthors[author].getName() : "undefined",
-      title: paper? paper.getTitle() : "undefined"
+      id: author, 
+      level,
+      author: authorObj? authorObj.name : "undefined",
+      title: paper.title? paper.title : "undefined"
       };
   }
 
@@ -226,70 +247,55 @@ function getCoAuthorsGraph(options) {
       nodes.push(minimizeAuthor(source, paper, level));
     }
     set.add(source);
-    if (level < maxLevel && paper != undefined && !setPapers.has(paper.getId())) {
-      setPapers.add(paper.getId());
-      const authors = paper.getAuthors();
+    if (level < maxLevel && paper != undefined && !setPapers.has(paper._id)) {
+      setPapers.add(paper._id);
+      const authors = paper.authors;
       authors.forEach(author => {
-        const authorId = author.getId ? author.getId() : author;
-        if (allAuthors[authorId] && (authorId != source)) {
+        const authorId = author.ids[0] ? author.ids[0] : "undefined";
+        if (authorId != source) {
+          nodes.push(minimizeAuthor(authorId, paper, level+1));
+          set.add(authorId);
           links.push({
             source: authorId,
             target: source
           });
-          const papersId = paperBasedOnName(allAuthors[authorId].getName());
-          papersId.forEach(paper => {
-            dig(allPapers[paper], level + 1, maxLevel, authorId)
+          Paper.find({ "authors.name": author.name }, function(err, papers){
+            if(err) throw error;
+            papers.forEach(paper => {
+              dig(paper, level + 1, maxLevel, authorId)
+            });
           });
-        }
+        };
       });
     }
-  }
-
-  function paperBasedOnName(authorName) {
-    const paperId = _.filter(
-    Object.keys(allPapers),
-    paperId => {
-      if(allPapers[paperId]) {
-        let authorObj = _.find(allPapers[paperId].getAuthors(),
-        author => 
-          author.name.toLowerCase() === authorName.toLowerCase()
-        )
-        return authorObj;
-      }
-    });
-    return paperId;
   }
 
   options = options || {};
   options.levels = options.levels || 3;
   options.author = options.author || "";
+  curLevel = 1;
 
-  let authorId = _.find(
-    Object.keys(allAuthors),
-    authorId =>
-    allAuthors[authorId].getName().toLowerCase() === options.author.toLowerCase()
-  );
+  Paper.find({ "authors.name": options.author }, function(err, papers){
+    if(err) throw error;
+    papers.forEach(paper => {
+      const authors = paper.authors;
+      var authorId = undefined;
+      authors.forEach(author => {
+        if (author.name === options.author) {
+          authorId = author.ids[0]?author.ids[0]:"undefined";
+        }
+      })
 
-  const author = allAuthors[authorId]; //id=??, name=??
-  logger.info(options.author + " compare " + author.name + "," + author.id);
-  const papersId = paperBasedOnName(options.author); //whole paper
-  logger.info("Author: " + author.name + ", Paper: " + papersId);
+      if(authorId == undefined) {
+        nodes.push(minimizeAuthor(authorId, paper, curlevel));
+      };
 
-  //authorId not found
-  if(authorId == undefined) {
-    nodes.push({
-      id : authorId,
-      level: 1,
-      author : options.author,
-      title : allPapers[papersId[0]]?allPapers[papersId[0]].getTitle():"undefined"
-    })
-  }
-
-  papersId.forEach(paperId => dig(allPapers[paperId], 1, options.levels, authorId));
-  return {
-    nodes,
-    links
-  };
+      dig(paper, curLevel, options.levels, authorId);
+      if(typeof callback === "function") {
+        callback(nodes, links);
+      }
+    });
+  });
 }
 
 /**
@@ -332,6 +338,8 @@ app.get("/", (req, res) => {
     mode: "test"
   }));
 });
+
+app.get("/top-X-of-Y", handlers.topNXofYHandler);
 
 app.get("/top-authors", handlers.topAuthorHandler);
 
@@ -410,8 +418,9 @@ app.get("/graph/co-Authors", (req, res) => {
   const options = {};
   options.author = params.author;
   options.levels = params.levels;
-
-  res.send(JSON.stringify(getCoAuthorsGraph(options)));
+  getCoAuthorsGraph(options, function(nodes, links) {
+    res.send(JSON.stringify({nodes, links}));
+  })
 });
 
 function startServer() {

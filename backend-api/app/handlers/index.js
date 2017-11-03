@@ -1,7 +1,6 @@
-const topAuthorHandler = require("./topAuthorHandler.js");
-
-module.exports = function (option) {
-  return {
-    topAuthorHandler: topAuthorHandler(option)
+module.exports = function(option) {
+  return { 
+    topAuthorHandler: require("./topAuthorHandler.js")(option),
+    topNXofYHandler: require("./topXofYHandler.js")(option)
   };
 };
