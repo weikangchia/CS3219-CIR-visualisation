@@ -2,8 +2,7 @@ const commander = require("commander");
 const express = require("express");
 const readline = require("readline");
 const _ = require("lodash");
-const db = require('mongoose');
-//const mongoimport = require('mongoimport');
+const mongoose = require('mongoose');
 
 const morgan = require("morgan");
 const logger = require('./app/middleware/logger');
@@ -11,41 +10,34 @@ const logger = require('./app/middleware/logger');
 const Parser = require("./app/Parser.js");
 const PapersController = require("./app/controllers/PapersController.js");
 
+const PaperSchema = require("./app/models/PaperSchema");
+
 const app = express();
 
 app.use(morgan("dev"));
 
-// TODO connect to DB here
-db.connect('mongodb://localhost/cs3219');
-connect =  db.connection
-connect.on('error', console.error.bind(console, 'connection error:'));
-connect.once('open', function() {
-  logger.info("mongoose connected");
+// init database connection
+mongoose.connect('mongodb://localhost/cs3219', {
+  useMongoClient: true
+}, err => {
+  if (err) {
+    logger.error(`Could not connect to database: ${err}`);
+  } else {
+    logger.info(`Connected to database: cs3219`);
+  }
 });
 
-var paperSchema = db.Schema({
-  title: String,
-  authors: Array,//[Schema.Types.ObjectId],
-  venue: String,
-  inCitations: [String],
-  outCitations: [String],
-  year: Number,
-  abstract: String,
-  keyPhrases: [String]
-});
-var Paper = db.model('papers', paperSchema);
+const db = mongoose.connection;
+db.model("Paper", PaperSchema, "papers");
 
 const papersController = new PapersController();
 
 // init handlers
 const handlers = require('./app/handlers/index.js')({
-  logger: logger,
-  db : db,
-  models : {
-    Paper
-  },
-  papersController : papersController
-})
+  logger,
+  db,
+  papersController
+});
 
 commander
   .version("0.1.0")
@@ -80,37 +72,6 @@ if (!commander.directory) {
 /**
  * Business Logic
  */
-
-/**
- * Returns the topN authors.
- *
- * @param {integer} topN number of authors (default is 10)
- */
-function getTopAuthors(options) {
-  options = options || {};
-  const topN = options.topN || 10;
-
-  const authors = papersController.getAuthorsObject();
-  let topAuthors = papersController.group({
-    groupsFromPaper: paper =>
-      paper.getAuthors().map(author => author.getId() || author.getName()),
-    paperFilter: options.paperFilter
-  });
-
-  topAuthors = Object.keys(topAuthors)
-    .sort((author1, author2) =>
-      topAuthors[author2].length - topAuthors[author1].length)
-    .slice(0, topN)
-    .map(authorId => {
-      return {
-        author: authors[authorId],
-        count: topAuthors[authorId].length,
-        papers: topAuthors[authorId]
-      };
-    });
-
-  return topAuthors;
-}
 
 /**
  * Returns the topN papers.
@@ -364,43 +325,9 @@ app.get("/top-papers", (req, res) => {
   res.send(JSON.stringify(getTopPapers(options)));
 });
 
-app.get("/trends/publication", (req, res) => {
-  const params = req.query;
+app.get("/trends/publication", handlers.trendPublicationHandler);
 
-  const options = {};
-  const paperFilters = [];
-
-  if (params.venue) {
-    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
-  }
-
-  if (paperFilters.length > 0) {
-    options.paperFilter = paper =>
-      paperFilters.every(paperFilter => paperFilter(paper));
-  }
-
-  res.send(JSON.stringify(getPublicationTrends(options)));
-});
-
-app.get("/trends/keyphrase", (req, res) => {
-  const params = req.query;
-
-  const options = {};
-  const paperFilters = [];
-
-  paperFilters.push(paper => {
-    return paper.getKeyPhrases().some(phrase => {
-      return phrase.toLowerCase() === params.phrase.toLowerCase();
-    });
-  });
-
-  if (paperFilters.length > 0) {
-    options.paperFilter = paper =>
-      paperFilters.every(paperFilter => paperFilter(paper));
-  }
-
-  res.send(JSON.stringify(getKeyPhrasesTrends(options)));
-});
+app.get("/trends/keyphrase", handlers.trendKeyPhraseHandler);
 
 app.get("/graph/incitation", (req, res) => {
   const params = req.query;

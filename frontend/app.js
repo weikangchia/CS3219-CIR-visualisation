@@ -30,20 +30,14 @@ app.use('/top-papers', (req, res) => {
   });
 });
 
-app.use('/trends-publications', (req, res) => {
-  res.sendFile('/public/trends-publication.html', {
+app.use('/trends-conference', (req, res) => {
+  res.sendFile('/public/trends-conference.html', {
     root: __dirname
   });
 });
 
-app.use('/trends-keyphrases', (req, res) => {
+app.use('/trends-keyphrase', (req, res) => {
   res.sendFile('/public/trends-keyphrase.html', {
-    root: __dirname
-  });
-});
-
-app.use('/trends', (req, res) => {
-  res.sendFile('/public/trends.html', {
     root: __dirname
   });
 });
