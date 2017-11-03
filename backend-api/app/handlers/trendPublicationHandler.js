@@ -48,7 +48,19 @@ function handler(options) {
     };
 
     Paper.aggregate([matchStage, groupStage, sortStage, projectStage], (err, groupResult) => {
-      logger.info(groupResult);
+      let currentIndex = 0;
+
+      for (let year = minYear; year <= maxYear; year++) {
+        if (groupResult[currentIndex].year !== year) {
+          groupResult.push({
+            year,
+            count: 0
+          });
+        } else {
+          currentIndex++;
+        }
+      }
+
       res.send(JSON.stringify(groupResult));
     });
   };

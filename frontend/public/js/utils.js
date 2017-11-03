@@ -1,6 +1,31 @@
 const API_HOST = "http://localhost:3000";
 
 /**
+ * Initialize the fakeloader animation.
+ */
+function initFakeLoader() {
+  $("#fakeLoader").fakeLoader({
+    zIndex: "999",
+    spinner: "spinner1",
+    bgColor: "#2ecc71"
+  });
+}
+
+/**
+ * Hide the fakeloader animation.
+ */
+function hideFakeLoader() {
+  $("#fakeLoader").hide();
+}
+
+/**
+ * Show the fakeloader animation.
+ */
+function showFakeLoader() {
+  $("#fakeLoader").show();
+}
+
+/**
  * Returns a Google scholar search url.
  *
  * @param {string} searchTerm
