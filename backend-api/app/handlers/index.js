@@ -8,6 +8,7 @@ module.exports = function (option) {
     topAuthorHandler: require("./topAuthorHandler")(option),
     topNXofYHandler: require("./topXofYHandler")(option),
     trendPublicationHandler: require("./trendPublicationHandler")(option),
-    trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option)
+    trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option),
+    coAuthorsHandler: require("./co-AuthorsHandler")(option)
   };
 };
