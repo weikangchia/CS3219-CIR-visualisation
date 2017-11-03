@@ -3,6 +3,7 @@
 * [Setting Up](#setting-up)
 * [Code Style](#code-style)
 * [Design](#design)
+* [API Endpoints](#api-endpoints)
 * [Developer Tools](#developer-tools)
 
 ## Setting up
@@ -65,6 +66,13 @@ We are following closely to [Airbnb](https://github.com/airbnb/javascript) Javas
 Below is the architecture diagram of the whole solution for this project.
 
 <img src="images/architecture.png" width="600"><br>
+
+## API Endpoints
+
+| Method | Endpoint      | Get Params | Example |
+| ------ | ------------- | ----- | ---- |
+| GET | /trends/conference | venue, minYear, maxYear | /trends/conference?venue=arxiv&minYear1800&maxYear2017 |
+| GET | /trends/keyphrase | phrase, minYear, maxYear | /trends/keyphrase?phrase=nlp&minYear1800&maxYear2017 |
 
 ## Developer Tools
 
