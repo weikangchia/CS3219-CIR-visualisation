@@ -68,6 +68,10 @@ Below is the architecture diagram of the whole solution for this project.
 
 <img src="images/architecture.png" width="600"><br>
 
+### CI/CD Process
+
+<img src="images/ci_cd_process.png" width="600"><br>
+
 ## API Endpoints
 
 | Method | Endpoint      | Get Params | Example |
