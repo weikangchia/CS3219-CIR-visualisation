@@ -86,7 +86,7 @@ function getTopXofY(options) {
         groupKeys = getGroupKeys(element, x);
         groupKeys.forEach(key => {
           id = key.id;
-          topX[id] = topX[id] || [];          
+          topX[id] = topX[id] || [];
           topX[id].push.apply(topX[id], key.count);
           xObjArr[id] = key.obj;
         }, this);
@@ -101,7 +101,7 @@ function getTopXofY(options) {
           return {
             x: xObjArr[id],
             count: topX[id].length,
-            papers: topX[id]
+            actualObjs: topX[id]
           };
         });
       resolve(topX);
