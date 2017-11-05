@@ -63,7 +63,7 @@ function getGroupKeys(paper, x) {
  * @param {string} y range
  * @param {string} value of y
  */
-function getTopXofY(Paper, options) {
+function getTopXofY(options) {
   return new Promise((resolve, reject) => {
     options = options || {};
     const topN = options.topN || 10;
@@ -81,6 +81,7 @@ function getTopXofY(Paper, options) {
 
     Paper.find(filterY, function (err, papers) {
       if (err) return logger.info(err);
+      logger.info(papers.length + " results from DB found.");  
       papers.forEach(function (element) {
         const groupKeys = getGroupKeys(element, x);
         groupKeys.forEach(key => {
@@ -109,10 +110,12 @@ function getTopXofY(Paper, options) {
   });
 }
 
+let logger;
+let Paper;
+
 module.exports = function (options) {
-  const logger = options.logger
-  const db = options.db
-  const Paper = options.models.Paper;
+  logger = options.logger;
+  Paper = options.models.Paper;
 
   return (req, res) => {
     const params = req.query;
@@ -131,6 +134,6 @@ module.exports = function (options) {
       options.topN = params.topN;
     }
 
-    getTopXofY(Paper, options).then(result => res.send(JSON.stringify(result)));
+    getTopXofY(options).then(result => res.send(JSON.stringify(result)));
   }
 }
