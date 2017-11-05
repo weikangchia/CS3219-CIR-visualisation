@@ -1,7 +1,13 @@
-const topAuthorHandler = require("./topAuthorHandler.js");
+/**
+ * Collections of handlers.
+ */
 
+/* eslint-disable global-require */
 module.exports = function (option) {
   return {
-    topAuthorHandler: topAuthorHandler(option)
+    topAuthorHandler: require("./topAuthorHandler")(option),
+    topNXofYHandler: require("./topXofYHandler")(option),
+    trendPublicationHandler: require("./trendPublicationHandler")(option),
+    trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option)
   };
 };
