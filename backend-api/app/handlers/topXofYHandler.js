@@ -1,56 +1,52 @@
 /**
  * Returns appropiate key object for paper depending on X
  *
- * @param {object} paper 
+ * @param {object} paper
  * @param {string} x domain(default is paper)
  */
 function getGroupKeys(paper, x) {
-  keys = [];
+  var keys = [];
   var paperObj = {};
-  paperObj['title'] = paper.title;
-  paperObj['authors'] = paper.authors;
-  paperObj['venue'] = paper.venue;
-  paperObj['inCitations'] = paper.inCitations;
-  paperObj['outCitations'] = paper.outCitations;
-  paperObj['year'] = paper.year;
-  paperObj['abstract'] = paper.abstract;
-  paperObj['keyPhrases'] = paper.keyPhrases;
+  paperObj.title = paper.title;
+  paperObj.authors = paper.authors;
+  paperObj.venue = paper.venue;
+  paperObj.inCitations = paper.inCitations;
+  paperObj.outCitations = paper.outCitations;
+  paperObj.year = paper.year;
+  paperObj.abstract = paper.abstract;
+  paperObj.keyPhrases = paper.keyPhrases;
 
-  if (x == "author") {
+  if (x === "author") {
     paper.authors.forEach(author => {
-      key = {};
-      key.id = author.ids[0];
+      var key = {};
+      [key.id, rest] = author.ids;
       key.obj = author;
       key.count = [paperObj];
       keys.push(key);
     }, this);
-
-  } else if (x == "venue") {
-    key = {};
+  } else if (x === "venue") {
+    var key = {};
     key.id = paper.venue;
-    key.obj = { 'venue': paper.venue };
+    key.obj = { venue: paper.venue };
     key.count = [paperObj];
     keys.push(key);
-
-  } else if (x == "keyphrase") {
+  } else if (x === "keyphrase") {
     paper.keyPhrases.forEach(keyPhrase => {
-      key = {};
+      var key = {};
       key.id = keyPhrase;
-      key.obj = { 'keyPhrase': keyPhrase };
+      key.obj = { keyPhrase: keyPhrase };
       key.count = [paperObj];
       keys.push(key);
     }, this);
-
-  } else if (x == "year") {
-    key = {};
+  } else if (x === "year") {
+    var key = {};
     key.id = paper.year;
-    key.obj = { 'year': paper.year };
+    key.obj = { year: paper.year };
     key.count = [paperObj];
     keys.push(key);
-
   } else {
     //default is paper
-    key = {};
+    var key = {};
     key.id = paper.id;
     key.obj = paperObj;
     key.count = paper.inCitations || [];
