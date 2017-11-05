@@ -22,6 +22,8 @@
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/d3-tip.js"></script>
 
+  <script src="./js/topnxofy.js"></script>
+
 </head>
 
 <body ng-app="topnxofy">
@@ -29,8 +31,31 @@
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
-    <div class="row">
-      
+    <div ng-show="show" class="row" ng-controller="QueryParamsController">
+      <div class="row">
+        <div class="col">
+          Limit
+          <input class="form-control" ng-model="query.topN" min="2" value="3" max="10" type="number" ng-bind="topN">
+        </div>
+        <div class="col">
+          Range:
+          <select class="form-control" ng-model="query.xCategoryValue">
+            <option ng-repeat="xCategory in xCategories">{{xCategory.display}}</option>
+          </select>
+        </div>
+        <div class="col">
+          Domain:
+          <select class="form-control" ng-model="query.yCategoryValue">
+            <option ng-repeat="yCategory in yCategories">{{yCategory.display}}</option>
+          </select>
+          <input ng-model="query.yValue">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+            <button  class="btn btn-info" ng-click="submitQuery()">Go</button>      
+        </div>
+      </div>
     </div>
   </div>
 
