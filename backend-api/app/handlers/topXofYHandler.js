@@ -5,8 +5,8 @@
  * @param {string} x domain(default is paper)
  */
 function getGroupKeys(paper, x) {
-  var keys = [];
-  var paperObj = {};
+  let keys = [];
+  let paperObj = {};
   paperObj.title = paper.title;
   paperObj.authors = paper.authors;
   paperObj.venue = paper.venue;
@@ -18,35 +18,36 @@ function getGroupKeys(paper, x) {
 
   if (x === "author") {
     paper.authors.forEach(author => {
-      var key = {};
+      let key = {};
+      let rest;
       [key.id, rest] = author.ids;
       key.obj = author;
       key.count = [paperObj];
       keys.push(key);
     }, this);
   } else if (x === "venue") {
-    var key = {};
+    let key = {};
     key.id = paper.venue;
     key.obj = { venue: paper.venue };
     key.count = [paperObj];
     keys.push(key);
   } else if (x === "keyphrase") {
     paper.keyPhrases.forEach(keyPhrase => {
-      var key = {};
+      let key = {};
       key.id = keyPhrase;
       key.obj = { keyPhrase: keyPhrase };
       key.count = [paperObj];
       keys.push(key);
     }, this);
   } else if (x === "year") {
-    var key = {};
+    let key = {};
     key.id = paper.year;
     key.obj = { year: paper.year };
     key.count = [paperObj];
     keys.push(key);
   } else {
-    //default is paper
-    var key = {};
+    // default is paper
+    let key = {};
     key.id = paper.id;
     key.obj = paperObj;
     key.count = paper.inCitations || [];
@@ -64,26 +65,25 @@ function getGroupKeys(paper, x) {
  * @param {string} value of y
  */
 function getTopXofY(options) {
-
   return new Promise((resolve, reject) => {
     options = options || {};
     const topN = options.topN || 10;
     const x = options.x || "paper";
 
-    var filterY = {};
+    let filterY = {};
     if (options.y && options.value) {
       y = options.y;
       value = options.value;
       filterY[y] = value;
     }
 
-    var topX = {};
-    var xObjArr = {};
+    let topX = {};
+    let xObjArr = {};
 
     Paper.find(filterY, function (err, papers) {
       if (err) return logger.info(err);
       papers.forEach(function (element) {
-        groupKeys = getGroupKeys(element, x);
+        let groupKeys = getGroupKeys(element, x);
         groupKeys.forEach(key => {
           id = key.id;
           topX[id] = topX[id] || [];
