@@ -63,7 +63,7 @@ function getGroupKeys(paper, x) {
  * @param {string} y range
  * @param {string} value of y
  */
-function getTopXofY(options) {
+function getTopXofY(Paper, options) {
   return new Promise((resolve, reject) => {
     options = options || {};
     const topN = options.topN || 10;
@@ -110,16 +110,13 @@ function getTopXofY(options) {
 }
 
 module.exports = function (options) {
-  logger = options.logger
-  papersController = options.papersController
-  db = options.db
-  Paper = options.models.Paper;
+  const logger = options.logger
+  const db = options.db
+  const Paper = options.models.Paper;
 
   return (req, res) => {
     const params = req.query;
-
     const options = {};
-    const paperFilters = [];
 
     if (params.x) {
       options.x = params.x;
@@ -134,6 +131,6 @@ module.exports = function (options) {
       options.topN = params.topN;
     }
 
-    getTopXofY(options).then(result => res.send(JSON.stringify(result)));
+    getTopXofY(Paper, options).then(result => res.send(JSON.stringify(result)));
   }
 }
