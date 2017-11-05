@@ -1,6 +1,6 @@
 # CS3219 Assignment 4/5 Visualization (Group 5)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/be7ecece1d1047fa9480741d5b72cf14)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=aljorhythm/CS3219-CIR-visualisation&amp;utm_campaign=Badge_Grade)
-[![wercker status](https://app.wercker.com/status/ba861855e3a5686924237c8922b960ba/s/master "wercker status")](https://app.wercker.com/project/byKey/ba861855e3a5686924237c8922b960ba)
+[![wercker status](https://app.wercker.com/status/08857fcefc646e0db0d2fbe3b212b409/s/master "wercker status")](https://app.wercker.com/project/byKey/08857fcefc646e0db0d2fbe3b212b409)
 
 App: [https://cs3219-frontend.herokuapp.com](https://cs3219-frontend.herokuapp.com)
 
