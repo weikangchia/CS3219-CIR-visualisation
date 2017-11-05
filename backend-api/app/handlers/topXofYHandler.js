@@ -1,3 +1,86 @@
+let logger;
+let Paper;
+
+module.exports = function (options) {
+  logger = options.logger;
+  Paper = options.models.Paper;
+
+  return (req, res) => {
+    const params = req.query;
+    const options = {};
+
+    if (params.x) {
+      options.x = params.x;
+    }
+
+    if (params.y && params.value) {
+      options.y = params.y;
+      options.value = params.value;
+    }
+
+    if (params.topN) {
+      options.topN = params.topN;
+    }
+
+    getTopXofY(options).then(result => res.send(JSON.stringify(result)));
+  }
+}
+
+/**
+ * Returns the topN x of y.
+ *
+ * @param {integer} topN number of x (default is 10)
+ * @param {string} x domain(default is paper)
+ * @param {string} y range
+ * @param {string} value of y
+ */
+function getTopXofY(options) {
+  return new Promise((resolve, reject) => {
+    options = options || {};
+    const topN = options.topN || 10;
+    const x = options.x || "paper";
+
+    const filterY = {};
+    if (options.y && options.value) {
+      y = options.y;
+      value = options.value;
+      filterY[y] = value;
+    }
+
+    let topX = {};
+    const xObjArr = {};
+
+    Paper.find(filterY, function (err, papers) {
+      if (err) return logger.info(err);
+      logger.info(`${papers.length} results from DB found.`);
+      papers.forEach(function (element) {
+        const groupKeys = getGroupKeys(element, x);
+        groupKeys.forEach(key => {
+          const id = key.id;
+          topX[id] = topX[id] || [];
+          topX[id].push(...key.count);
+          xObjArr[id] = key.obj;
+        }, this);
+      }
+      );
+
+      topX = Object.keys(topX)
+        .sort((x1, x2) =>
+          topX[x2].length - topX[x1].length)
+        .slice(0, topN)
+        .map(id => {
+          return {
+            x: xObjArr[id],
+            count: topX[id].length,
+            actualObjs: topX[id]
+          };
+        });
+      resolve(topX);
+    }).select('title authors venue inCitations outCitations year abstract keyPhrases');
+
+  });
+}
+
 /**
  * Returns appropiate key object for paper depending on X
  *
@@ -53,87 +136,4 @@ function getGroupKeys(paper, x) {
     keys.push(key);
   }
   return keys;
-}
-
-/**
- * Returns the topN x of y.
- *
- * @param {integer} topN number of x (default is 10)
- * @param {string} x domain(default is paper)
- * @param {string} y range
- * @param {string} value of y
- */
-function getTopXofY(options) {
-  return new Promise((resolve, reject) => {
-    options = options || {};
-    const topN = options.topN || 10;
-    const x = options.x || "paper";
-
-    const filterY = {};
-    if (options.y && options.value) {
-      y = options.y;
-      value = options.value;
-      filterY[y] = value;
-    }
-
-    let topX = {};
-    const xObjArr = {};
-
-    Paper.find(filterY, function (err, papers) {
-      if (err) return logger.info(err);
-      logger.info(papers.length + " results from DB found.");  
-      papers.forEach(function (element) {
-        const groupKeys = getGroupKeys(element, x);
-        groupKeys.forEach(key => {
-          const id = key.id;
-          topX[id] = topX[id] || [];
-          topX[id].push(...key.count);
-          xObjArr[id] = key.obj;
-        }, this);
-      }
-      );
-
-      topX = Object.keys(topX)
-        .sort((x1, x2) =>
-          topX[x2].length - topX[x1].length)
-        .slice(0, topN)
-        .map(id => {
-          return {
-            x: xObjArr[id],
-            count: topX[id].length,
-            actualObjs: topX[id]
-          };
-        });
-      resolve(topX);
-    }).select('title authors venue inCitations outCitations year abstract keyPhrases');
-
-  });
-}
-
-let logger;
-let Paper;
-
-module.exports = function (options) {
-  logger = options.logger;
-  Paper = options.models.Paper;
-
-  return (req, res) => {
-    const params = req.query;
-    const options = {};
-
-    if (params.x) {
-      options.x = params.x;
-    }
-
-    if (params.y && params.value) {
-      options.y = params.y;
-      options.value = params.value;
-    }
-
-    if (params.topN) {
-      options.topN = params.topN;
-    }
-
-    getTopXofY(options).then(result => res.send(JSON.stringify(result)));
-  }
 }
