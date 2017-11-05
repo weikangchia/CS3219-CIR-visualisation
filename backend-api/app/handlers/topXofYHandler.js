@@ -5,8 +5,8 @@
  * @param {string} x domain(default is paper)
  */
 function getGroupKeys(paper, x) {
-  let keys = [];
-  let paperObj = {};
+  const keys = [];
+  const paperObj = {};
   paperObj.title = paper.title;
   paperObj.authors = paper.authors;
   paperObj.venue = paper.venue;
@@ -18,36 +18,35 @@ function getGroupKeys(paper, x) {
 
   if (x === "author") {
     paper.authors.forEach(author => {
-      let key = {};
-      let rest;
-      [key.id, rest] = author.ids;
+      const key = {};
+      [key.id] = author.ids;
       key.obj = author;
       key.count = [paperObj];
       keys.push(key);
     }, this);
   } else if (x === "venue") {
-    let key = {};
+    const key = {};
     key.id = paper.venue;
     key.obj = { venue: paper.venue };
     key.count = [paperObj];
     keys.push(key);
   } else if (x === "keyphrase") {
     paper.keyPhrases.forEach(keyPhrase => {
-      let key = {};
+      const key = {};
       key.id = keyPhrase;
       key.obj = { keyPhrase: keyPhrase };
       key.count = [paperObj];
       keys.push(key);
     }, this);
   } else if (x === "year") {
-    let key = {};
+    const key = {};
     key.id = paper.year;
     key.obj = { year: paper.year };
     key.count = [paperObj];
     keys.push(key);
   } else {
     // default is paper
-    let key = {};
+    const key = {};
     key.id = paper.id;
     key.obj = paperObj;
     key.count = paper.inCitations || [];
@@ -70,7 +69,7 @@ function getTopXofY(options) {
     const topN = options.topN || 10;
     const x = options.x || "paper";
 
-    let filterY = {};
+    const filterY = {};
     if (options.y && options.value) {
       y = options.y;
       value = options.value;
@@ -78,16 +77,16 @@ function getTopXofY(options) {
     }
 
     let topX = {};
-    let xObjArr = {};
+    const xObjArr = {};
 
     Paper.find(filterY, function (err, papers) {
       if (err) return logger.info(err);
       papers.forEach(function (element) {
-        let groupKeys = getGroupKeys(element, x);
+        const groupKeys = getGroupKeys(element, x);
         groupKeys.forEach(key => {
-          id = key.id;
+          const id = key.id;
           topX[id] = topX[id] || [];
-          topX[id].push.apply(topX[id], key.count);
+          topX[id].push(...key.count);
           xObjArr[id] = key.obj;
         }, this);
       }
