@@ -99,7 +99,7 @@ Below is the architecture diagram of the whole solution for this project.
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** <br />
+    **Content:**
     `[{`
     `x : {xObj},`
     `count : 128,`
