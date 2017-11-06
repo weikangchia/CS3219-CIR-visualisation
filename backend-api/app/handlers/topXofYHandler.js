@@ -119,14 +119,13 @@ function getTopXofY(params) {
           .map(id => {
             return {
               x: xObjArr[id],
-              count: topX[id].length,
-              actualObjs: topX[id]
+              count: topX[id].length
             };
           });
 
         resolve(topX);
       }
-    }).select('title authors venue inCitations outCitations year abstract keyPhrases');
+    }).select('id title authors venue inCitations outCitations year abstract keyPhrases');
   });
 }
 
@@ -139,7 +138,13 @@ function handler(options) {
   return (req, res) => {
     const params = req.query;
 
-    getTopXofY(params).then(result => res.send(JSON.stringify(result)));
+    getTopXofY(params).then(result => res.send(JSON.stringify({
+      topN: params.topN,
+      x: params.x,
+      y: params.y,
+      value: params.value,
+      results: result
+    })));
   };
 }
 

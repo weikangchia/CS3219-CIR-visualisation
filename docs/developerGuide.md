@@ -113,8 +113,15 @@ Below is the architecture diagram of the whole solution for this project.
 
   * **Code:** 200 <br />
     **Content:**
-    `[{`
-    `x : {xObj},`
-    `count : 128,`
-    `actualObjs : [{actualObj}, ..]`
-    `}]`
+    `{`
+    `topN: 10`
+    `x: author`
+    `y: venue`
+    `value: arxiv`
+    `results: [`
+    `{`
+    `x: {xObj},`
+    `count: 128,`
+    `},`
+    `...]`
+    `}`
