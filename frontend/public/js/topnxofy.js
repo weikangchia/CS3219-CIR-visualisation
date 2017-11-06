@@ -2,11 +2,11 @@
  * Angular app for top n x of y
  */
 
-var app = angular.module("topnxofy", []);
+cir.controller("QueryDisplayController", function($scope) {
 
-app.controller("QueryDisplayController", function($scope) {});
+});
 
-app.controller("QueryParamsController", function($scope) {
+cir.controller("QueryParamsController", function($scope) {
   $scope.xCategories = [
     {
       display: "Authors",
