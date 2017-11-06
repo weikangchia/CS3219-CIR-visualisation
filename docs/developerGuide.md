@@ -40,6 +40,7 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    db.papers.createIndex({venue: 1})
    db.papers.createIndex({"authors.name": 1})
    db.papers.createIndex({"year": 1})
+   db.papers.createIndex({keyPhrases: 1})
    ```
 ### Run frontend server
 To run frontend server, go to `/frontend` folder and execute:
@@ -66,6 +67,10 @@ We are following closely to [Airbnb](https://github.com/airbnb/javascript) Javas
 Below is the architecture diagram of the whole solution for this project.
 
 <img src="images/architecture.png" width="600"><br>
+
+### CI/CD Process
+
+<img src="images/ci_cd_process.png" width="600"><br>
 
 ## API Endpoints
 
