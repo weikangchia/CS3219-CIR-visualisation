@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGO_DB_URI, {
   useMongoClient: true
 }, err => {
   if (err) {
-    logger.error(`Could not connect to database: ${err}`);
+    logger.error(`Could not connect to database ${process.env.MONGO_DB_URI}: ${err}`);
   } else {
     logger.info(`Connected to database: ${process.env.MONGO_DB_URI}`);
   }

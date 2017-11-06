@@ -37,6 +37,11 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    db.createCollection("papers", {collation: {locale: 'en', strength: 2}})
    ```
 4. Import the datasets into the database.
+   
+   Example
+   ```
+   mongoimport --db CS3219 --collection papers --file ~/Downloads/papers-2017-02-21-200000.json
+   ```
 5. Create indexes:
    <br/>
    ```
