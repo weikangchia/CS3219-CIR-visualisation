@@ -74,11 +74,9 @@ Below is the architecture diagram of the whole solution for this project.
 <img src="images/ci_cd_process.png" width="600"><br>
 
 ## API Endpoints
-
-| Method | Endpoint      | Get Params | Example |
-| ------ | ------------- | ----- | ---- |
-| GET | /trends/conference | venue, minYear, maxYear | /trends/conference?venue=arxiv&minYear1800&maxYear2017 |
-| GET | /trends/keyphrase | phrase, minYear, maxYear | /trends/keyphrase?phrase=nlp&minYear1800&maxYear2017 |
+### Trends
+- **[<code>GET</code> trends/conference](endpoints/trends/GET_conference.md)**
+- **[<code>GET</code> trends/keyphrase](endpoints/trends/GET_keyphrase.md)**
 
 ## Developer Tools
 
