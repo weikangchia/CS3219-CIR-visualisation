@@ -85,9 +85,7 @@ function getTopXofY(params) {
       ({
         y,
         value
-      } = {
-        params
-      });
+      } = params);
 
       filterY[y] = value;
     }
