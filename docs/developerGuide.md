@@ -19,6 +19,12 @@ To install dependencies enter each project folder (`/backend-api` and `/frontend
 npm install
 ```
 
+### Env files
+1. Go to `/backend-api` and create a new file `.env` from `.env.example`.
+2. You should only change the port number and mongodb uri to suit your environment. By default the API server is running on port 3000.
+3. Go to `/frontend` and create a new file `.env` from `.env.example`.
+4. You should only change the port number to suit your environment. By default the frontend server is running on port 9000.
+
 ### Setup database server
 Follow the instructions in this [online documentation](https://docs.mongodb.com/manual/administration/install-community/) to install the MongoDB server.
 
@@ -76,8 +82,8 @@ Below is the architecture diagram of the whole solution for this project.
 
 | Method | Endpoint      | Get Params | Example |
 | ------ | ------------- | ----- | ---- |
-| GET | /trends/conference | venue, minYear, maxYear | /trends/conference?venue=arxiv&minYear1800&maxYear2017 |
-| GET | /trends/keyphrase | phrase, minYear, maxYear | /trends/keyphrase?phrase=nlp&minYear1800&maxYear2017 |
+| GET | /trends/conference | venue, minYear, maxYear | /trends/conference?venue=arxiv&minYear=1800&maxYear=2017 |
+| GET | /trends/keyphrase | phrase, minYear, maxYear | /trends/keyphrase?phrase=nlp&minYear=1800&maxYear=2017 |
 
 ## Developer Tools
 
