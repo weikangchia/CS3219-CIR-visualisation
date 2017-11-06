@@ -1,151 +1,146 @@
+let logger;
+let db;
+
 /**
- * Returns the topN papers.
+ * Returns appropriate key object for paper depending on X
  *
- * @param {integer} topN number of papers (default is 10)
+ * @param {object} paper
+ * @param {string} x domain (default is paper)
  */
-function getTopPapers(options) {
+function getGroupKeys(paper, x) {
+  const keys = [];
+  const paperObj = {};
+  paperObj.title = paper.title;
+  paperObj.authors = paper.authors;
+  paperObj.venue = paper.venue;
+  paperObj.inCitations = paper.inCitations;
+  paperObj.outCitations = paper.outCitations;
+  paperObj.year = paper.year;
+  paperObj.abstract = paper.abstract;
+  paperObj.keyPhrases = paper.keyPhrases;
 
-  return new Promise((resolve, reject) => {
-    options = options || {};
-    const topN = options.topN || 10;
-
-    y = options.y;
-    value = options.value;
-    var filterY = {};
-    filterY[y] = value;
-
-    var topPapers = {};
-    //   var inCites = {};
-    var paperObj = {};
-
-    Paper.find(filterY, function (err, papers) {
-      if (err) return logger.info(err);
-      papers.forEach(function (element) {
-        paperObj['title'] = element.title;
-        paperObj['authors'] = element.authors;
-        paperObj['venue'] = element.venue;
-        paperObj['inCitations'] = element.inCitations;
-        paperObj['outCitations'] = element.outCitations;
-        paperObj['year'] = element.year;
-        paperObj['abstract'] = element.abstract;
-        paperObj['keyPhrases'] = element.keyPhrases;
-        //inCites[element.id] = paperObj;
-        topPapers[element.id] = paperObj;
-     //   logger.info(topPapers[element.id]['inCitations']);
-        /* 
-        element.authors.forEach(authorObj => {
-          id = authorObj.ids[0];
-          topAuthors[id] = topAuthors[id] || [];
-          topAuthors[id].push(paperObj);
-          paperObjArr[id] = authorObj;
-        }, this);*/
-      }
-      );
-
-      topPapers = Object.keys(topPapers)
-        .sort((paper1, paper2) =>{
-          logger.info(paper2);
-          topPapers[paper2.id]['inCitations'].length - topPapers[paper1.id]['inCitations'].length;})
-        .slice(0, topN);
-      /*
-            topPapers.forEach(paper =>
-              paper.setInCitations(paper.getInCitations().map(inCitationId => {
-                return papersDict[inCitationId] || inCitationId;
-              })));
-      */
-      resolve(topPapers);
-    });
-
-  });
+  if (x === "author") {
+    paper.authors.forEach(author => {
+      const key = {};
+      [key.id] = author.ids;
+      key.obj = author;
+      key.count = [paperObj];
+      keys.push(key);
+    }, this);
+  } else if (x === "venue") {
+    const key = {};
+    key.id = paper.venue;
+    key.obj = {
+      venue: paper.venue
+    };
+    key.count = [paperObj];
+    keys.push(key);
+  } else if (x === "keyphrase") {
+    paper.keyPhrases.forEach(keyPhrase => {
+      const key = {};
+      key.id = keyPhrase;
+      key.obj = {
+        keyPhrase
+      };
+      key.count = [paperObj];
+      keys.push(key);
+    }, this);
+  } else if (x === "year") {
+    const key = {};
+    key.id = paper.year;
+    key.obj = {
+      year: paper.year
+    };
+    key.count = [paperObj];
+    keys.push(key);
+  } else {
+    // default is paper
+    const key = {};
+    key.id = paper.id;
+    key.obj = paperObj;
+    key.count = paper.inCitations || [];
+    keys.push(key);
+  }
+  return keys;
 }
 
 /**
- * Returns the topN authors.
+ * Returns the topN x of y.
  *
- * @param {integer} topN number of authors (default is 10)
+ * @param {integer} topN number of x (default is 10)
+ * @param {string} x domain (default is paper)
+ * @param {string} y range
+ * @param {string} value of y
  */
-function getTopAuthors(options) {
-
+function getTopXofY(params) {
   return new Promise((resolve, reject) => {
-    options = options || {};
-    const topN = options.topN || 10;
+    params = params || {};
+    const topN = params.topN || 10;
+    const x = params.x || "paper";
 
-    y = options.y;
-    value = options.value;
-    var filterY = {};
-    filterY[y] = value;
+    const filterY = {};
+    let y;
+    let value;
+    if (params.y && params.value) {
+      ({
+        y,
+        value
+      } = params);
 
-    var topAuthors = {};
-    var authorsObjArr = {};
-    var paperObj = {};
+      filterY[y] = value;
+    }
 
-    Paper.find(filterY, function (err, papers) {
-      if (err) return logger.info(err);
-      papers.forEach(function (element) {
-        paperObj['title'] = element.title;
-        paperObj['authors'] = element.authors;
-        paperObj['venue'] = element.venue;
-        paperObj['inCitations'] = element.inCitations;
-        paperObj['outCitations'] = element.outCitations;
-        paperObj['year'] = element.year;
-        paperObj['abstract'] = element.abstract;
-        paperObj['keyPhrases'] = element.keyPhrases;
-        element.authors.forEach(authorObj => {
-          id = authorObj.ids[0];
-          topAuthors[id] = topAuthors[id] || [];
-          topAuthors[id].push(paperObj);
-          authorsObjArr[id] = authorObj;
-        }, this);
-      }
-      );
+    let topX = {};
+    const xObjArr = {};
 
-      topAuthors = Object.keys(topAuthors)
-        .sort((author1, author2) =>
-          topAuthors[author2].length - topAuthors[author1].length)
-        .slice(0, topN)
-        .map(authorId => {
-          return {
-            author: authorsObjArr[authorId],
-            count: topAuthors[authorId].length,
-            papers: topAuthors[authorId]
-          };
+    const Paper = db.model("Paper");
 
+    Paper.find(filterY, (err, papers) => {
+      if (err) {
+        logger.info(err);
+      } else {
+        logger.info(`${papers.length} results from DB found.`);
+        papers.forEach(function (element) {
+          const groupKeys = getGroupKeys(element, x);
+          groupKeys.forEach(key => {
+            const {
+              id
+            } = key;
+            topX[id] = topX[id] || [];
+            topX[id].push(...key.count);
+            xObjArr[id] = key.obj;
+          }, this);
         });
-      resolve(topAuthors);
-    });
 
+        topX = Object.keys(topX)
+          .sort((x1, x2) =>
+            topX[x2].length - topX[x1].length)
+          .slice(0, topN)
+          .map(id => {
+            return {
+              x: xObjArr[id],
+              count: topX[id].length,
+              actualObjs: topX[id]
+            };
+          });
+
+        resolve(topX);
+      }
+    }).select('title authors venue inCitations outCitations year abstract keyPhrases');
   });
 }
 
-module.exports = function (options) {
-  logger = options.loggerController
-  Paper = options.db.model("Paper");
+function handler(options) {
+  ({
+    logger,
+    db
+  } = options);
 
   return (req, res) => {
     const params = req.query;
 
-    const options = {};
-    const paperFilters = [];
-
-    if (params.y && params.value) {
-      options.y = params.y;
-      options.value = params.value;
-    }
-
-    if (params.topN) {
-      options.topN = params.topN;
-    }
-
-    if (paperFilters.length > 0) {
-      options.paperFilter = paper =>
-        paperFilters.every(paperFilter => paperFilter(paper));
-    }
-    if (params.x == "author") {
-      getTopAuthors(options).then(result => res.send(JSON.stringify(result)));
-    } else if (params.x == "paper") {
-      getTopPapers(options).then(result => res.send(JSON.stringify(result)));
-
-    }
-  }
-
+    getTopXofY(params).then(result => res.send(JSON.stringify(result)));
+  };
 }
+
+module.exports = handler;
