@@ -106,7 +106,7 @@ Below is the architecture diagram of the whole solution for this project.
  
    `topN=[integer] default is 10` 
    `x=[string] paper(default) || author || venue || keyphrase || year` 
-   `y=[string] title || author || venue || keyphrase || year` 
+   `y=[string] paper || author || venue || keyphrase || year` 
    `value=[string]` 
 
 * **Success Response:**
