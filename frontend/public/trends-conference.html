@@ -177,7 +177,7 @@
         const requests = [];
         conferences.forEach((conference) => {
           requests.push(axios.get(
-            `${API_HOST}/trends/publication?venue=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
+            `${API_HOST}/trends/publication?name=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
           ));
         });
 
