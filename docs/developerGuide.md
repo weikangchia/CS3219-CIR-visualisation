@@ -24,6 +24,9 @@ npm install
 Follow the instructions in this [online documentation](https://docs.mongodb.com/manual/administration/install-community/) to install the MongoDB server.
 
 1. Start the MongoDB server.
+  ```
+  sudo mongod
+  ```
 2. Open the MongoDB console and create the database and collection:
    <br/>
    ```
