@@ -5,6 +5,7 @@
 * [Design](#design)
 * [API Endpoints](#api-endpoints)
 * [Developer Tools](#developer-tools)
+* [REST APIs](#rest-apis)
 
 ## Setting up
 ### Prerequisites
@@ -82,3 +83,38 @@ Below is the architecture diagram of the whole solution for this project.
 ## Developer Tools
 
 * [insomnia](https://insomnia.rest/download/) - Rest client to inspect api calls
+
+## REST APIs
+
+**Get Top N X of Y**
+----
+  Returns the top N X of Y in JSON format.
+  Top papers are counted by number of inCitations while the rest are counted by number of papers.
+
+* **URL**
+
+  /top-X-of-Y
+
+* **Method:**
+
+  `GET`
+  
+*  **URL Params**
+
+   All Params are optional.
+   'y' requires a 'value' and vice versa.
+ 
+   `topN=[integer] default is 10` 
+   `x=[string] paper(default) || author || venue || keyphrase || year` 
+   `y=[string] title || author || venue || keyphrase || year` 
+   `value=[string]` 
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+    `[{`
+    `x : {xObj},`
+    `count : 128,`
+    `actualObjs : [{actualObj}, ..]`
+    `}]`
