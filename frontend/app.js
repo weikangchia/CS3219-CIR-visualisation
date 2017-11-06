@@ -1,11 +1,14 @@
 const express = require("express");
 const path = require("path");
+const dotenv = require("dotenv");
 
 const morgan = require("morgan");
 const compression = require("compression");
 const logger = require('./app/middleware/logger');
 
 const app = express();
+
+dotenv.load();
 
 app.use(morgan("dev"));
 app.use(compression());
@@ -30,20 +33,14 @@ app.use('/top-papers', (req, res) => {
   });
 });
 
-app.use('/trends-publications', (req, res) => {
-  res.sendFile('/public/trends-publication.html', {
+app.use('/trends-conference', (req, res) => {
+  res.sendFile('/public/trends-conference.html', {
     root: __dirname
   });
 });
 
-app.use('/trends-keyphrases', (req, res) => {
+app.use('/trends-keyphrase', (req, res) => {
   res.sendFile('/public/trends-keyphrase.html', {
-    root: __dirname
-  });
-});
-
-app.use('/trends', (req, res) => {
-  res.sendFile('/public/trends.html', {
     root: __dirname
   });
 });
@@ -54,6 +51,6 @@ app.use('/graphs-incitations', (req, res) => {
   });
 });
 
-const server = app.listen(9000, () => {
+const server = app.listen(process.env.PORT, () => {
   logger.info(`Listening on port ${server.address().port}`);
 });

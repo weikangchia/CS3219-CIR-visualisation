@@ -3,6 +3,7 @@
 * [Setting Up](#setting-up)
 * [Code Style](#code-style)
 * [Design](#design)
+* [API Endpoints](#api-endpoints)
 * [Developer Tools](#developer-tools)
 * [REST APIs](#rest-apis)
 
@@ -40,6 +41,7 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    db.papers.createIndex({venue: 1})
    db.papers.createIndex({"authors.name": 1})
    db.papers.createIndex({"year": 1})
+   db.papers.createIndex({keyPhrases: 1})
    ```
 ### Run frontend server
 To run frontend server, go to `/frontend` folder and execute:
@@ -66,6 +68,17 @@ We are following closely to [Airbnb](https://github.com/airbnb/javascript) Javas
 Below is the architecture diagram of the whole solution for this project.
 
 <img src="images/architecture.png" width="600"><br>
+
+### CI/CD Process
+
+<img src="images/ci_cd_process.png" width="600"><br>
+
+## API Endpoints
+
+| Method | Endpoint      | Get Params | Example |
+| ------ | ------------- | ----- | ---- |
+| GET | /trends/conference | venue, minYear, maxYear | /trends/conference?venue=arxiv&minYear1800&maxYear2017 |
+| GET | /trends/keyphrase | phrase, minYear, maxYear | /trends/keyphrase?phrase=nlp&minYear1800&maxYear2017 |
 
 ## Developer Tools
 
