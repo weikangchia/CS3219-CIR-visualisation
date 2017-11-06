@@ -17,7 +17,7 @@
 Accepted x are = paper || author || venue || keyphrase || year.  <br />
 If x is invalid, default domain will be used. <br />
 - **y** — The range that you are searching.  <br />
-Accepted y are = paper || author || venue || keyphrase || year.  <br /> <br />
+Accepted y are = paper || author || venue || keyphrase || year.  <br />
 - **value** — The value for the range you are searching.
 
 ## Return format
