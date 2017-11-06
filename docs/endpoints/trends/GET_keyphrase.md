@@ -1,21 +1,21 @@
-# Trends Resources
+# Keyphrase Trends
 
     GET trends/keyphrase
 
 ## Description
-Returns trend information for a particular conference.
+Returns trend information for a particular keyphrase.
 
 ***
 
 ## Parameters
-Parameter **name** is required.
+Parameter **phrase** is required.
 
-- **name** — The name of the conference.
+- **phrase** — The phrase that you want to search for.
 - **minYear** — The minimum year for the trend that you want to search for. (Default: 1800)
 - **maxYear** — The maximum year for the trend that you want to search for. (Default: 1800)
 
 ## Return format
-An array of values.
+An array of trend data.
 
 ***
 
@@ -28,41 +28,41 @@ An array of values.
 ## Example
 **Request**
 
-  GET trends/conference?name=icse&minYear=2000&maxYear=2017
+  GET trends/keyphrase?phrase=icse&minYear=2010&maxYear=2017
 
-## Return __shortened for example purpose__
+**Return**
 ``` json
 [
   {
-    "count": 5,
-    "year": 2010
+    "year": "2010",
+    "count": 2
   },
   {
-    "count": 6,
-    "year": 2011
+    "year": "2011",
+    "count": 2
   },
   {
-    "count": 3,
-    "year": 2012
+    "year": "2012",
+    "count": 4
   },
   {
-    "count": 8,
-    "year": 2013
+    "year": "2013",
+    "count": 7
   },
   {
-    "count": 2,
-    "year": 2014
+    "year": "2014",
+    "count": 4
   },
   {
-    "count": 4,
-    "year": 2015
+    "year": "2015",
+    "count": 12
   },
   {
-    "count": 9,
-    "year": 2016
+    "year": "2016",
+    "count": 4
   },
   {
-    "year": 2017,
+    "year": "2017",
     "count": 0
   }
 ]

@@ -1,4 +1,4 @@
-# Trends Resources
+# Conference Trends
 
     GET trends/conference
 
@@ -15,7 +15,7 @@ Parameter **name** is required.
 - **maxYear** — The maximum year for the trend that you want to search for. (Default: 1800)
 
 ## Return format
-An array of values.
+An array of trend data.
 
 ***
 
@@ -28,9 +28,9 @@ An array of values.
 ## Example
 **Request**
 
-  GET trends/conference?name=icse&minYear=2000&maxYear=2017
+  GET trends/conference?name=icse&minYear=2010&maxYear=2017
 
-## Return __shortened for example purpose__
+**Return**
 ``` json
 [
   {
