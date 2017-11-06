@@ -3,7 +3,7 @@
     GET top-X-of-Y
 
 ## Description
-  Returns the top N X of Y in JSON format.
+  Returns the top N X of Y in JSON format. <br />
   Top papers are counted by number of inCitations while the rest are counted by number of papers.
 
 ***
@@ -13,8 +13,11 @@
   'y' requires a 'value' and vice versa.
 
 - **topN** — The top number of X to find. (Default: 10)
-- **x** — The domain that you are searching. Accepted x are = paper || author || venue || keyphrase || year. If x is invalid, default domain will be used. (Default: paper)
-- **y** — The range that you are searching.
+- **x** — The domain that you are searching.  <br />
+Accepted x are = paper || author || venue || keyphrase || year.  <br />
+If x is invalid, default domain will be used. (Default: paper)
+- **y** — The range that you are searching.  <br />
+Accepted y are = paper || author || venue || keyphrase || year.  <br />
 - **value** — The value for the range you are searching.
 
 ## Return format
