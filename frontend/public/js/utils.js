@@ -1,4 +1,5 @@
 const API_HOST = "http://localhost:3000";
+const FRONTEND_HOST = "http://localhost:9000";
 
 /**
  * Initialize the fakeloader animation.
