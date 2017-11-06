@@ -77,7 +77,7 @@ function getGroupKeys(paper, x) {
   const keys = [];
 
   // paper must have an id
-  if (!paper.id || (paper.id.trim && paper.id.trim() === "")) {
+  if (paper.id === "") {
     return keys;
   }
 
