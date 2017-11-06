@@ -74,11 +74,9 @@ Below is the architecture diagram of the whole solution for this project.
 <img src="images/ci_cd_process.png" width="600"><br>
 
 ## API Endpoints
-
-| Method | Endpoint      | Get Params | Example |
-| ------ | ------------- | ----- | ---- |
-| GET | /trends/conference | venue, minYear, maxYear | /trends/conference?venue=arxiv&minYear1800&maxYear2017 |
-| GET | /trends/keyphrase | phrase, minYear, maxYear | /trends/keyphrase?phrase=nlp&minYear1800&maxYear2017 |
+### Trends
+- **[<code>GET</code> trends/conference](endpoints/trends/GET_conference.md)**
+- **[<code>GET</code> trends/keyphrase](endpoints/trends/GET_keyphrase.md)**
 
 ## Developer Tools
 
@@ -101,27 +99,27 @@ Below is the architecture diagram of the whole solution for this project.
   
 *  **URL Params**
 
-   All Params are optional.
+   All Params are optional. <br />
    'y' requires a 'value' and vice versa.
  
-   `topN=[integer] default is 10` 
-   `x=[string] paper(default) || author || venue || keyphrase || year` 
-   `y=[string] paper || author || venue || keyphrase || year` 
-   `value=[string]` 
+   `topN=[integer] default is 10`  <br />
+   `x=[string] paper(default) || author || venue || keyphrase || year`  <br />
+   `y=[string] paper || author || venue || keyphrase || year`  <br />
+   `value=[string]`  <br />
 
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:**
-    `{`
-    `topN: 10`
-    `x: author`
-    `y: venue`
-    `value: arxiv`
-    `results: [`
-    `{`
-    `x: {xObj},`
-    `count: 128,`
-    `},`
-    `...]`
+    **Content:** <br />
+    `{` <br />
+    `topN: 10` <br />
+    `x: author` <br />
+    `y: venue` <br />
+    `value: arxiv` <br />
+    `results: [` <br /> <br />
+    `{` <br />
+    `x: {xObj},` <br />
+    `count: 128,` <br />
+    `},` <br />
+    `...]` <br />
     `}`
