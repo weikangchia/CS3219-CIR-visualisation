@@ -5,7 +5,7 @@
 * [Design](#design)
 * [API Endpoints](#api-endpoints)
 * [Developer Tools](#developer-tools)
-* [REST APIs](#rest-apis)
+* [Others](#others)
 
 ## Setting up
 ### Prerequisites
@@ -34,6 +34,10 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    db.createCollection("papers", {collation: {locale: 'en', strength: 2}})
    ```
 4. Import the datasets into the database.
+   <br/>
+   ```
+   ./mongoimport --db cs3219 --collection papers --file <paper json file location>
+   ```
 5. Create indexes:
    <br/>
    ```
@@ -82,3 +86,7 @@ Below is the architecture diagram of the whole solution for this project.
 ## Developer Tools
 
 * [insomnia](https://insomnia.rest/download/) - Rest client to inspect api calls
+
+## Others
+
+- d3plus (v1) [documentation](https://github.com/alexandersimoes/d3plus/wiki/Visualizations)

@@ -9,36 +9,29 @@
 ***
 
 ## Parameters
-  All Params are optional. <br />
+  All parameters are optional. <br />
   'y' requires a 'value' and vice versa.
 
 - **topN** — The top number of X to find. (Default: 10)
 - **x** — The domain that you are searching. (Default: paper) <br />
-Accepted x are = paper || author || venue || keyphrase || year.  <br />
+Accepted x values are = paper || author || venue || keyphrase || year.  <br />
 If x is invalid, default domain will be used. <br />
-- **y** — The range that you are searching.  <br />
+- **y** — The range that you are searching. <br />
 Accepted y are = paper || author || venue || keyphrase || year.  <br />
 - **value** — The value for the range you are searching.
 
 ## Return format
-- **200 Success** - JSON format.
-`{` <br />
-`topN: 10` <br />
-`x: author` <br />
-`y: venue` <br />
-`value: arxiv` <br />
-`results: [` <br />
-`{` <br />
-`x: {xObj},` <br />
-`count: 128,` <br />
-`},` <br />
-`...]` <br />
-`}`
+A JSON object with the following keys and values:
+- **topN** — The top n value.
+- **x** — The x domain.
+- **y** — The y domain.
+- **value** — The search value.
+- **results** — An array of x objects.
 
 ***
 
 ## Errors
-
+- **400 Bad Request** — The request issued is missing one or more of the required parameters or contains parameters in an invalid form.
 
 ***
 
@@ -50,38 +43,14 @@ Accepted y are = paper || author || venue || keyphrase || year.  <br />
 **Return**
 ``` json
 {
-	"topN": "3",
-	"x": "author",
-	"y": "venue",
-	"value": "arxiv",
-	"results": [
-		{
-			"x": {
-				"ids": [
-					"1747337"
-				],
-				"name": "Damien Chablat"
-			},
-			"count": 6
-		},
-		{
-			"x": {
-				"ids": [
-					"1706805"
-				],
-				"name": "Zhiyuan Yan"
-			},
-			"count": 4
-		},
-		{
-			"x": {
-				"ids": [
-					"1729425"
-				],
-				"name": "Mita Nasipuri"
-			},
-			"count": 4
-		}
-	]
+  "topN": "3",
+  "x": "author",
+  "y": "venue",
+  "value": "arxiv",
+  "results": [
+    { "x": { "ids": ["1747337"], "name": "Damien Chablat" }, "count": 6 },
+    { "x": { "ids": ["1706805"], "name": "Zhiyuan Yan" }, "count": 4 },
+    { "x": { "ids": ["1729425"], "name": "Mita Nasipuri" }, "count": 4 }
+  ]
 }
 ```
