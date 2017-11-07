@@ -7,6 +7,7 @@ module.exports = function (option) {
   return {
     topNXofYHandler: require("./topXofYHandler")(option),
     trendPublicationHandler: require("./trendPublicationHandler")(option),
-    trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option)
+    trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option),
+    graphIncitationHandler: require("./graphIncitationHandler")(option)
   };
 };
