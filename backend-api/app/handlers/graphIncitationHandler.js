@@ -6,7 +6,10 @@ const handlerName = "graphIncitationHandler";
 const paperProjOptions = {
   inCitations: 1,
   authors: 1,
+  paperAbstract: 1,
   title: 1,
+  year: 1,
+  pdfUrls: 1,
   id: 1
 };
 
@@ -38,16 +41,21 @@ function parsePaper(paper) {
   return {
     id: paper.id,
     authors: paper.authors,
-    title: paper.title
+    title: paper.title,
+    year: paper.year,
+    abstract: paper.paperAbstract,
+    pdfUrl: paper.pdfUrls.length > 0 ? paper.pdfUrls[0] : ""
   };
 }
 
 async function dig(paper, currentLevel, maxLevel, basePaperId, nodeLinks) {
-  if (currentLevel > maxLevel) {
+  if (currentLevel === 0) {
+    nodeLinks.rawNodes[paper.id] = parsePaper(paper);
+  }
+
+  if (currentLevel >= maxLevel) {
     logger.info(`handler="${handlerName}" currentLevel=${currentLevel} message="level reached"`);
   } else {
-    nodeLinks.nodes[paper.id] = parsePaper(paper);
-
     const {
       inCitations
     } = paper;
@@ -56,9 +64,11 @@ async function dig(paper, currentLevel, maxLevel, basePaperId, nodeLinks) {
       const inCitedPaper = await getPaperById(inCitationId, paperProjOptions);
 
       if (inCitedPaper === null) {
-        logger.info(`handler="${handlerName}" currentLevel=${currentLevel} citationId="${inCitationId}" ` +
-          `message="null (skipping)" parentId="${basePaperId}"`);
+        /* logger.info(`handler="${handlerName}" currentLevel=${currentLevel} citationId="${inCitationId}" ` +
+          `message="null (skipping)" parentId="${basePaperId}"`); */
       } else {
+        nodeLinks.rawNodes[inCitedPaper.id] = parsePaper(inCitedPaper);
+
         nodeLinks
           .links
           .push({
@@ -66,8 +76,8 @@ async function dig(paper, currentLevel, maxLevel, basePaperId, nodeLinks) {
             target: paper.id
           });
 
-        logger.info(`handler="${handlerName}" currentLevel=${currentLevel} citationId="${inCitationId}" ` +
-          `incitationLength=${inCitedPaper.inCitations.length} message="continue to dig" parentId="${basePaperId}"`);
+        /* logger.info(`handler="${handlerName}" currentLevel=${currentLevel} citationId="${inCitationId}" ` +
+          `incitationLength=${inCitedPaper.inCitations.length} message="continue to dig" parentId="${basePaperId}"`); */
 
         await dig(inCitedPaper, currentLevel + 1, maxLevel, inCitationId, nodeLinks);
       }
@@ -95,7 +105,8 @@ function handler(options) {
 
     getPaperByTitle(params.title, paperProjOptions).then(paper => {
       const nodeLinks = {
-        nodes: {},
+        rawNodes: {},
+        nodes: [],
         links: []
       };
 
@@ -104,6 +115,12 @@ function handler(options) {
         res.send(nodeLinks);
       } else {
         dig(paper, 0, parseInt(level, 10), null, nodeLinks).then(result => {
+          Object.keys(nodeLinks.rawNodes).forEach(key => {
+            nodeLinks.nodes.push(nodeLinks.rawNodes[key]);
+          });
+
+          delete nodeLinks.rawNodes;
+
           res.send(JSON.stringify(result));
         });
       }
