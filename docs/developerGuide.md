@@ -78,10 +78,15 @@ Below is the architecture diagram of the whole solution for this project.
 <img src="images/ci_cd_process.png" width="600"><br>
 
 ## API Endpoints
+### Top
+- **[<code>GET</code> top-X-of-Y](endpoints/top-X-of-Y/GET_top-X-of-Y.md)**
+
 ### Trends
 - **[<code>GET</code> trends/conference](endpoints/trends/GET_conference.md)**
 - **[<code>GET</code> trends/keyphrase](endpoints/trends/GET_keyphrase.md)**
-- **[<code>GET</code> top-X-of-Y](endpoints/top-X-of-Y/GET_top-X-of-Y.md)**
+
+### Graphs
+- **[<code>GET</code> graphs/incitation](endpoints/graphs/GET_incitation.md)**
 
 ## Developer Tools
 
