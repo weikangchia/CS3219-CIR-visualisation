@@ -82,47 +82,11 @@ Below is the architecture diagram of the whole solution for this project.
 <img src="images/ci_cd_process.png" width="600"><br>
 
 ## API Endpoints
-
-| Method | Endpoint      | Get Params | Example |
-| ------ | ------------- | ----- | ---- |
-| GET | /trends/conference | venue, minYear, maxYear | /trends/conference?venue=arxiv&minYear1800&maxYear2017 |
-| GET | /trends/keyphrase | phrase, minYear, maxYear | /trends/keyphrase?phrase=nlp&minYear1800&maxYear2017 |
+### Trends
+- **[<code>GET</code> trends/conference](endpoints/trends/GET_conference.md)**
+- **[<code>GET</code> trends/keyphrase](endpoints/trends/GET_keyphrase.md)**
+- **[<code>GET</code> top-X-of-Y](endpoints/top-X-of-Y/GET_top-X-of-Y.md)**
 
 ## Developer Tools
 
 * [insomnia](https://insomnia.rest/download/) - Rest client to inspect api calls
-
-## REST APIs
-
-**Get Top N X of Y**
-----
-  Returns the top N X of Y in JSON format.
-  Top papers are counted by number of inCitations while the rest are counted by number of papers.
-
-* **URL**
-
-  /top-X-of-Y
-
-* **Method:**
-
-  `GET`
-  
-*  **URL Params**
-
-   All Params are optional.
-   'y' requires a 'value' and vice versa.
- 
-   `topN=[integer] default is 10` 
-   `x=[string] paper(default) || author || venue || keyphrase || year` 
-   `y=[string] title || author || venue || keyphrase || year` 
-   `value=[string]` 
-
-* **Success Response:**
-
-  * **Code:** 200 <br />
-    **Content:**
-    `[{`
-    `x : {xObj},`
-    `count : 128,`
-    `actualObjs : [{actualObj}, ..]`
-    `}]`

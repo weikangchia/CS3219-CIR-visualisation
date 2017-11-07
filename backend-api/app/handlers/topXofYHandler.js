@@ -2,6 +2,72 @@ let logger;
 let db;
 
 /**
+ * Returns appropriate select depending on x.
+ * Default is paper if x empty.
+ *
+ * @param {string} x domain
+ */
+function getSelect(x) {
+  let toReturn = "";
+  if (x === "author") {
+    toReturn = "authors";
+  } else if (x === "venue") {
+    toReturn = "venue";
+  } else if (x === "keyphrase") {
+    toReturn = "keyPhrases";
+  } else if (x === "year") {
+    toReturn = "year";
+  } else {
+    // default is paper
+    toReturn = "id title authors venue inCitations outCitations year abstract keyPhrases";
+  }
+  return toReturn;
+}
+
+/**
+ * Returns appropriate filter depending on Y.
+ * Returns empty filter if either y or value is missing.
+ *
+ * @param {string} params.y range
+ * @param {string} params.value for y
+ */
+function getFilter(params) {
+  const filterY = {};
+  let y;
+  let value;
+
+  if (!params.y || !params.value) {
+    return filterY;
+  }
+
+  if (params.y === "author") {
+    y = "authors.name";
+    ({
+      value
+    } = params);
+  } else if (params.y === "keyphrase") {
+    y = "keyPhrases";
+    ({
+      value
+    } = params);
+  } else if (params.y === "paper") {
+    y = "title";
+    ({
+      value
+    } = params);
+  } else {
+    // venue, year and invalid
+    ({
+      y,
+      value
+    } = params);
+  }
+
+  filterY[y] = value;
+  return filterY;
+}
+
+/**
  * Returns appropriate key object for paper depending on X
  *
  * @param {object} paper
@@ -9,32 +75,32 @@ let db;
  */
 function getGroupKeys(paper, x) {
   const keys = [];
-  const paperObj = {};
-  paperObj.title = paper.title;
-  paperObj.authors = paper.authors;
-  paperObj.venue = paper.venue;
-  paperObj.inCitations = paper.inCitations;
-  paperObj.outCitations = paper.outCitations;
-  paperObj.year = paper.year;
-  paperObj.abstract = paper.abstract;
-  paperObj.keyPhrases = paper.keyPhrases;
+
+  // paper must have an id
+  if (paper.id === "") {
+    return keys;
+  }
 
   if (x === "author") {
     paper.authors.forEach(author => {
-      const key = {};
-      [key.id] = author.ids;
-      key.obj = author;
-      key.count = [paperObj];
-      keys.push(key);
+      if (author.ids.length !== 0) {
+        const key = {};
+        [key.id] = author.ids;
+        key.obj = author;
+        key.count = 1;
+        keys.push(key);
+      }
     }, this);
   } else if (x === "venue") {
-    const key = {};
-    key.id = paper.venue;
-    key.obj = {
-      venue: paper.venue
-    };
-    key.count = [paperObj];
-    keys.push(key);
+    if (paper.venue && (!paper.venue.trim || paper.venue.trim() !== "")) {
+      const key = {};
+      key.id = paper.venue;
+      key.obj = {
+        venue: paper.venue
+      };
+      key.count = 1;
+      keys.push(key);
+    }
   } else if (x === "keyphrase") {
     paper.keyPhrases.forEach(keyPhrase => {
       const key = {};
@@ -42,23 +108,35 @@ function getGroupKeys(paper, x) {
       key.obj = {
         keyPhrase
       };
-      key.count = [paperObj];
+      key.count = 1;
       keys.push(key);
     }, this);
   } else if (x === "year") {
-    const key = {};
-    key.id = paper.year;
-    key.obj = {
-      year: paper.year
-    };
-    key.count = [paperObj];
-    keys.push(key);
+    if (paper.year && (!paper.year.trim || paper.year.trim() !== "")) {
+      const key = {};
+      key.id = paper.year;
+      key.obj = {
+        year: paper.year
+      };
+      key.count = 1;
+      keys.push(key);
+    }
   } else {
     // default is paper
+    const paperObj = {};
+    paperObj.title = paper.title;
+    paperObj.authors = paper.authors;
+    paperObj.venue = paper.venue;
+    paperObj.inCitations = paper.inCitations;
+    paperObj.outCitations = paper.outCitations;
+    paperObj.year = paper.year;
+    paperObj.abstract = paper.abstract;
+    paperObj.keyPhrases = paper.keyPhrases;
+
     const key = {};
     key.id = paper.id;
     key.obj = paperObj;
-    key.count = paper.inCitations || [];
+    key.count = paper.inCitations.length;
     keys.push(key);
   }
   return keys;
@@ -78,17 +156,8 @@ function getTopXofY(params) {
     const topN = params.topN || 10;
     const x = params.x || "paper";
 
-    const filterY = {};
-    let y;
-    let value;
-    if (params.y && params.value) {
-      ({
-        y,
-        value
-      } = params);
-
-      filterY[y] = value;
-    }
+    const filterY = getFilter(params);
+    const select = getSelect(x);
 
     let topX = {};
     const xObjArr = {};
@@ -107,26 +176,26 @@ function getTopXofY(params) {
               id
             } = key;
             topX[id] = topX[id] || [];
-            topX[id].push(...key.count);
+            topX[id] = Number(topX[id]) + Number(key.count);
             xObjArr[id] = key.obj;
           }, this);
         });
 
         topX = Object.keys(topX)
           .sort((x1, x2) =>
-            topX[x2].length - topX[x1].length)
+            topX[x2] - topX[x1])
           .slice(0, topN)
           .map(id => {
             return {
               x: xObjArr[id],
-              count: topX[id].length,
-              actualObjs: topX[id]
+              count: topX[id]
             };
           });
 
         resolve(topX);
       }
-    }).select('title authors venue inCitations outCitations year abstract keyPhrases');
+    }).select(select)
+      .lean();
   });
 }
 
@@ -139,7 +208,13 @@ function handler(options) {
   return (req, res) => {
     const params = req.query;
 
-    getTopXofY(params).then(result => res.send(JSON.stringify(result)));
+    getTopXofY(params).then(result => res.send(JSON.stringify({
+      topN: params.topN,
+      x: params.x,
+      y: params.y,
+      value: params.value,
+      results: result
+    })));
   };
 }
 
