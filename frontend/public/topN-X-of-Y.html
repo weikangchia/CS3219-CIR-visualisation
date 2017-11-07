@@ -23,6 +23,11 @@
   <script src="./js/d3-tip.js"></script>
   <script src="./js/cir.js"></script>
   
+  <script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="./js/topnxofy.js"></script>
 
 </head>
@@ -32,32 +37,54 @@
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
-    <div ng-show="show" class="row" ng-controller="QueryParamsController">
-      <div class="row">
+    <div class="row">
         <div class="col">
-          Limit
-          <input class="form-control" ng-model="query.topN" min="2" value="3" max="10" type="number" ng-bind="topN">
+          <h1>Top N X of Y</h1>
+          <p>Visualization of a generic query of top objects in a domain</p>
         </div>
-        <div class="col">
-          Range:
-          <select class="form-control" ng-model="query.xCategoryValue">
-            <option ng-repeat="xCategory in xCategories">{{xCategory.display}}</option>
-          </select>
-        </div>
-        <div class="col">
-          Domain:
-          <select class="form-control" ng-model="query.yCategoryValue">
-            <option ng-repeat="yCategory in yCategories">{{yCategory.display}}</option>
-          </select>
-          <input ng-model="query.yValue">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-            <button  class="btn btn-info" ng-click="submitQuery()">Go</button>      
-        </div>
-      </div>
     </div>
+
+    <div class="row">
+      <div class="col col-12 col-md-8 order-2 order-md-1">
+          <div id="graph"></div>
+        </div>
+        <div class="col col-12 col-md-4 order-1 order-md-2">
+          <div class="row" ng-controller="QueryParamsController">
+            <div class="col">
+              <div class="form-group">
+                Limit
+                <input class="form-control" ng-model="query.topN" min="2" max="10" type="number" ng-model="query.topN">                
+              </div>
+
+              <div class="form-group">
+                Range
+                <select class="form-control" ng-model="query.xCategoryValue">
+                  <option ng-repeat="xCategory in xCategories">{{xCategory.display}}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                Domain
+                <select class="form-control" ng-model="query.yCategoryValue">
+                  <option ng-repeat="yCategory in yCategories" value="{{yCategory.key}}">{{yCategory.display}}</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                Domain Value
+                <input class="domain-selector" ng-model="query.yValue">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+                <button  class="btn btn-info" ng-click="submitQuery()">Go</button>      
+            </div>
+          </div>
+        </div>
+    </div>
+      
+    
   </div>
 
   <!-- Optional JavaScript -->
