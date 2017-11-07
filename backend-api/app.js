@@ -50,42 +50,11 @@ app.get("/", (req, res) => {
 
 app.get("/top-X-of-Y", handlers.topNXofYHandler);
 
-// app.get("/top-authors", handlers.topAuthorHandler);
-
-/* app.get("/top-papers", (req, res) => {
-  const params = req.query;
-
-  const options = {};
-  const paperFilters = [];
-
-  if (params.venue) {
-    paperFilters.push(paper => paper.getVenue().toLowerCase() === params.venue.toLowerCase());
-  }
-
-  if (params.topN) {
-    options.topN = params.topN;
-  }
-
-  if (paperFilters.length > 0) {
-    options.paperFilter = paper =>
-      paperFilters.every(paperFilter => paperFilter(paper));
-  }
-  res.send(JSON.stringify(getTopPapers(options)));
-}); */
-
 app.get("/trends/publication", handlers.trendPublicationHandler);
 
 app.get("/trends/keyphrase", handlers.trendKeyPhraseHandler);
 
-/* app.get("/graph/incitation", (req, res) => {
-  const params = req.query;
-
-  const options = {};
-  options.title = params.title;
-  options.levels = params.levels;
-
-  res.send(JSON.stringify(getInCitationsGraph(options)));
-}); */
+app.get("/graphs/incitation", handlers.graphIncitationHandler);
 
 const server = app.listen(process.env.PORT, () => {
   logger.info(`Listening on port ${server.address().port}`);
