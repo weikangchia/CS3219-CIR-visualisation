@@ -1,50 +1,80 @@
 let logger;
 let db;
 
-async function getPaperByTitle(title) {
+const handlerName = "graphIncitationHandler";
+
+const paperProjOptions = {
+  inCitations: 1,
+  authors: 1,
+  title: 1,
+  id: 1
+};
+
+async function getPaperByTitle(title, projections) {
   return new Promise((resolve, reject) => {
     const Paper = db.model("Paper");
 
     Paper.findOne({
       title
-    }, (err, result) => {
+    }, projections, (err, result) => {
       resolve(result);
     });
   });
 }
 
-async function getPaperById(id) {
+async function getPaperById(id, projections) {
   return new Promise((resolve, reject) => {
     const Paper = db.model("Paper");
 
     Paper.findOne({
       id
-    }, (err, result) => {
+    }, projections, (err, result) => {
       resolve(result);
     });
   });
 }
 
-async function dig(paper, currentLevel, maxLevel, parentPaperId) {
+function parsePaper(paper) {
+  return {
+    id: paper.id,
+    authors: paper.authors,
+    title: paper.title
+  };
+}
+
+async function dig(paper, currentLevel, maxLevel, basePaperId, nodeLinks) {
   if (currentLevel > maxLevel) {
-    logger.info(`Level ${currentLevel}: Level reach`);
-  } else if (paper === null) {
-    logger.info(`Level ${currentLevel}: Paper is null`);
+    logger.info(`handler="${handlerName}" currentLevel=${currentLevel} message="level reached"`);
   } else {
+    nodeLinks.nodes[paper.id] = parsePaper(paper);
+
     const {
       inCitations
     } = paper;
 
-    await Promise.all(inCitations.map(async citationId => {
-      const citedPaper = await getPaperById(citationId);
-      if (citedPaper === null) {
-        logger.info(`Level ${currentLevel}: Citation Id: ${citationId}: null (skip): Parent Id: ${parentPaperId}`);
+    await Promise.all(inCitations.map(async inCitationId => {
+      const inCitedPaper = await getPaperById(inCitationId, paperProjOptions);
+
+      if (inCitedPaper === null) {
+        logger.info(`handler="${handlerName}" currentLevel=${currentLevel} citationId="${inCitationId}" ` +
+          `message="null (skipping)" parentId="${basePaperId}"`);
       } else {
-        logger.info(`Level ${currentLevel}: Citation Id: ${citationId}: ${citedPaper.inCitations.length} (digging): Parent Id: ${parentPaperId}`);
-        await dig(citedPaper, currentLevel + 1, maxLevel, citationId);
+        nodeLinks
+          .links
+          .push({
+            source: inCitationId,
+            target: paper.id
+          });
+
+        logger.info(`handler="${handlerName}" currentLevel=${currentLevel} citationId="${inCitationId}" ` +
+          `incitationLength=${inCitedPaper.inCitations.length} message="continue to dig" parentId="${basePaperId}"`);
+
+        await dig(inCitedPaper, currentLevel + 1, maxLevel, inCitationId, nodeLinks);
       }
     }));
   }
+
+  return nodeLinks;
 }
 
 function handler(options) {
@@ -56,14 +86,27 @@ function handler(options) {
 
     const params = req.query;
 
-    logger.info(`Graph max level: ${params.level}`);
-    logger.info(`Graph title: ${params.title}`);
+    const {
+      title,
+      level
+    } = params;
 
-    getPaperByTitle(params.title).then(paper => {
-      dig(paper, 0, parseInt(params.level, 10)).then(() => {
-        logger.info("done");
-        res.send("done");
-      });
+    logger.info(`handler="${handlerName}" title="${title}" maxLevel=${level}`);
+
+    getPaperByTitle(params.title, paperProjOptions).then(paper => {
+      const nodeLinks = {
+        nodes: {},
+        links: []
+      };
+
+      if (paper === null) {
+        logger.info(`handler="${handlerName}" message="unable to find paper ${title}"`);
+        res.send(nodeLinks);
+      } else {
+        dig(paper, 0, parseInt(level, 10), null, nodeLinks).then(result => {
+          res.send(JSON.stringify(result));
+        });
+      }
     });
   };
 }
