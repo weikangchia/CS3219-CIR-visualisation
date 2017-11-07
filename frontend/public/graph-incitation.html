@@ -107,7 +107,7 @@
         const title = $("#title").val();
 
         axios.get(
-          `${API_HOST}/graph/incitation?level=${currentLevel}&title=${title}`
+          `${API_HOST}/graphs/incitation?level=${currentLevel}&title=${title}`
         ).then(
           response => {
             updateVisualization(response.data);

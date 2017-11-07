@@ -95,11 +95,8 @@ function handler(options) {
     } = options);
 
     const params = req.query;
-
-    const {
-      title,
-      level
-    } = params;
+    const title = params.title.trim() || "";
+    const level = parseInt(params.level, 10) || 2;
 
     logger.info(`handler="${handlerName}" title="${title}" maxLevel=${level}`);
 
@@ -114,7 +111,7 @@ function handler(options) {
         logger.info(`handler="${handlerName}" message="unable to find paper ${title}"`);
         res.send(nodeLinks);
       } else {
-        dig(paper, 0, parseInt(level, 10), null, nodeLinks).then(result => {
+        dig(paper, 0, level, null, nodeLinks).then(result => {
           Object.keys(nodeLinks.rawNodes).forEach(key => {
             nodeLinks.nodes.push(nodeLinks.rawNodes[key]);
           });

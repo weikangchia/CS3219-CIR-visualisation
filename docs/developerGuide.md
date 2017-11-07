@@ -5,7 +5,6 @@
 * [Design](#design)
 * [API Endpoints](#api-endpoints)
 * [Developer Tools](#developer-tools)
-* [REST APIs](#rest-apis)
 
 ## Setting up
 ### Prerequisites
@@ -78,48 +77,9 @@ Below is the architecture diagram of the whole solution for this project.
 - **[<code>GET</code> trends/conference](endpoints/trends/GET_conference.md)**
 - **[<code>GET</code> trends/keyphrase](endpoints/trends/GET_keyphrase.md)**
 
+### Graphs
+- **[<code>GET</code> graphs/incitation](endpoints/graphs/GET_incitation.md)**
+
 ## Developer Tools
 
 * [insomnia](https://insomnia.rest/download/) - Rest client to inspect api calls
-
-## REST APIs
-
-**Get Top N X of Y**
-----
-  Returns the top N X of Y in JSON format.
-  Top papers are counted by number of inCitations while the rest are counted by number of papers.
-
-* **URL**
-
-  /top-X-of-Y
-
-* **Method:**
-
-  `GET`
-  
-*  **URL Params**
-
-   All Params are optional. <br />
-   'y' requires a 'value' and vice versa.
- 
-   `topN=[integer] default is 10`  <br />
-   `x=[string] paper(default) || author || venue || keyphrase || year`  <br />
-   `y=[string] title || author || venue || keyphrase || year`  <br />
-   `value=[string]`  <br />
-
-* **Success Response:**
-
-  * **Code:** 200 <br />
-    **Content:** <br />
-    `{` <br />
-    `topN: 10` <br />
-    `x: author` <br />
-    `y: venue` <br />
-    `value: arxiv` <br />
-    `results: [` <br /> <br />
-    `{` <br />
-    `x: {xObj},` <br />
-    `count: 128,` <br />
-    `},` <br />
-    `...]` <br />
-    `}`
