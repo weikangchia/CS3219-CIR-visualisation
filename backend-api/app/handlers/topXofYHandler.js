@@ -142,6 +142,15 @@ function getGroupKeys(paper, x) {
   return keys;
 }
 
+function sanitizeXorY(xOrY){
+  if(xOrY === 'authors'){
+    xOrY = 'author';
+  } else if(xOrY === 'venues'){
+    xOrY = 'venue';
+  }
+  return xOrY
+}
+
 /**
  * Returns the topN x of y.
  *
@@ -154,7 +163,10 @@ function getTopXofY(params) {
   return new Promise((resolve, reject) => {
     params = params || {};
     const topN = params.topN || 10;
-    const x = params.x || "paper";
+    let x = params.x || "paper";
+    
+    x = sanitizeXorY(x);
+    params.y = sanitizeXorY(params.y);
 
     const filterY = getFilter(params);
     const select = getSelect(x);
