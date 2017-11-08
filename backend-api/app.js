@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const _ = require("lodash");
 
 const morgan = require("morgan");
 const logger = require("./app/middleware/logger");
@@ -22,9 +21,8 @@ mongoose.connect(
   },
   err => {
     if (err) {
-      logger.error(
-        `Could not connect to database ${process.env.MONGO_DB_URI}: ${err}`
-      );
+      err = `Could not connect to database ${process.env.MONGO_DB_URI}: ${err}`;
+      logger.error(err);
     } else {
       logger.info(`Connected to database: ${process.env.MONGO_DB_URI}`);
     }
@@ -50,11 +48,10 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(
-    JSON.stringify({
-      mode: "test"
-    })
-  );
+  let result = {
+    mode: "test"
+  };
+  res.send(JSON.stringify(result));
 });
 
 app.get("/top-X-of-Y", handlers.topNXofYHandler);

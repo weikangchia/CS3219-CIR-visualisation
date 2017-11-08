@@ -17,7 +17,7 @@ const selects = {
  * @param {string} x domain
  */
 function getSelect(x) {
-  return selects[x] || selects['paper']
+  return selects[x] || selects["paper"];
 }
 
 /**
@@ -187,7 +187,7 @@ function getTopXofY(params) {
               count: topX[id]
             };
           })
-          .filter(d => d.count != 0);
+          .filter(d => d.count !== 0);
 
         resolve(topX);
       }

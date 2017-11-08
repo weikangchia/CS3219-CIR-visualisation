@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = options => {
   const { logger, db } = options;
 
@@ -5,12 +7,14 @@ module.exports = options => {
 
   function autocomplete(params) {
     return new Promise((resolve, reject) => {
-      var unwind;
-      var domain = params.domain;
-      var search = params.search;
-      var groupBy;
+      let unwind,
+        group,
+        groupBy,
+        pipeline,
+        match = {};
+      let { domain, search } = params;
 
-      if (domain == "authors") {
+      if (domain === "authors") {
         groupBy = "authors.name";
 
         unwind = {
@@ -18,11 +22,9 @@ module.exports = options => {
         };
       }
 
-      if (domain == "venues") {
+      if (domain === "venues") {
         groupBy = "venue";
       }
-
-      match = {};
 
       match[groupBy] = {
         $regex: new RegExp(`^${search}`, "i")
@@ -57,15 +59,13 @@ module.exports = options => {
 
       db.model("Paper").aggregate(pipeline, (err, results) => {
         if (err) return reject(err);
-        resolve(results.map(result => result["_id"]));
+        return resolve(results.map(result => result["_id"]));
       });
     });
   }
 
   return (req, res) => {
     logger.info("Retrieving autocomplete search from database");
-
-    const Paper = db.model("Paper");
 
     const params = req.query;
     const domain = params.domain;
@@ -75,11 +75,7 @@ module.exports = options => {
     }
 
     if (validDomains.indexOf(domain) >= 0) {
-      autocomplete({
-        domain: params.domain,
-        limit: params.limit || 5,
-        search: params.search
-      }).then(results => {
+      autocomplete(({ domain, limit = 5, search } = params)).then(results => {
         res.send(JSON.stringify(results));
       });
     } else {
