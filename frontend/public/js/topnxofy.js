@@ -59,17 +59,16 @@ cir.controller("QueryParamsController", [
     };
 
     $(".domain-selector").autocomplete({
-      source: function(req, resolve) {
+      source: function(req, updateList) {
         var domain = $scope.query.yCategoryValue
         var search = $scope.query.yValue
         var searchParams = new URLSearchParams();
         searchParams.set('domain', domain);
         searchParams.set('search', search);
         var url = API_HOST + "/autocomplete?" + searchParams.toString()
-        console.log(url)
         $.ajax({
           url: url,
-          success: resolve
+          success: updateList
         });
       }
     });
