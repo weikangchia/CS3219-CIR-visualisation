@@ -28,8 +28,13 @@ function handler(options) {
       const yearCountArr = {};
       const groupResult = [];
 
+      // initialize all year
+      for (let year = minYear; year <= maxYear; year++) {
+        yearCountArr[year] = 0;
+      }
+
       result.forEach(paper => {
-        yearCountArr[paper.year] = yearCountArr[paper.year] + 1 || 1;
+        yearCountArr[paper.year]++;
       });
 
       Object.keys(yearCountArr).forEach(year => {

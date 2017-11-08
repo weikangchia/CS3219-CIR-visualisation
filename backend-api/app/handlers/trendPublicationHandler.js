@@ -10,13 +10,13 @@ function handler(options) {
     const Paper = db.model("Paper");
 
     const params = req.query;
-    const venue = params.venue.trim() || "";
+    const name = params.name.trim() || "";
     const minYear = parseInt(params.minYear, 10) || 1800;
     const maxYear = parseInt(params.maxYear, 10) || 1800;
 
     const matchStage = {
       $match: {
-        venue,
+        venue: name,
         year: {
           $gte: minYear,
           $lte: maxYear
@@ -48,7 +48,19 @@ function handler(options) {
     };
 
     Paper.aggregate([matchStage, groupStage, sortStage, projectStage], (err, groupResult) => {
-      logger.info(groupResult);
+      let currentIndex = 0;
+
+      for (let year = minYear; year <= maxYear; year++) {
+        if (groupResult[currentIndex] === undefined || groupResult[currentIndex].year !== year) {
+          groupResult.push({
+            year,
+            count: 0
+          });
+        } else {
+          currentIndex++;
+        }
+      }
+
       res.send(JSON.stringify(groupResult));
     });
   };

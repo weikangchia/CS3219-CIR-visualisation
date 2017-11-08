@@ -5,6 +5,7 @@
 * [Design](#design)
 * [API Endpoints](#api-endpoints)
 * [Developer Tools](#developer-tools)
+* [Others](#others)
 
 ## Setting up
 ### Prerequisites
@@ -18,6 +19,12 @@ To install dependencies enter each project folder (`/backend-api` and `/frontend
 ``` 
 npm install
 ```
+
+### Env files
+1. Go to `/backend-api` and create a new file `.env` from `.env.example`.
+2. You should only change the port number and mongodb uri to suit your environment. By default the API server is running on port 3000.
+3. Go to `/frontend` and create a new file `.env` from `.env.example`.
+4. You should only change the port number to suit your environment. By default the frontend server is running on port 9000.
 
 ### Setup database server
 Follow the instructions in this [online documentation](https://docs.mongodb.com/manual/administration/install-community/) to install the MongoDB server.
@@ -33,6 +40,10 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    db.createCollection("papers", {collation: {locale: 'en', strength: 2}})
    ```
 4. Import the datasets into the database.
+   <br/>
+   ```
+   ./mongoimport --db cs3219 --collection papers --file <paper json file location>
+   ```
 5. Create indexes:
    <br/>
    ```
@@ -40,6 +51,7 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    db.papers.createIndex({venue: 1})
    db.papers.createIndex({"authors.name": 1})
    db.papers.createIndex({"year": 1})
+   db.papers.createIndex({keyPhrases: 1})
    ```
 ### Run frontend server
 To run frontend server, go to `/frontend` folder and execute:
@@ -67,13 +79,25 @@ Below is the architecture diagram of the whole solution for this project.
 
 <img src="images/architecture.png" width="600"><br>
 
-## API Endpoints
+### CI/CD Process
 
-| Method | Endpoint      | Get Params | Example |
-| ------ | ------------- | ----- | ---- |
-| GET | /trends/conference | venue, minYear, maxYear | /trends/conference?venue=arxiv&minYear1800&maxYear2017 |
-| GET | /trends/keyphrase | phrase, minYear, maxYear | /trends/keyphrase?phrase=nlp&minYear1800&maxYear2017 |
+<img src="images/ci_cd_process.png" width="600"><br>
+
+## API Endpoints
+### Top
+- **[<code>GET</code> top-X-of-Y](endpoints/top-X-of-Y/GET_top-X-of-Y.md)**
+
+### Trends
+- **[<code>GET</code> trends/conference](endpoints/trends/GET_conference.md)**
+- **[<code>GET</code> trends/keyphrase](endpoints/trends/GET_keyphrase.md)**
+
+### Graphs
+- **[<code>GET</code> graphs/incitation](endpoints/graphs/GET_incitation.md)**
 
 ## Developer Tools
 
 * [insomnia](https://insomnia.rest/download/) - Rest client to inspect api calls
+
+## Others
+
+- d3plus (v1) [documentation](https://github.com/alexandersimoes/d3plus/wiki/Visualizations)

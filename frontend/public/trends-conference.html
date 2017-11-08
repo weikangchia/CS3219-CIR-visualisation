@@ -26,6 +26,7 @@
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/nouislider.min.js"></script>
   <script src="./js/wNumb.js"></script>
+  <script src="./js/utils.js"></script>
 
 </head>
 
@@ -37,7 +38,7 @@
     <div class="row">
       <div class="col">
         <h1>Conference Trends</h1>
-        <p>Visualization of the trends of the amount of publications across all available years for a venue.</p>
+        <p>Visualization of the trends of the amount of publications across all available years for a conference.</p>
       </div>
     </div>
 
@@ -111,6 +112,9 @@
 
   <!-- filter script -->
   <script>
+    // init fakeloader
+    initFakeLoader();
+
     // scripts for year slider
     const slider = document.getElementById('slider');
 
@@ -162,6 +166,8 @@
         }
       })
       .submit(() => {
+        showFakeLoader();
+
         let conferences = new Array();
         conferences = $("#filterForm").serializeArray();
         conferences.pop();
@@ -171,7 +177,8 @@
         const requests = [];
         conferences.forEach((conference) => {
           requests.push(axios.get(
-            `${API_HOST}/trends/publication?venue=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
+            `${API_HOST}/trends/publication?name=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
+          ));
         });
 
         axios.all(requests)
@@ -189,6 +196,8 @@
             });
 
             updateVisualization(parseData);
+
+            hideFakeLoader();
           }));
       });
 

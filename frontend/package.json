@@ -1,7 +1,14 @@
 {
   "name": "cs3219-cir-visualization",
   "version": "1.0.0",
-  "description": "",
+  "description": "Frontend server repository.",
+  "engines": {
+    "node": "7.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:weikangchia/CS3219-CIR-visualisation.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
