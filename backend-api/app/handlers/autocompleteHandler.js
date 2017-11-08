@@ -55,13 +55,8 @@ module.exports = options => {
         pipeline.push(operation);
       });
 
-      console.log(JSON.stringify(pipeline, null, 4));
-      // return db.model("Paper").find({venue :'Zoology'}, (err, res)=>{
-      //   resolve(res)
-      // });
       db.model("Paper").aggregate(pipeline, (err, results) => {
         if (err) return reject(err);
-        console.log(results);
         resolve(results.map(result => result["_id"]));
       });
     });
