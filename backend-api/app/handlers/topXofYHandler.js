@@ -202,7 +202,8 @@ function getTopXofY(params) {
               x: xObjArr[id],
               count: topX[id]
             };
-          });
+          })
+          .filter(d => d.count != 0);
 
         resolve(topX);
       }
