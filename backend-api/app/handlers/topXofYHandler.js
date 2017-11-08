@@ -1,6 +1,15 @@
 let logger;
 let db;
 
+const selects = {
+  author: "authors",
+  venue: "venue",
+  keyphrase: "keyPhrases",
+  year: "year",
+  paper:
+    "id title authors venue inCitations outCitations year abstract keyPhrases"
+};
+
 /**
  * Returns appropriate select depending on x.
  * Default is paper if x empty.
@@ -8,20 +17,7 @@ let db;
  * @param {string} x domain
  */
 function getSelect(x) {
-  let toReturn = "";
-  if (x === "author") {
-    toReturn = "authors";
-  } else if (x === "venue") {
-    toReturn = "venue";
-  } else if (x === "keyphrase") {
-    toReturn = "keyPhrases";
-  } else if (x === "year") {
-    toReturn = "year";
-  } else {
-    // default is paper
-    toReturn = "id title authors venue inCitations outCitations year abstract keyPhrases";
-  }
-  return toReturn;
+  return selects[x] || selects['paper']
 }
 
 /**
@@ -42,25 +38,16 @@ function getFilter(params) {
 
   if (params.y === "author") {
     y = "authors.name";
-    ({
-      value
-    } = params);
+    ({ value } = params);
   } else if (params.y === "keyphrase") {
     y = "keyPhrases";
-    ({
-      value
-    } = params);
+    ({ value } = params);
   } else if (params.y === "paper") {
     y = "title";
-    ({
-      value
-    } = params);
+    ({ value } = params);
   } else {
     // venue, year and invalid
-    ({
-      y,
-      value
-    } = params);
+    ({ y, value } = params);
   }
 
   filterY[y] = value;
@@ -142,13 +129,13 @@ function getGroupKeys(paper, x) {
   return keys;
 }
 
-function sanitizeXorY(xOrY){
-  if(xOrY === 'authors'){
-    xOrY = 'author';
-  } else if(xOrY === 'venues'){
-    xOrY = 'venue';
+function sanitizeXorY(xOrY) {
+  if (xOrY === "authors") {
+    xOrY = "author";
+  } else if (xOrY === "venues") {
+    xOrY = "venue";
   }
-  return xOrY
+  return xOrY;
 }
 
 /**
@@ -164,7 +151,7 @@ function getTopXofY(params) {
     params = params || {};
     const topN = params.topN || 10;
     let x = params.x || "paper";
-    
+
     x = sanitizeXorY(x);
     params.y = sanitizeXorY(params.y);
 
@@ -181,12 +168,10 @@ function getTopXofY(params) {
         logger.info(err);
       } else {
         logger.info(`${papers.length} results from DB found.`);
-        papers.forEach(function (element) {
+        papers.forEach(function(element) {
           const groupKeys = getGroupKeys(element, x);
           groupKeys.forEach(key => {
-            const {
-              id
-            } = key;
+            const { id } = key;
             topX[id] = topX[id] || [];
             topX[id] = Number(topX[id]) + Number(key.count);
             xObjArr[id] = key.obj;
@@ -194,8 +179,7 @@ function getTopXofY(params) {
         });
 
         topX = Object.keys(topX)
-          .sort((x1, x2) =>
-            topX[x2] - topX[x1])
+          .sort((x1, x2) => topX[x2] - topX[x1])
           .slice(0, topN)
           .map(id => {
             return {
@@ -207,27 +191,29 @@ function getTopXofY(params) {
 
         resolve(topX);
       }
-    }).select(select)
+    })
+      .select(select)
       .lean();
   });
 }
 
 function handler(options) {
-  ({
-    logger,
-    db
-  } = options);
+  ({ logger, db } = options);
 
   return (req, res) => {
     const params = req.query;
 
-    getTopXofY(params).then(result => res.send(JSON.stringify({
-      topN: params.topN,
-      x: params.x,
-      y: params.y,
-      value: params.value,
-      results: result
-    })));
+    getTopXofY(params).then(result =>
+      res.send(
+        JSON.stringify({
+          topN: params.topN,
+          x: params.x,
+          y: params.y,
+          value: params.value,
+          results: result
+        })
+      )
+    );
   };
 }
 
