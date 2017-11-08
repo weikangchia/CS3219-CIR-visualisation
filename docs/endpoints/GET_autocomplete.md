@@ -3,7 +3,7 @@
     GET autocomplete
 
 ## Description
-Returns autocomplete values based on search
+Returns autocomplete values based on search value
 
 ***
 
@@ -48,13 +48,35 @@ curl -s "localhost:3000/autocomplete?search=a&domain=venues" | python -m json.to
 **Request**
 
 ``` shell
-curl -s "localhost:3000/autocomplete?search=ax&domain=venues" | python -m json.tool
+curl -s "localhost:3000/autocomplete?search=a&domain=authors" | python -m json.tool
 ```
 
 **Return**
 ``` json
 [
-    "Axone",
-    "Axioms"
+    "aurora Vizcaino",
+    "arko Martinovic",
+    "andy Zaidman",
+    "andreas Reichpietsch@gmd De",
+    "andisabelle Savy"
+]
+```
+
+### Search Authors
+
+**Request**
+
+``` shell
+curl -s "localhost:3000/autocomplete?search=and&domain=authors" | python -m json.tool
+```
+
+**Return**
+``` json
+[
+    "andy Zaidman",
+    "andreas Reichpietsch@gmd De",
+    "andisabelle Savy",
+    "And\u0161tefan Be\u0148u\u0161",
+    "And\u00e9tienne Mann"
 ]
 ```
