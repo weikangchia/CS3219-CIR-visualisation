@@ -45,6 +45,8 @@ curl -s "localhost:3000/autocomplete?search=a&domain=venues" | python -m json.to
 ]
 ```
 
+### Search Authors
+
 **Request**
 
 ``` shell
@@ -61,8 +63,6 @@ curl -s "localhost:3000/autocomplete?search=a&domain=authors" | python -m json.t
     "andisabelle Savy"
 ]
 ```
-
-### Search Authors
 
 **Request**
 
