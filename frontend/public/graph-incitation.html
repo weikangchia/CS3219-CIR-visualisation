@@ -11,23 +11,24 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="./css/bootstrap.min.css">
 
-  <link rel="stylesheet" href="css/custom.css">
+  <link rel="stylesheet" href="./css/custom.css">
 
-  <link rel="stylesheet" href="css/fakeLoader.css">
+  <link rel="stylesheet" href="./css/fakeLoader.css">
+
+  <link rel="stylesheet" href="./css/font-awesome.min.css">
 
   <link rel="stylesheet" href="./css/nouislider.min.css">
 
-  <script src="./js/d3.v4.min.js"></script>
+  <script src="./js/d3.min.js"></script>
+  <script src="./js/d3plus.full.min.js"></script>
   <script src="./js/jquery.min.js"></script>
-  <script src="./js/utils.js"></script>
   <script src="./js/angular.min.js"></script>
   <script src="./js/fakeLoader.min.js"></script>
-  <script src="./js/d3-tip.js"></script>
-  <script src="./bower_components/lodash/dist/lodash.min.js"></script>
   <script src="./js/nouislider.min.js"></script>
   <script src="./js/wNumb.js"></script>
+  
+  <script src="./js/utils.js"></script>
   <script src="./js/cir.js"></script>
-
 </head>
 
 <body ng-app="CIR">
@@ -36,45 +37,58 @@
 
   <div class="container">
     <div class="row">
-      <div class="col-12">
-        <h1>Citation Web</h1>
-        <h2 id="title"></h2>
-
-        <p>A citation web for a base paper. Up to 2 levels of base paper citation is created (i.e. if the base paper is A, capture
+      <div class="col">
+        <h1>Incitation Graph</h1>
+        <p>A citation graph for a base paper. Up to 3 levels of base paper citation is created (i.e. if the base paper is A, capture
           up to C: A is cited by B, and B is cited by C, so A
           <- B <- C) </p>
-      </div>
-      <div class="col-3 col-md-2 col-lg-1">
-        <p>Level:
-          <span class="levels"></span>
-        </p>
-      </div>
-      <div class="col-9 col-md-6">
-        <div id="slider"></div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col">
+      <div class="col col-12 col-md-8 order-2 order-md-1">
         <div id="graph"></div>
       </div>
+      <div class="col col-12 col-md-4 order-1 order-md-2">
+        <h5>Filtering</h5>
+
+        <form id="filterForm">
+          <div class="form-group">
+            <label for="title">Base Paper</label>
+            <input class="form-control" id="title" placeholder="Title">
+          </div>
+
+          <h6>Level &#40;<span id="current-level">2</span>&#41;</h6>
+          <div class="form-group row">
+            <div class="col-12">
+              <div id="slider"></div>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-10">
+              <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
     </div>
-  </div>
 
-  <!-- params processing -->
-  <script>
-    $(() => {
-      const searchParams = new URLSearchParams(window.location.search);
-      const currentLevel = searchParams.get('levels');
-      $(".levels").html(currentLevel);
+    <!-- filter script -->
+    <script>
+      // init fakeloader
+      initFakeLoader();
 
+      // scripts for year slider
       const slider = document.getElementById('slider');
+
       noUiSlider.create(slider, {
-        start: [currentLevel],
+        start: 2,
         padding: 0,
         range: {
           'min': 1,
-          'max': 5
+          'max': 3
         },
         step: 1,
         format: wNumb({
@@ -84,176 +98,78 @@
 
       slider.noUiSlider.on('change', function () {
         const levelSliderValue = slider.noUiSlider.get();
-        const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set('levels', levelSliderValue[0]);
-        window.location.search = searchParams.toString();
+        $("#current-level").text(levelSliderValue[0]);
       });
-    });
 
-  </script>
+      // scripts for the input
+      $("#filterForm").submit(() => {
+        showFakeLoader();
 
-  <script>
-    /**
-     * Parse url params and redirect if need be
-     */
-    const searchParams = new URLSearchParams(window.location.search);
-    let title = searchParams.get("title");
-    if (!title) {
-      title = prompt("Please enter title", "Low-density parity check codes over GF(q)");
-      if (title) {
-        searchParams.set('title', title);
-        var levels = searchParams.get('levels');
-        if (!levels) {
-          searchParams.set('levels', 3);
-        }
-        window.location.search = searchParams.toString();
-      }
-    }
+        const currentLevel = slider.noUiSlider.get()[0];
+        const title = $("#title").val();
 
-    $('#title').html(title || '(all)');
-
-  </script>
-
-  <!-- d3 Script -->
-
-  <script>
-    $("#fakeLoader").fakeLoader({
-      zIndex: "999",
-      spinner: "spinner1",
-      bgColor: "#2ecc71"
-    });
-
-    const tip = d3.tip().attr('class', 'd3-tip').html(function (d) {
-      return d.htmlText;
-    });
-
-    d3.json(API_HOST + "/graph/incitation?" + searchParams.toString(), function (error, data) {
-      if (error) return showError('Server Error')
-      $("#fakeLoader").hide();
-
-      const width = 1500;
-      const height = 1500;
-
-      const svg = d3.select('#graph')
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .call(tip);
-
-      const simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function (d) {
-          return d.id;
-        }))
-        .force("charge", d3.forceManyBody().strength(-200))
-        .force("center", d3.forceCenter(width / 2, height / 2));
-
-      const link = svg.append("g")
-        .attr("class", "links")
-        .selectAll("line")
-        .data(data.links)
-        .enter().append("line");
-
-      const node = svg.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(data.nodes)
-        .enter().append("circle")
-        .attr("r", 8)
-        .attr("fill", function (d) {
-          return d3.schemeCategory20c[d.level * 2];
-        })
-        .on("mouseover", function (d) {
-          let htmlText = `<h5>${d.title}</h5>${d.authors.map(author => author.name).join(", ")}`;
-
-          if (d.level > 1) {
-            const sources = _.filter(data.links, (link) => link.target.id == d.id)
-              .map((match) => {
-                return "(Level " + match.source.level + ")\t" + match.source.title;
-              });
-            htmlText = htmlText.concat(`<br><br><h6>In citations (${sources.length})</h6>${sources.join("<br>")}`);
-          }
-
-          d.htmlText = htmlText;
-          tip.show(d);
-        })
-        .on("mouseout", function (d) {
-          tip.hide();
-        })
-        .call(d3.drag()
-          .on("start", dragStarted)
-          .on("drag", dragged)
-          .on("end", dragEnded));
-
-      simulation
-        .nodes(data.nodes)
-        .on("tick", ticked);
-
-      simulation.force("link")
-        .links(data.links);
-
-      svg.append("svg:defs").selectAll("marker")
-        .data(["end"])
-        .enter().append("svg:marker")
-        .attr("id", String)
-        .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 25)
-        .attr("refY", 0)
-        .attr("markerWidth", 5)
-        .attr("markerHeight", 5)
-        .attr("orient", "auto")
-        .append("svg:path")
-        .attr("d", "M0,-5L10,0L0,5");
-
-      function ticked() {
-        link
-          .attr("x1", function (d) {
-            return d.source.x;
-          })
-          .attr("y1", function (d) {
-            return d.source.y;
-          })
-          .attr("x2", function (d) {
-            return d.target.x;
-          })
-          .attr("y2", function (d) {
-            return d.target.y;
-          })
-          .attr("marker-end", "url(#end)");
-
-        node
-          .attr("cx", function (d) {
-            return d.x;
-          })
-          .attr("cy", function (d) {
-            return d.y;
+        axios.get(
+          `${API_HOST}/graphs/incitation?level=${currentLevel}&title=${title}`
+        ).then(
+          response => {
+            updateVisualization(response.data);
+            hideFakeLoader();
           });
+      });
+
+    </script>
+
+    <!-- d3 Script -->
+    <script>
+      function updateVisualization(data) {
+        $("#graph").empty();
+        var visualization = d3plus.viz()
+          .container("#graph")
+          .type("network")
+          .data(data.nodes)
+          .edges(data.links)
+          .edges({
+            "arrows": 4,
+            "strength": 1.4
+          })
+          .size({
+            value: 5
+          })
+          .id("id")
+          .width({
+            value: $("#graph").width()
+          })
+          .height({
+            value: 500
+          })
+          .labels({
+            value: false
+          })
+          .tooltip({
+            stacked: true,
+            large: 500,
+            fullscreen: true,
+            html: function (id) {
+              const paper = data.nodes.find(node => node.id === id);
+              const viewUrl = paper.pdfUrl || googleScholarSearchUrl(paper.title);
+
+              const htmlText =
+                `<h6>${paper.title} (${paper.year})</h6>` +
+                `<b>Authors:</b> ${paper.authors.map(author => author.name).join(", ")}<br/>` +
+                `<b>Abstract:</b> ${paper.abstract}<br/><br/><a class="btn btn-secondary btn-sm" href="${viewUrl}" role="button" target="_blank">View</a>`;
+
+              return htmlText;
+            }
+          })
+          .draw();
       }
 
-      function dragStarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      }
+    </script>
 
-      function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-      }
-
-      function dragEnded(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-      }
-    });
-
-  </script>
-
-
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="./js/popper.min.js"></script>
-  <script src="./js/bootstrap.min.js"></script>
+    <!-- Optional JavaScript -->
+    <script src="./js/axios.min.js"></script>
+    <script src="./js/popper.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
 </body>
 
 </html>

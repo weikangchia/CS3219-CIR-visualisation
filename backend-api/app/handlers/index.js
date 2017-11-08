@@ -8,6 +8,7 @@ module.exports = function (option) {
     topNXofYHandler: require("./topXofYHandler")(option),
     trendPublicationHandler: require("./trendPublicationHandler")(option),
     trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option),
-    autocompleteHandler: require("./autocompleteHandler")(option)
+    autocompleteHandler: require("./autocompleteHandler")(option),
+    graphIncitationHandler: require("./graphIncitationHandler")(option)
   };
 };
