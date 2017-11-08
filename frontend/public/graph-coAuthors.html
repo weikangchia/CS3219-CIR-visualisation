@@ -54,7 +54,7 @@
     const searchParams = new URLSearchParams(window.location.search);
     let author = searchParams.get("author");
     if (!author) {
-      author = prompt("Please enter author's name", "A T George");
+      author = prompt("Please enter author's name", "Uwe Aickelin");
       if (author) {
         searchParams.set('author', author);
         window.location.search = searchParams.toString();
