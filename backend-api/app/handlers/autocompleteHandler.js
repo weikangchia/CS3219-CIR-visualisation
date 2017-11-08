@@ -64,18 +64,20 @@ module.exports = options => {
     logger.info("Retrieving autocomplete search from database");
 
     const params = req.query;
-    const {domain} = params;
+    let { domain } = params;
+    let limit;
 
     if (!params.search) {
       return res.status(404).send("INVALID_SEARCH_VALUE");
     }
 
     if (validDomains.indexOf(domain) >= 0) {
-      return autocomplete(({ domain, topN: limit = 5, search } = params)).then(results => {
+      return autocomplete(
+        ({ domain, topN: limit = 5, search } = params)
+      ).then(results => {
         res.send(JSON.stringify(results));
       });
-    } else {
-      return res.status(404).send("INVALID_DOMAIN");
     }
+    return res.status(404).send("INVALID_DOMAIN");
   };
 };
