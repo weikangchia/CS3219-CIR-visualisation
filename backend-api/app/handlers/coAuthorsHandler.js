@@ -3,87 +3,129 @@
  *
  * @param {*, function} options, callback function
  */
-function getCoAuthorsGraph(options, callback) {
-	const nodes = [];
-	const links = [];
-	const set = new Set();
-	const setPapers = new Set();
+async function getCoAuthorsGraph(options, callback) {
+  const nodes = [];
+  const links = [];
+  const set = new Set();
+  const setPapers = new Set();
 
-	function minimizeAuthor(author, paper, level) {
-		const authorObj = paper.authors.find(authorObject => authorObject.ids[0] === author);
-		return {
-			id: author,
-			level,
-			author: authorObj ? authorObj.name : "undefined",
-			title: paper.title ? paper.title : "undefined"
-		};
-	}
+  function minimizeAuthor(author, paper, level) {
+    const authorObj = paper.authors.find(authorObject => authorObject.ids[0] === author);
+    return {
+      id: author,
+      level,
+      author: authorObj ? authorObj.name : "undefined",
+      title: paper.title ? paper.title : "undefined"
+    };
+  }
 
-	function dig(paper, level, maxLevel, source) {
-		if (!set.has(source)) {
-			nodes.push(minimizeAuthor(source, paper, level));
-		}
-		set.add(source);
-		if (level < maxLevel && paper != undefined && !setPapers.has(paper._id)) {
-			setPapers.add(paper._id);
-			const authors = paper.authors;
-			authors.forEach(author => {
-			  const authorId = author.ids[0] ? author.ids[0] : "undefined";
-				if (authorId !== source) {
-					nodes.push(minimizeAuthor(authorId, paper, level + 1));
-					set.add(authorId);
-					links.push({
-						source: authorId,
-						target: source
-					});
-					Paper.find( { "authors.name": author.name }, function(err, papers) {
-					if (err) throw error;
-						papers.forEach(paper => {
-						dig(paper, level + 1, maxLevel, authorId)
-						});
-					});
-				};
-			});
-		}
-	}
+  function findAuthorId(paper, authorName) {
+    const authors = paper.authors;
+    var authorId = undefined;
+    authors.forEach(author => {
+      if(author.name === authorName) {
+        authorId = author.ids[0] ? author.ids[0] : undefined;
+      }
+    });
+    return authorId;
+  }
 
-	options = options || {};
-	options.levels = options.levels || 3;
-	options.author = options.author || "";
-	curLevel = 1;
+  async function getPapersFromAuthorName(authorName) {
+    return new Promise((resolve, reject) => {
+      Paper.find({
+        "authors.name": authorName
+      }, (err, result) => {
+        resolve(result);
+      });
+    })
+  }
 
-Paper.find({ "authors.name": options.author }, function(err, papers){
-		if(err) throw error;
-		papers.forEach(paper => {
-			const authors = paper.authors;
-			var authorId = undefined;
-			authors.forEach(author => {
-				if (author.name === options.author) {
-						authorId = author.ids[0] ? author.ids[0] : "undefined";
-				}
-			})
+  async function dig(curLevel, maxLevel, source) {
+    const papers = await getPapersFromAuthorName(source);
 
-			if (authorId === undefined) {
-					nodes.push(minimizeAuthor(authorId, paper, curlevel));
-			};
+    if(papers === null) {
+      logger.info("No Papers found with author's Name " + options.author);
+    } else {
+      await Promise.all(papers.map(async paper => {
+            // logger.info(paper.title);
+            // logger.info(paper.authors);
+        await findAuthorsFromPaper(paper, source, curLevel, maxLevel);
+      }));
+    }
+  }
 
-			dig(paper, curLevel, options.levels, authorId);
-			if (typeof callback === "function") {
-					callback(nodes, links);
-			}
-		});
-	});
+  async function findAuthorsFromPaper(paper, author, curLevel, maxLevel) {
+    if(curLevel < maxLevel && paper !== undefined && !setPapers.has(paper._id.toString())) {
+      setPapers.add(paper._id.toString());
+      const authorId = findAuthorId(paper, author);
+      if(!set.has(authorId) && authorId !== undefined) {
+        nodes.push(minimizeAuthor(authorId, paper, curLevel));
+        set.add(authorId);
+      }
+      const authors = paper.authors;
+      //logger.info("Authors: " + authors);
+      if(authorId !== undefined) {
+        await Promise.all(authors.map(async author => {
+          coAuthorId = author.ids[0] ? author.ids[0] : undefined;
+          if(coAuthorId !== undefined) {
+            if(!set.has(coAuthorId)) {
+              nodes.push(minimizeAuthor(coAuthorId, paper, curLevel + 1));
+              set.add(coAuthorId);
+            }
+            if(coAuthorId !== authorId){
+              links.push({
+                source: author.ids[0],
+                target: authorId
+              })
+              // logger.info(paper.title);
+              // logger.info("Source: " + author.ids[0] + " " + "Target: " + authorId);
+              if((curLevel+1) < maxLevel) {
+                await dig(curLevel + 1, maxLevel, author.name);
+              }
+            }
+          }
+        }));
+      }
+    }
+  }
+
+  options = options || {};
+  options.levels = options.levels || 3;
+  options.author = options.author || "";
+
+  const papers = await getPapersFromAuthorName(options.author);
+
+  if(papers === null) {
+    logger.info("No Papers found with author's Name " + options.author);
+  } else {
+    await Promise.all(papers.map(async paper => {
+      //logger.info(paper.authors);
+      await findAuthorsFromPaper(paper, options.author, 1, options.levels);
+    }));
+  }
+
+  logger.info(nodes);
+  return {
+    nodes,
+    links
+  }
 }
 
 module.exports = function(options) {
-	logger = options.logger;
-	return (req, res) => {
-		const params = req.query;
-		const options = {};
-		options.author = params.author;
-		options.levels = params.levels;
-		getCoAuthorsGraph(options, function(nodes, links) {
-			res.send(JSON.stringify({nodes, links}));
-		})
-	};
+  const {
+    logger,
+    db
+  } = options;
+  return (req, res) => {
+    const Paper = db.model("Paper");
+    const params = req.query;
+    const options = {};
+    options.author = params.author;
+    options.levels = params.levels;
+    options.paper = Paper;
+
+    getCoAuthorsGraph(options).then(result => {
+      res.send(JSON.stringify(result));
+    })
+  };
 }
