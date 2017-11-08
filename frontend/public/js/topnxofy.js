@@ -20,7 +20,7 @@ cir.controller("QueryParamsController", [
       },
       {
         display: "Venues",
-        key: "venue"
+        key: "venues"
       },
       {
         display: "Book Titles",
@@ -38,15 +38,15 @@ cir.controller("QueryParamsController", [
       },
       {
         display: "Venue",
-        key: "venue"
+        key: "venues"
       },
       {
         display: "Cited Author",
-        key: "cited-author"
+        key: "cited-authors"
       },
       {
         display: "Cited By Author",
-        key: "cited-by-author"
+        key: "cited-by-authors"
       }
     ];
 
