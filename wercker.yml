@@ -34,6 +34,7 @@ deploy-frontend:
         code: |
           cd frontend
           sed -i -e 's/http:\/\/localhost:3000/https:\/\/cs3219-api-server.herokuapp.com/g' public/js/utils.js
+          sed -i -e 's/http:\/\/localhost:9000/https:\/\/cs3219-frontend.herokuapp.com/g' public/js/utils.js
     - heroku-deploy:
         key: $HEROKU_KEY
         key-name: HEROKU_KEY_PAIR
