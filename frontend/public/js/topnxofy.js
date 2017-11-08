@@ -5,7 +5,12 @@
 cir.controller("QueryParamsController", [
   "API_HOST", "$scope",
   function(API_HOST, $scope) {
+
     $scope.xCategories = [
+      {
+        display: "Papers",
+        key: "paper"
+      },
       {
         display: "Authors",
         key: "authors"
@@ -31,14 +36,15 @@ cir.controller("QueryParamsController", [
         key: "base-papers"
       }
     ];
+
     $scope.yCategories = [
-      {
-        display: "Author",
-        key: "authors"
-      },
       {
         display: "Venue",
         key: "venues"
+      },
+      {
+        display: "Author",
+        key: "authors"
       },
       {
         display: "Cited Author",
@@ -51,11 +57,26 @@ cir.controller("QueryParamsController", [
     ];
 
     $scope.query = {
-      topN : 3
+      topN : 3,
+      xCategoryValue : $scope.xCategories[0]['key'],
+      yCategoryValue : $scope.yCategories[0]['key']
     };
 
+    function displayVisualization(data){
+      console.log(data)
+    }
+
     $scope.submitQuery = function() {
-      console.log($scope.query);
+      var searchParams = new URLSearchParams();
+      searchParams.set('topN', $scope.query.topN);
+      searchParams.set('x', $scope.query.xCategoryValue);
+      searchParams.set('y', $scope.query.yCategoryValue);
+      searchParams.set('value', $scope.query.yValue); //top-X-of-Y?topN=3&x=author&y=venue&value=arxiv
+      var url = API_HOST + "/top-X-of-Y?" + searchParams.toString();
+      $.ajax({
+        url,
+        success: displayVisualization
+      })
     };
 
     $(".domain-selector").autocomplete({
