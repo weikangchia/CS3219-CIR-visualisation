@@ -30,9 +30,7 @@ An array of autocomplete values.
 
 **Request**
 
-``` shell
-curl -s "localhost:3000/autocomplete?search=a&domain=venues" | python -m json.tool
-```
+  GET autocomplete?search=a&domain=venues
 
 **Return**
 ``` json
@@ -49,9 +47,7 @@ curl -s "localhost:3000/autocomplete?search=a&domain=venues" | python -m json.to
 
 **Request**
 
-``` shell
-curl -s "localhost:3000/autocomplete?search=a&domain=authors" | python -m json.tool
-```
+  GET autocomplete?search=a&domain=authors
 
 **Return**
 ``` json
@@ -66,9 +62,7 @@ curl -s "localhost:3000/autocomplete?search=a&domain=authors" | python -m json.t
 
 **Request**
 
-``` shell
-curl -s "localhost:3000/autocomplete?search=and&domain=authors" | python -m json.tool
-```
+  GET autocomplete?search=and&domain=authors
 
 **Return**
 ``` json
