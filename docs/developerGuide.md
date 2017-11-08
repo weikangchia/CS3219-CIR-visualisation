@@ -94,6 +94,9 @@ Below is the architecture diagram of the whole solution for this project.
 - **[<code>GET</code> trends/conference](endpoints/trends/GET_conference.md)**
 - **[<code>GET</code> trends/keyphrase](endpoints/trends/GET_keyphrase.md)**
 
+### Auto-complete
+- **[<code>GET</code> autocomplete](endpoints/GET_autocomplete.md)**
+
 ### Graphs
 - **[<code>GET</code> graphs/incitation](endpoints/graphs/GET_incitation.md)**
 
