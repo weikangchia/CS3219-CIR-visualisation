@@ -78,7 +78,7 @@
       return d.htmlText;
     });
 
-    d3.json(API_HOST + "/graph/co-authors?" + searchParams.toString(), function (error, data) {
+    d3.json(API_HOST + "/graph/coauthors?" + searchParams.toString(), function (error, data) {
       if (error) return showError('Server Error')
       $("#fakeLoader").hide();
 

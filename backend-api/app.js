@@ -56,7 +56,7 @@ app.get("/trends/keyphrase", handlers.trendKeyPhraseHandler);
 
 app.get("/graphs/incitation", handlers.graphIncitationHandler);
 
-app.get("/graph/co-authors", handlers.coAuthorsHandler);
+app.get("/graph/coauthors", handlers.graphCoauthorsHandler);
 
 const server = app.listen(process.env.PORT, () => {
   logger.info(`Listening on port ${server.address().port}`);
