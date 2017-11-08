@@ -17,7 +17,7 @@ const selects = {
  * @param {string} x domain
  */
 function getSelect(x) {
-  return selects[x] || selects["paper"];
+  return selects[x] || selects.paper;
 }
 
 /**
@@ -168,7 +168,7 @@ function getTopXofY(params) {
         logger.info(err);
       } else {
         logger.info(`${papers.length} results from DB found.`);
-        papers.forEach(function(element) {
+        papers.forEach(element => {
           const groupKeys = getGroupKeys(element, x);
           groupKeys.forEach(key => {
             const { id } = key;
@@ -203,17 +203,16 @@ function handler(options) {
   return (req, res) => {
     const params = req.query;
 
-    getTopXofY(params).then(result =>
-      res.send(
-        JSON.stringify({
-          topN: params.topN,
-          x: params.x,
-          y: params.y,
-          value: params.value,
-          results: result
-        })
-      )
-    );
+    getTopXofY(params).then(result => {
+      const send = {
+        topN: params.topN,
+        x: params.x,
+        y: params.y,
+        value: params.value,
+        results: result
+      };
+      res.send(JSON.stringify(send));
+    });
   };
 }
 
