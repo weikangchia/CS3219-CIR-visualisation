@@ -157,18 +157,16 @@ function getTopXofY(params) {
 
     let filterY = {};
     if (entities[y]) {
-      const getFilter = entities[y].getFilter;
+      const { getFilter } = entities[y];
       filterY = getFilter(y, params.value);
     }
 
     let select = "";
     let getGroupKeys;
     if (entities[x]) {
-      select = entities[x].select;
-      getGroupKeys = entities[x].getGroupKeys;
+      ({ select, getGroupKeys } = entities[x]);
     } else {
-      select = entities.paper.select;
-      getGroupKeys = entities.paper.getGroupKeys;
+      ({ select, getGroupKeys } = entities.paper);
     }
 
     let topX = {};
