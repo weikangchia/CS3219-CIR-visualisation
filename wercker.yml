@@ -53,5 +53,8 @@ deploy-api-server:
 
 test-api-server:
   steps:
-    - endpoints:
-      npm run test-endpoints
+    - script:
+        name: echo mocha test api-server
+        code: |
+          cd backend-api
+          npm run test-endpoints
