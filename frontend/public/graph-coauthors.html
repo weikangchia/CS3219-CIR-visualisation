@@ -148,15 +148,12 @@
             large: 500,
             fullscreen: true,
             html: function (id) {
-              console.log(data.nodes);
-              const paper = data.nodes.find(node => node.id === id);
-              const viewUrl = googleScholarSearchUrl(paper.title);
+              const node = data.nodes.find(node => node.id === id);
+              const viewUrl = googleScholarSearchUrl(node.title);
 
               const htmlText =
-                `<h6>${paper.title} (${paper.year})</h6>` +
-                `<b>Author:</b> ${paper.authors.find(author => author.ids[0] === id).name}<br/>`;
-                // +
-                // `<b>Abstract:</b> ${paper.abstract}<br/><br/><a class="btn btn-secondary btn-sm" href="${viewUrl}" role="button" target="_blank">View</a>`;
+                `<h6>${node.title} (Level: ${node.level})</h6>` +
+                `<b>Author:</b> ${node.author}<br/>`;
 
               return htmlText;
             }
