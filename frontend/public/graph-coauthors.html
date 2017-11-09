@@ -107,7 +107,7 @@
         const name = $("#name").val();
 
         axios.get(
-          `${API_HOST}/graph/co-Authors?levels=${currentLevel}&author=${name}`
+          `${API_HOST}/graph/coauthors?levels=${currentLevel}&author=${name}`
         ).then(
           response => {
             updateVisualization(response.data);
