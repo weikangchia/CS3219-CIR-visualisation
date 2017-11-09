@@ -12,3 +12,4 @@ module.exports = function (option) {
     graphIncitationHandler: require("./graphIncitationHandler")(option)
   };
 };
+/* eslint-enable global-require */
