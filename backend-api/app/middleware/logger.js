@@ -4,10 +4,12 @@ require("winston-loggly");
 
 dotenv.load();
 
+let logger;
+
 if (process.env.NODE_ENV === "test") {
-  const logger = new winston.Logger();
+  logger = new winston.Logger();
 } else {
-  const logger = new winston.Logger({
+  logger = new winston.Logger({
     transports: [
       new winston.transports.Console({
         level: process.env.LOG_LEVEL,
