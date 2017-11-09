@@ -28,10 +28,6 @@ cir.controller("QueryParamsController", [
         key: "venues"
       },
       {
-        display: "Book Titles",
-        key: "book-title"
-      },
-      {
         display: "Base Papers",
         key: "base-papers"
       }
