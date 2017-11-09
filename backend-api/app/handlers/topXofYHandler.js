@@ -13,7 +13,7 @@ const selects = {
 const entities = {
   author: {
     select: selects.author,
-    getGroupKeys: function (paper) {
+    getGroupKeys(paper) {
       const keys = [];
       paper.authors.forEach(author => {
         if (author.ids.length !== 0) {
@@ -22,11 +22,11 @@ const entities = {
             obj: author,
             count: 1
           });
-        } 
+        }
       }, this);
       return keys;
     },
-    getFilter: function (y, value) {
+    getFilter(y, value) {
       if (y && value) {
         return {
           'authors.name': value
@@ -37,7 +37,7 @@ const entities = {
   },
   venue: {
     select: selects.venue,
-    getGroupKeys: function (paper) {
+    getGroupKeys(paper) {
       if (paper.venue && (!paper.venue.trim || paper.venue.trim() !== "")) {
         return [{
           id: paper.venue,
@@ -49,7 +49,7 @@ const entities = {
       }
       return [];
     },
-    getFilter: function (y, value) {
+    getFilter(y, value) {
       const filterY = {};
       if (y && value) {
         filterY[y] = value;
@@ -59,7 +59,7 @@ const entities = {
   },
   keyphrase: {
     select: selects.keyphrase,
-    getGroupKeys: function (paper) {
+    getGroupKeys(paper) {
       return paper.keyPhrases.map(keyPhrase => {
         return {
           id: keyPhrase,
@@ -70,7 +70,7 @@ const entities = {
         };
       }, this);
     },
-    getFilter: function (y, value) {
+    getFilter(y, value) {
       if (y && value) {
         return { keyPhrases: value };
       }
@@ -79,7 +79,7 @@ const entities = {
   },
   year: {
     select: selects.year,
-    getGroupKeys: function (paper) {
+    getGroupKeys(paper) {
       if (paper.year && (!paper.year.trim || paper.year.trim() !== "")) {
         return [{
           id: paper.year,
@@ -91,9 +91,9 @@ const entities = {
       }
       return [];
     },
-    getFilter: function (y, value) {
+    getFilter(y, value) {
       const filterY = {};
-      if (y && value && !isNaN(value)) {
+      if (y && value && !Number.isNaN(value)) {
         filterY[y] = value;
       }
       return filterY;
@@ -101,7 +101,7 @@ const entities = {
   },
   paper: {
     select: selects.paper,
-    getGroupKeys: function (paper) {
+    getGroupKeys(paper) {
       const paperObj = {
         title: paper.title,
         authors: paper.authors,
@@ -111,23 +111,23 @@ const entities = {
         year: paper.year,
         abstract: paper.abstract,
         keyPhrases: paper.keyPhrases
-      }
+      };
 
       const key = {
         id: paper.id,
         obj: paperObj,
         count: paper.inCitations.length
-      }
+      };
       return [key];
     },
-    getFilter: function (y, value) {
+    getFilter(y, value) {
       if (y && value) {
-        return { title: value }
+        return { title: value };
       }
       return {};
     }
   }
-}
+};
 
 function sanitizeXorY(xOrY) {
   if (xOrY === "authors") {
