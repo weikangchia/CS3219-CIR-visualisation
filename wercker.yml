@@ -57,5 +57,5 @@ test-api-server:
         name: echo mocha test api-server
         code: |
           cd backend-api
-          npm install --dev
+          npm install
           npm run test-endpoints
