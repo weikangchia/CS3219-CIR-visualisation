@@ -59,3 +59,12 @@ test-api-server:
           cd backend-api
           npm install
           npm run test-endpoints
+
+integrate-test:
+  steps:
+    - script:
+        name: test run mocha
+        code: |
+          cd backend-api
+          npm install
+          npm test 
