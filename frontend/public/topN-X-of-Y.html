@@ -63,21 +63,21 @@
             </div>
 
             <div class="form-group">
-              Range
+              Domain
               <select class="form-control" ng-model="query.xCategoryValue">
                 <option ng-repeat="xCategory in xCategories" value="{{ xCategory.key }}">{{xCategory.display}}</option>
               </select>
             </div>
 
             <div class="form-group">
-              Domain
+              Range
               <select class="form-control" ng-model="query.yCategoryValue">
                 <option ng-repeat="yCategory in yCategories" value="{{ yCategory.key }}">{{yCategory.display}}</option>
               </select>
             </div>
             
             <div class="form-group">
-              Domain Value
+              Range Value
               <input class="domain-selector" ng-model="query.yValue" placeholder="Search {{ query.yCategoryValue }}">
             </div>
 

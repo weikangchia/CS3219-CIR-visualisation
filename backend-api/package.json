@@ -7,7 +7,7 @@
     "url": "git@github.com:weikangchia/CS3219-CIR-visualisation.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-endpoints": "mocha test/endpoints.js --exit",
     "start": "nodemon app.js"
   },
   "author": "",
@@ -20,12 +20,16 @@
     "mongoose": "^4.12.5",
     "morgan": "^1.9.0",
     "walk": "^2.3.9",
-    "winston": "^2.4.0"
+    "winston": "^2.4.0",
+    "winston-loggly": "^1.3.1"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.0.2",
     "eslint-plugin-import": "^2.7.0",
+    "mocha": "^4.0.1",
     "nodemon": "^1.12.1"
   }
 }

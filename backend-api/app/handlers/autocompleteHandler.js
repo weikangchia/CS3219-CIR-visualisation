@@ -67,6 +67,8 @@ module.exports = options => {
     let { domain } = params;
     let limit;
 
+    params.limit = params.topN || 5;
+
     if (!params.search) {
       return res.status(404).send("INVALID_SEARCH_VALUE");
     }

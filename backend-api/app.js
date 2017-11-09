@@ -67,3 +67,5 @@ app.get("/autocomplete", handlers.autocompleteHandler);
 const server = app.listen(process.env.PORT, () => {
   logger.info(`Listening on port ${server.address().port}`);
 });
+
+module.exports = app;
