@@ -7,7 +7,7 @@
     "url": "git@github.com:weikangchia/CS3219-CIR-visualisation.git"
   },
   "scripts": {
-    "test": "mocha --exit",
+    "test-endpoints": "mocha test/endpoints.js --exit",
     "start": "nodemon app.js"
   },
   "author": "",

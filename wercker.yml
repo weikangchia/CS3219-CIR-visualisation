@@ -50,3 +50,8 @@ deploy-api-server:
         user: $HEROKU_USER
         app-name: $HEROKU_APP_NAME
         source_dir: backend-api
+
+test-api-server:
+  steps:
+    - endpoints:
+      npm run test-endpoints
