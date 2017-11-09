@@ -118,6 +118,7 @@
     </script>
 
   <!-- d3 Script -->
+<<<<<<< HEAD:frontend/public/graph-coAuthors.html
    <script>
       function updateVisualization(data) {
         $("#graph").empty();
@@ -129,6 +130,101 @@
           .edges({
             "arrows": 4,
             "strength": 1.4
+=======
+
+  <script>
+    $("#fakeLoader").fakeLoader({
+      zIndex: "999",
+      spinner: "spinner1",
+      bgColor: "#2ecc71"
+    });
+
+    const tip = d3.tip().attr('class', 'd3-tip').html(function (d) {
+      return d.htmlText;
+    });
+
+    d3.json(API_HOST + "/graph/coauthors?" + searchParams.toString(), function (error, data) {
+      if (error) return showError('Server Error')
+      $("#fakeLoader").hide();
+
+      const width = 1500;
+      const height = 1500;
+
+      const svg = d3.select('#graph')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .call(tip);
+
+      const simulation = d3.forceSimulation()
+        .force("link", d3.forceLink().id(function (d) {
+          return d.id;
+        }))
+        .force("charge", d3.forceManyBody().strength(-200))
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+      const link = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(data.links)
+        .enter().append("line");
+
+      const node = svg.append("g")
+        .attr("class", "nodes")
+        .selectAll("circle")
+        .data(data.nodes)
+        .enter().append("circle")
+        .attr("r", 8)
+        .attr("fill", function (d) {
+          return d3.schemeCategory20c[d.level * 2];
+        })
+        .on("mouseover", function (d) {
+          let htmlText = `<h5>${d.title}</h5>(Level: ${d.level}) ${d.author}`;
+
+          // if (d.level > 1) {
+          //   const sources = _.filter(data.links, (link) => link.target.id == d.id)
+          //     .map((match) => {
+          //       return "(Level " + match.source.level + ")\t" + match.source.title;
+          //     });
+          // //   htmlText = htmlText.concat(`<br><br><h6>In citations (${sources.length})</h6>${sources.join("<br>")}`);
+          // }
+
+          d.htmlText = htmlText;
+          tip.show(d);
+        })
+        .on("mouseout", function (d) {
+          tip.hide();
+        })
+        .call(d3.drag()
+          .on("start", dragStarted)
+          .on("drag", dragged)
+          .on("end", dragEnded));
+
+      simulation
+        .nodes(data.nodes)
+        .on("tick", ticked);
+
+      simulation.force("link")
+        .links(data.links);
+
+      svg.append("svg:defs").selectAll("marker")
+        .data(["end"])
+        .enter().append("svg:marker")
+        .attr("id", String)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 25)
+        .attr("refY", 0)
+        .attr("markerWidth", 5)
+        .attr("markerHeight", 5)
+        .attr("orient", "auto")
+        .append("svg:path")
+        .attr("d", "M0,-5L10,0L0,5");
+
+      function ticked() {
+        link
+          .attr("x1", function (d) {
+            return d.source.x;
+>>>>>>> a811a08fa00f392c5ec2e0cdcb51996a0be6f078:frontend/public/graph-coauthors.html
           })
           .size({
             value: 5

@@ -51,8 +51,8 @@ app.use('/graphs-incitations', (req, res) => {
   });
 });
 
-app.use('/graphs-coAuthors', (req, res) => {
-  res.sendFile('/public/graph-coAuthors.html', {
+app.use('/graphs-coauthors', (req, res) => {
+  res.sendFile('/public/graph-coauthors.html', {
     root: __dirname
   });
 });
