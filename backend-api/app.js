@@ -49,7 +49,7 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
   const result = {
-    mode: "test"
+    msg: "hello world"
   };
   res.send(JSON.stringify(result));
 });
