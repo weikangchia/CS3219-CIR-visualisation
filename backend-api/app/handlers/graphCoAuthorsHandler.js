@@ -46,9 +46,6 @@ async function dig(currLevel, maxLevel, sourceAuthorName, nodeLinks) {
     logger.info(`No Papers found with author's Name: ${sourceAuthorName}`);
   } else {
     await Promise.all(papers.map(async paper => {
-      // logger.info(paper.title);
-      // logger.info(paper.authors);
-      /* eslint-disable no-use-before-define */
       await findAuthorsFromPaper(paper, sourceAuthorName, currLevel, maxLevel, nodeLinks);
     }));
   }
@@ -134,7 +131,8 @@ function handler(options) {
   return (req, res) => {
     const params = req.query;
     const authorName = params.author.trim() || "";
-    const level = parseInt(params.level, 10) || 2;
+    const level = parseInt(params.levels, 10) || 2;
+    logger.info(level);
 
     getCoAuthorsGraph(authorName, level).then(result => {
       res.send(JSON.stringify(result));
