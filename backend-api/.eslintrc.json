@@ -1,7 +1,9 @@
 {
   "extends": "airbnb-base",
   "rules": {
-    "max-len": [1, 120, 2, { "ignoreComments": true }],
+    "max-len": [1, 120, 2, {
+      "ignoreComments": true
+    }],
     "quote-props": [1, "consistent-as-needed"],
     "no-param-reassign": 0,
     "arrow-body-style": 0,
@@ -9,9 +11,14 @@
     "quotes": 0,
     "no-plusplus": 0,
     "wrap-iife": [2, "inside"],
-    "no-unused-vars": [1, { "vars": "local", "args": "none" }],
+    "no-unused-vars": [1, {
+      "vars": "local",
+      "args": "none"
+    }],
     "comma-dangle": ["error", "never"],
     "arrow-parens": ["error", "as-needed"],
-    "no-underscore-dangle": { "allow": ["_id"] }
+    "no-underscore-dangle": ["error", {
+      "allow": ["_id"]
+    }]
   }
 }
