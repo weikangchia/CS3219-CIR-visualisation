@@ -73,7 +73,7 @@
             </div>
           </div>
 
-          <!-- template for confenrence input -->
+          <!-- template for conference input -->
           <div class="form-group row" id="optionTemplate" hidden>
             <div class="col-10">
               <label class="sr-only" for="inlineFormInputGroup">Conference</label>
@@ -163,6 +163,8 @@
             .removeAttr("hidden")
             .removeAttr("id")
             .insertBefore(template);
+          
+          attachAutocomplete($(clone).find("input"));
 
           currentNumFields++;
         }
@@ -250,20 +252,23 @@
 
   <!-- autocomplete -->
   <script>
-  $(function(){
-    $("#inlineFormInputGroup").autocomplete({
-      source: function(req, updateList) {
-        var searchParams = new URLSearchParams();
-        searchParams.set("domain", "venue");
-        searchParams.set("search", req.term);
-        var url = API_HOST + "/autocomplete?" + searchParams.toString();
-        $.ajax({
-          url: url,
-          success: updateList
-        });
-      }
-    });
-  })
+    function attachAutocomplete($dom) {
+      $dom.autocomplete({
+        source: function(req, updateList) {
+          var searchParams = new URLSearchParams();
+          searchParams.set("domain", "venue");
+          searchParams.set("search", req.term);
+          var url = API_HOST + "/autocomplete?" + searchParams.toString();
+          $.ajax({
+            url: url,
+            success: updateList
+          });
+        }
+      });
+    }
+    $(function() {
+      attachAutocomplete($("#inlineFormInputGroup"));
+    });    
   </script>
 
 </body>
