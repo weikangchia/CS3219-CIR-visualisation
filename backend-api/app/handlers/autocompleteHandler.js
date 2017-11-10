@@ -1,7 +1,7 @@
 module.exports = options => {
   const { logger, db } = options;
 
-  const validDomains = ["venues", "authors"];
+  const validDomains = ["venues", "authors", "keyphrases"];
 
   function autocomplete(params) {
     return new Promise((resolve, reject) => {
@@ -16,10 +16,13 @@ module.exports = options => {
         unwind = {
           $unwind: "$authors"
         };
-      }
-
-      if (domain === "venues") {
+      } else if (domain === "venues") {
         groupBy = "venue";
+      }else if (domain === "keyphrases"){
+        unwind = {
+          $unwind: "$keyPhrases"
+        };
+        groupBy = "keyPhrases"
       }
 
       match[groupBy] = {
