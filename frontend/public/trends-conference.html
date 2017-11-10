@@ -30,6 +30,7 @@
   <script src="./js/nouislider.min.js"></script>
   <script src="./js/wNumb.js"></script>
   <script src="./js/utils.js"></script>
+  <script src="./js/cirfakeloader.js"></script>
   <script src="./js/cir.js"></script>  
 
   <script src="./js/jquery-ui.min.js"></script>
@@ -37,7 +38,6 @@
 </head>
 
 <body ng-app="">
-  <div id="fakeLoader"></div>
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
@@ -119,7 +119,7 @@
   <!-- filter script -->
   <script>
     // init fakeloader
-    initFakeLoader();
+    const fakeLoader = new CirFakeLoader();
 
     // scripts for year slider
     const slider = document.getElementById('slider');
@@ -172,7 +172,7 @@
         }
       })
       .submit(() => {
-        showFakeLoader();
+        fakeLoader.show();
 
         let conferences = new Array();
         conferences = $("#filterForm").serializeArray();
@@ -203,7 +203,7 @@
 
             updateVisualization(parseData);
 
-            hideFakeLoader();
+            fakeLoader.hide(500);
           }));
       });
 
@@ -254,7 +254,7 @@
     $("#inlineFormInputGroup").autocomplete({
       source: function(req, updateList) {
         var searchParams = new URLSearchParams();
-        searchParams.set("domain", "venues");
+        searchParams.set("domain", "venue");
         searchParams.set("search", req.term);
         var url = API_HOST + "/autocomplete?" + searchParams.toString();
         $.ajax({
