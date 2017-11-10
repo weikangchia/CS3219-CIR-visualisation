@@ -11,6 +11,7 @@ const mockgoose = new Mockgoose(mongoose);
 const server = require("../app");
 
 const should = chai.should();
+const expect = chai.expect;
 
 chai.use(chaiHttp);
 
