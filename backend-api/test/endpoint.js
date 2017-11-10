@@ -11,7 +11,7 @@ const mockgoose = new Mockgoose(mongoose);
 const server = require("../app");
 
 const should = chai.should();
-const expect = { chai };
+const { expect } = chai;
 
 chai.use(chaiHttp);
 
@@ -47,14 +47,13 @@ describe("/GET index", () => {
   });
 });
 
-describe("autocomplete", () => {
+describe("/GET autocomplete", () => {
   it("it should return some results", function(done) {
-    this.timeout(5000);
     chai
       .request(server)
       .get("/autocomplete?search=a&domain=author")
       .end((err, res) => {
-        expect(err).equals(null);
+        expect(err).to.be.null;
         res.should.have.status(200);
         res.body.should.be.a("array");
         res.body.length.should.be.gt(0);
