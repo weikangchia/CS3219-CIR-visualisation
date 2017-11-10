@@ -19,21 +19,22 @@
   <script src="./js/d3plus.full.min.js"></script>
   <script src="./js/jquery.min.js"></script>
   <script src="./bower_components/lodash/dist/lodash.min.js"></script>  
-  <script src="./js/utils.js"></script>
   <script src="./js/angular.min.js"></script>
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/d3-tip.js"></script>
-  <script src="./js/cir.js"></script>
   
   <script src="./js/jquery-ui.min.js"></script>
   <link rel="stylesheet" href="css/jquery-ui.css">
 
-  <script src="./js/topnxofy.js"></script>
 
+  <script src="./js/utils.js"></script>
+  <script src="./js/cirfakeloader.js"></script>
+  <script src="./js/cir.js"></script>
+  <script src="./js/topnxofy.js"></script>
+  
 </head>
 
 <body ng-app="CIR">
-  <div id="fakeLoader"></div>
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
@@ -86,7 +87,10 @@
         </div>
       </div>
     </div>
-      
+    
+    <script>
+      var fakeLoader = new CirFakeLoader();
+    </script>
     
   </div>
 

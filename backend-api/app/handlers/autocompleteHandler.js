@@ -1,34 +1,63 @@
 module.exports = options => {
   const { logger, db } = options;
 
-  const validDomains = ["venues", "authors"];
+  const domains = {
+    venue: {
+      groupBy: "venue"
+    },
+    author: {
+      groupBy: "authors.name",
+      unwind: {
+        $unwind: "$authors"
+      }
+    },
+    keyphrase: {
+      unwind: {
+        $unwind: "$keyPhrases"
+      },
+      groupBy: "keyPhrases"
+    },
+    paper: {
+      groupBy: "title"
+    },
+    year: {
+      groupBy: "year",
+      project: {
+        $project: {
+          year: {
+            $substr: ["$year", 0, 4]
+          }
+        }
+      }
+    }
+  };
+
+  const validDomains = Object.keys(domains);
 
   function autocomplete(params) {
     return new Promise((resolve, reject) => {
-      let groupBy;
-      let unwind;
-      const match = {};
+      let match;
       const { domain, search } = params;
 
-      if (domain === "authors") {
-        groupBy = "authors.name";
+      let { groupBy, unwind, getMatch, project } = domains[domain];
 
-        unwind = {
-          $unwind: "$authors"
+      if (getMatch) {
+        match = getMatch(params);
+      } else {
+        match = {};
+
+        match[groupBy] = {
+          $regex: new RegExp(`^${search}`, "i")
         };
       }
-
-      if (domain === "venues") {
-        groupBy = "venue";
-      }
-
-      match[groupBy] = {
-        $regex: new RegExp(`^${search}`, "i")
-      };
 
       const group = { _id: `$${groupBy}` };
 
       const pipeline = [];
+
+      if (project) {
+        pipeline.push(project);
+      }
 
       if (unwind) {
         pipeline.push(unwind);

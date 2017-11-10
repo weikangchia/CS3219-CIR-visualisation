@@ -10,7 +10,7 @@ Returns autocomplete values based on search value
 ## Parameters
 Parameter **domain** and **search** are required.
 
-- **domain** — The domain ('authors' or 'venues')
+- **domain** — The domain - 'paper' || 'author' || 'venue' || 'keyphrase' || 'year'
 - **search** - The search value
 
 ## Return format
