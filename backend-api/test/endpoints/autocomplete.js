@@ -8,7 +8,7 @@ module.exports = function(params) {
           .request(server)
           .get("/autocomplete?search=a&domain=author")
           .end((err, res) => {
-            expect(err).equals(null)
+            expect(err).equals(null);
             res.should.have.status(200);
             res.body.should.be.a("array");
             res.body.length.should.be.gt(0);
