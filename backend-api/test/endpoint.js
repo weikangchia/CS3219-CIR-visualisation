@@ -49,7 +49,8 @@ describe("/GET trends/keyphrase", () => {
   });
 
   it("it should GET an array of keyphrase trends", done => {
-    const expectedResult = [{
+    const expectedResult = [
+      {
         _id: "59f32bd4cd71fe9b08c653e9",
         year: 2015
       },
