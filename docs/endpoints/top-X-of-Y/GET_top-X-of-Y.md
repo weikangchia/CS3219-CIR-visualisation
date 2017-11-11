@@ -10,15 +10,14 @@
 ***
 
 ## Parameters
-  All parameters are optional. <br />
-  'y' requires a 'value' and vice versa.
+  All parameters are optional. If y is specified, value must be given too and vice versa.
 
 - **topN** — The top number of X to find. (Default: 10)
 - **x** — The domain that you are searching. (Default: paper) <br />
 Accepted x values are = paper || author || venue || keyphrase || year.  <br />
 If x is invalid, default domain will be used. <br />
 - **y** — The range that you are searching. <br />
-Accepted y are = paper || author || venue || keyphrase || year.  <br />
+Accepted y values are = paper || author || venue || keyphrase || year.  <br />
 - **value** — The value for the range you are searching.
 
 ## Return format
