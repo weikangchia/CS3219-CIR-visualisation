@@ -22,21 +22,6 @@ slider.noUiSlider.on("change", function() {
   $("#current-level").text(levelSliderValue[0]);
 });
 
-// scripts for the input
-$("#filterForm").submit(() => {
-  fakeLoader.show();
-
-  const currentLevel = slider.noUiSlider.get()[0];
-  const title = $("#title").val();
-
-  axios
-    .get(`${API_HOST}/graphs/incitation?level=${currentLevel}&title=${title}`)
-    .then(response => {
-      updateVisualization(response.data);
-      fakeLoader.hide();
-    });
-});
-
 /**
  * D3 Visualisation
  */
@@ -94,7 +79,7 @@ function updateVisualization(data) {
 
 function attachAutocomplete($dom) {
   $dom.autocomplete({
-    source: function (req, updateList) {
+    source: function(req, updateList) {
       var searchParams = new URLSearchParams();
       searchParams.set("domain", "paper");
       searchParams.set("search", req.term);
@@ -107,6 +92,65 @@ function attachAutocomplete($dom) {
   });
 }
 // attach to first input
-$(function () {
+$(function() {
   attachAutocomplete($("input[name=title]"));
 });
+
+/**
+ * Query
+ */
+
+function getFormParams() {
+  return {
+    title: $("input[name=title]").val(),
+    currentLevel: slider.noUiSlider.get()[0]
+  };
+}
+
+function renderFormFromSearch() {
+  const { title, level = 2 } = $location.search();
+  $("input[name=title]").val(title);
+  slider.noUiSlider.set(level);
+}
+
+/**
+ * No request is made if title is empty
+ */
+function submitQuery() {
+  // fakeLoader.show();
+
+  const { title, currentLevel } = getFormParams();
+  if (title) {
+    axios
+      .get(`${API_HOST}/graphs/incitation?level=${currentLevel}&title=${title}`)
+      .then(response => {
+        updateVisualization(response.data);
+        // fakeLoader.hide();
+      });
+  }
+}
+
+/**
+ * UI Controller
+ */
+
+function pageLoad() {
+  renderFormFromSearch();
+  submitQuery();
+}
+
+// on submit
+$("#filterForm").submit(() => {
+  $location.search(getFormParams());
+});
+
+// on search change
+cir.run([
+  "$rootScope",
+  $rootScope => {
+    $rootScope.$on("$locationChangeStart", () => pageLoad());
+  }
+]);
+
+// on page load
+$(() => () => pageLoad());
