@@ -39,7 +39,7 @@
 
 </head>
 
-<body ng-app="">
+<body ng-app="CIR">
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
@@ -65,7 +65,7 @@
               <label class="sr-only" for="inlineFormInputGroup">Keyphrase</label>
               <div class="input-group mb-2 mb-sm-0">
                 <div class="input-group-addon">@</div>
-                <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Keyphrase" name="keyphrases" value="nlp">
+                <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Keyphrase" name="keyphrases">
               </div>
             </div>
             <div class="col-2">
@@ -75,7 +75,7 @@
             </div>
           </div>
 
-          <!-- template for conference input -->
+          <!-- template for keyphrase input -->
           <div class="form-group row" id="optionTemplate" hidden>
             <div class="col-10">
               <label class="sr-only" for="inlineFormInputGroup">Keyphrase</label>
@@ -118,155 +118,8 @@
     </div>
   </div>
 
-  <!-- filter script -->
-  <script>
-    const fakeLoader = new CirFakeLoader();        
-
-    // scripts for year slider
-    const slider = document.getElementById('slider');
-
-    noUiSlider.create(slider, {
-      start: [1800, 2017],
-      connect: true,
-      padding: 0,
-      range: {
-        'min': 1800,
-        'max': 2017
-      },
-      step: 1,
-      format: wNumb({
-        decimals: 0
-      })
-    });
-
-    slider.noUiSlider.on('update', function () {
-      const yearSliderValue = slider.noUiSlider.get();
-      $("#yearStart").text(yearSliderValue[0]);
-      $("#yearEnd").text(yearSliderValue[1]);
-    });
-
-    // scripts for the conference input
-    const maxFields = 5;
-    let currentNumFields = 1;
-
-    const template = $("#optionTemplate");
-
-    function deleteSelf(conferenceInputObj) {
-      $(".addButton").removeAttr("disabled");
-      $(conferenceInputObj).closest(".form-group.row").remove();
-      currentNumFields--;
-    }
-
-    $("#filterForm")
-      .on("click", ".addButton", () => {
-        if (currentNumFields < maxFields) {
-          const clone = template.clone()
-            .removeAttr("hidden")
-            .removeAttr("id")
-            .insertBefore(template);
-
-          attachAutocomplete($(clone).find("input"));
-          currentNumFields++;
-        }
-
-        if (currentNumFields === maxFields) {
-          $(".addButton").attr("disabled", "disabled");
-        }
-      })
-      .submit(() => {
-        let keyphrases = new Array();
-        keyphrases = $("#filterForm").serializeArray();
-        keyphrases.pop();
-
-        const yearRange = slider.noUiSlider.get();
-
-        const requests = [];
-        keyphrases.forEach((keyphrase) => {
-          requests.push(axios.get(
-            `${API_HOST}/trends/keyphrase?phrase=${keyphrase.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`));
-        });
-
-        axios.all(requests)
-          .then(axios.spread((...allData) => {
-            const parseData = [];
-
-            allData.forEach((keyphrase, i) => {
-              keyphrase.data.forEach(data => {
-                parseData.push({
-                  keyphrase: keyphrases[i].value,
-                  year: data.year,
-                  count: data.count
-                });
-              });
-            });
-
-            updateVisualization(parseData);
-          }));
-      });
-
-  </script>
-
-  <!-- d3 Script -->
-  <script>
-    function updateVisualization(data) {
-      fakeLoader.hide();
-
-      $("#graph").empty();
-      var visualization = d3plus.viz()
-        .container("#graph")
-        .data(data)
-        .type("line")
-        .id("keyphrase")
-        .text("keyphrase")
-        .width({
-          value: $("#graph").width()
-        })
-        .height({
-          value: 300
-        })
-        .y({
-          "value": "count",
-          "label": "No. of Publications"
-        }) // key to use for y-axis
-        .x("year") // key to use for x-axis
-        .format({
-          "text": (text, params) => {
-            if (text === "count") {
-              return "Number of Publications";
-            } else {
-              return d3plus.string.title(text, params);
-            }
-          }
-        })
-        .time("year")
-        .timing({
-          "transitions": 1000
-        })
-        .draw();
-    }
-
-  </script>
-
-  <!-- autocomplete -->
-  <script>
-    function attachAutocomplete($dom) {
-      $dom.autocomplete({
-        source: function(req, updateList) {
-          var searchParams = new URLSearchParams();
-          searchParams.set("domain", "keyphrase");
-          searchParams.set("search", req.term);
-          var url = API_HOST + "/autocomplete?" + searchParams.toString();
-          $.ajax({
-            url: url,
-            success: updateList
-          });
-        }
-      });
-    }
-    $(function() {
-      attachAutocomplete($("#inlineFormInputGroup"));
-    });
-  </script>
+  <!-- app-ui -->
+  <script src="./js/app-ui/trends-keyphrase.js"></script>
 
 </body>
 
