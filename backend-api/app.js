@@ -1,9 +1,9 @@
 const express = require("express");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
 const morgan = require("morgan");
-const logger = require('./app/middleware/logger');
+const logger = require("./app/middleware/logger");
 
 const PaperSchema = require("./app/models/PaperSchema");
 
@@ -14,21 +14,25 @@ dotenv.load();
 app.use(morgan("dev"));
 
 // init database connection
-mongoose.connect(process.env.MONGO_DB_URI, {
-  useMongoClient: true
-}, err => {
-  if (err) {
-    logger.error(`Could not connect to database: ${err}`);
-  } else {
-    logger.info(`Connected to database: ${process.env.MONGO_DB_URI}`);
+mongoose.connect(
+  process.env.MONGO_DB_URI, {
+    useMongoClient: true
+  },
+  err => {
+    if (err) {
+      err = `Could not connect to database ${process.env.MONGO_DB_URI}: ${err}`;
+      logger.error(err);
+    } else {
+      logger.info(`Connected to database: ${process.env.MONGO_DB_URI}`);
+    }
   }
-});
+);
 
 const db = mongoose.connection;
 db.model("Paper", PaperSchema, "papers");
 
 // init handlers
-const handlers = require('./app/handlers/index.js')({
+const handlers = require("./app/handlers/index.js")({
   logger,
   db
 });
@@ -43,14 +47,15 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(JSON.stringify({
-    mode: "test"
-  }));
+  const result = {
+    message: "hello world"
+  };
+  res.status(200).send(JSON.stringify(result));
 });
 
 app.get("/top-X-of-Y", handlers.topNXofYHandler);
 
-app.get("/trends/publication", handlers.trendPublicationHandler);
+app.get("/trends/conference", handlers.trendConferenceHandler);
 
 app.get("/trends/keyphrase", handlers.trendKeyPhraseHandler);
 
@@ -58,7 +63,10 @@ app.get("/graphs/incitation", handlers.graphIncitationHandler);
 
 app.get("/graph/coauthors", handlers.graphCoauthorsHandler);
 
+app.get("/autocomplete", handlers.autocompleteHandler);
+
 const server = app.listen(process.env.PORT, () => {
   logger.info(`Listening on port ${server.address().port}`);
 });
 
+module.exports = app;
