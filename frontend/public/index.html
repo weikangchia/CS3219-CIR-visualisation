@@ -15,30 +15,59 @@
 
   <script src="./js/jquery.min.js"></script>
   <script src="./js/angular.min.js"></script>
+  <script src="./js/utils.js"></script>  
+  <script src="./js/cir.js"></script>  
 
 </head>
 
-<body ng-app="">
+<body ng-app="CIR">
   <div ng-include="'nav.html'"></div>
 
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <h1>CS3219 CIR Visualization</h1>
-
-        <p>Due to the way the human brain processes information, using charts or graphs to visualize large amounts of complex
-          information allows human to understand and retain information better. Data visualization is a quick way to communicate
-          information in a visual way and highlight trends/patterns in the information. In this assignment, first 200,000
-          lines from the full dataset at
-          <a href="http://labs.semanticscholar.org/corpus/">http://labs.semanticscholar.org/corpus/</a> are used to create visualization using d3.js.</p>
-        <p>
-          The overall aim of CIR is to provide Simon with a usable interface which accepts his intuitive queries and provides him with
-          outputs/visualizations to help him analyze various aspects of research publications. In particular, Simon is interested
-          in trend-based queries.</p>
+  <!-- Header -->
+  <header class="intro-header">
+    <div class="container">
+      <div class="intro-message">
+        <h1>Viz 5</h1>
+        <h3>Conference Papers Visualization</h3>
+        <hr class="intro-divider">
+        <ul class="list-inline intro-social-buttons">
+          <li class="list-inline-item">
+            <a href="https://github.com/weikangchia/CS3219-CIR-visualisation" class="btn btn-secondary btn-lg">
+              <i class="fa fa-github fa-fw"></i>
+              <span class="network-name">Github</span>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
+  </header>
 
-  </div>
+  <section class="content-section-a">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-5 ml-auto">
+          <hr class="section-heading-spacer">
+          <div class="clearfix"></div>
+          <h2 class="section-heading">200,000 Thousands of Papers</h2>
+          <p class="lead">200,000 thousands of published research paper from
+            <a target="_blank" href="http://labs.semanticscholar.org/corpus/">Open Research Corpus</a> in Computer Science, Neuroscience, and Biomedical are used to create visualization.</p>
+        </div>
+        <div class="col-lg-5 mr-auto">
+          <img class="img-fluid" src="./image/analytics.png" alt="">
+        </div>
+      </div>
+
+    </div>
+    <!-- /.container -->
+  </section>
+
+  <footer>
+    <div class="container text-center">
+      <p class="copyright text-muted small">Copyright &copy; Viz 2017. All Rights Reserved</p>
+    </div>
+  </footer>
+
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="./js/popper.min.js"></script>
