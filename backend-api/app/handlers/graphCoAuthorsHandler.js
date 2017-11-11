@@ -39,18 +39,6 @@ async function getPapersFromAuthorName(authorName) {
   });
 }
 
-async function dig(currLevel, maxLevel, sourceAuthorName, nodeLinks) {
-  const papers = await getPapersFromAuthorName(sourceAuthorName);
-
-  if (papers === null) {
-    logger.info(`No Papers found with author's Name: ${sourceAuthorName}`);
-  } else {
-    await Promise.all(papers.map(async paper => {
-      await findAuthorsFromPaper(paper, sourceAuthorName, currLevel, maxLevel, nodeLinks);
-    }));
-  }
-}
-
 async function findAuthorsFromPaper(paper, authorName, currLevel, maxLevel, nodeLinks) {
   if (currLevel <= maxLevel && paper !== undefined && !(paper.id in nodeLinks.papers)) {
     const {
@@ -64,7 +52,6 @@ async function findAuthorsFromPaper(paper, authorName, currLevel, maxLevel, node
       nodeLinks.nodes.push(minimizeAuthor(authorId, paper, currLevel));
     }
 
-    // logger.info("Authors: " + authors);
     if (authorId !== undefined) {
       await Promise.all(authors.map(async author => {
         const coAuthorId = author.ids[0] ? author.ids[0] : undefined;
@@ -79,10 +66,17 @@ async function findAuthorsFromPaper(paper, authorName, currLevel, maxLevel, node
               source: author.ids[0],
               target: authorId
             });
-            // logger.info(paper.title);
-            // logger.info("Source: " + author.ids[0] + " " + "Target: " + authorId);
+
             if ((currLevel + 1) < maxLevel) {
-              await dig(currLevel + 1, maxLevel, author.name, nodeLinks);
+              const papers = await getPapersFromAuthorName(author.name);
+
+              if (papers === null) {
+                logger.info(`No Papers found with author's Name: ${sourceAuthorName}`);
+              } else {
+                await Promise.all(papers.map(async paper => {
+                  await findAuthorsFromPaper(paper, author.name, currLevel+1, maxLevel, nodeLinks);
+                }));
+              }
             }
           }
         }
@@ -111,7 +105,6 @@ async function getCoAuthorsGraph(authorName, level) {
     logger.info(`No Papers found with author's Name: ${authorName}`);
   } else {
     await Promise.all(papers.map(async paper => {
-      // logger.info(paper.authors);
       await findAuthorsFromPaper(paper, authorName, 0, level, nodeLinks);
     }));
   }
