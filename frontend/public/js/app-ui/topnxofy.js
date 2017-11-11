@@ -63,7 +63,7 @@ cir.controller("QueryParamsController", [
       var results = data.results;
       return results
         .map(record => {
-          record["id"] = record.x.name || record.x.venue || record.x.title || record.x.id;
+          record["id"] = record.x.keyPhrase || record.x.year || record.x.name || record.x.venue || record.x.title || record.x.id;
           return record;
         })
         .sort((record1, record2) => {
