@@ -43,21 +43,6 @@ async function getPapersFromAuthorName(authorName) {
   });
 }
 
-async function dig(currLevel, maxLevel, sourceAuthorName, nodeLinks) {
-  const papers = await getPapersFromAuthorName(sourceAuthorName);
-
-  if (papers === null) {
-    logger.info({
-      handler: handlerName,
-      message: `unable to find paper with author name ${sourceAuthorName}`
-    });
-  } else {
-    await Promise.all(papers.map(async paper => {
-      await findAuthorsFromPaper(paper, sourceAuthorName, currLevel, maxLevel, nodeLinks);
-    }));
-  }
-}
-
 async function findAuthorsFromPaper(paper, authorName, currLevel, maxLevel, nodeLinks) {
   if (currLevel <= maxLevel && paper !== undefined && !(paper.id in nodeLinks.papers)) {
     const {
@@ -87,7 +72,18 @@ async function findAuthorsFromPaper(paper, authorName, currLevel, maxLevel, node
             });
 
             if ((currLevel + 1) < maxLevel) {
-              await dig(currLevel + 1, maxLevel, author.name, nodeLinks);
+              const papers = await getPapersFromAuthorName(author.name);
+
+              if (papers === null) {
+                logger.info({
+                  handler: handlerName,
+                  message: `unable to find paper with author name ${author.name}`
+                });
+              } else {
+                await Promise.all(papers.map(async paper => {
+                  await findAuthorsFromPaper(paper, author.name, currLevel+1, maxLevel, nodeLinks);
+                }));
+              }
             }
           }
         }
