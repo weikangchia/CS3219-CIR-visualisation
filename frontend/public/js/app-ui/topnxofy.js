@@ -85,9 +85,19 @@ cir.controller("QueryParamsController", [
       .type("bar")
       .container("#barchart")
       .id("id");
+    window.bc = barChart;
 
     function displayVisualization(data) {
       var barData = transformDataIntoBarData(data);
+
+      if (barData.length == 0) {
+        $("#barchart")
+          .html("No Data Available")
+          .css({
+            "text-align": "center",
+            "color": "red"
+          });
+      }
 
       var maxCount = barData.reduce(
         (max, record) => Math.max(max, record.count),
@@ -96,7 +106,6 @@ cir.controller("QueryParamsController", [
 
       var barDataIds = barData.map(record => record.id);
 
-      console.log(data)
       barChart
         .data(barData)
         .x({
@@ -108,7 +117,7 @@ cir.controller("QueryParamsController", [
           label: "Count"
         })
         .title(
-            "Top " +
+          "Top " +
             barData.length +
             " " +
             capitalize(data.x) +
@@ -118,7 +127,7 @@ cir.controller("QueryParamsController", [
             data.value
         )
         .title({
-          "sub": data.description
+          sub: data.description
         })
         .format({
           text: (text, params) => {
