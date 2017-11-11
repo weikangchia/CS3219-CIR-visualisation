@@ -68,8 +68,8 @@ cir.controller("QueryParamsController", [
       yValue: searchParams.get("value") || "ArXiv"
     };
 
-    function transformDataIntoBarData(data, domain) {
-      var itemId = _.find($scope.xCategories, { key: domain }).itemId;
+    function transformDataIntoBarData(data) {
+      var itemId = _.find($scope.xCategories, { key: data.x }).itemId;
       var results = data.results;
       return results
         .map(record => {
@@ -87,9 +87,8 @@ cir.controller("QueryParamsController", [
       .id("id");
 
     function displayVisualization(data) {
-      var barData = transformDataIntoBarData(data, data.x);
+      var barData = transformDataIntoBarData(data);
 
-      console.log(barData);
       var maxCount = barData.reduce(
         (max, record) => Math.max(max, record.count),
         0
@@ -97,6 +96,7 @@ cir.controller("QueryParamsController", [
 
       var barDataIds = barData.map(record => record.id);
 
+      console.log(data)
       barChart
         .data(barData)
         .x({
@@ -108,7 +108,7 @@ cir.controller("QueryParamsController", [
           label: "Count"
         })
         .title(
-          "Top " +
+            "Top " +
             barData.length +
             " " +
             capitalize(data.x) +
@@ -117,6 +117,9 @@ cir.controller("QueryParamsController", [
             ": " +
             data.value
         )
+        .title({
+          "sub": data.description
+        })
         .format({
           text: (text, params) => {
             if (text === "size") {
