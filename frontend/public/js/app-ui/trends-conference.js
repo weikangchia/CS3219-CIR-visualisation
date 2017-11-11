@@ -34,23 +34,6 @@ slider.noUiSlider.on("update", function() {
  * Conference inputs
  **/
 
-// url params
-$(() => {
-  let venues = $location.search()["venues"];
-  if (!venues) {
-    venues = "ArXiv";
-  }
-  venues.split(",").forEach((venue, i) => {
-    if (i > 0) {
-      addConferenceInput(venue);
-    } else {
-      $("[name=conferences]")
-        .eq(0)
-        .val(venue);
-    }
-  });
-});
-
 // inputs
 const maxFields = 5;
 let currentNumFields = 1;
@@ -85,50 +68,98 @@ function addConferenceInput(value) {
   }
 }
 
-$("#filterForm")
-  .on("click", ".addButton", () => addConferenceInput())
-  .submit(e => {
-    fakeLoader.show();
+function renderFormFromSearch() {
+  let { conferences, yearRange } = $location.search();
+  const $inputs = $("[name=conferences]");
 
-    let conferences = new Array();
-    conferences = $("#filterForm").serializeArray();
-    conferences.pop();
+  conferences = conferences || ["ArXiv"];
+  conferences = Array.isArray(conferences) ? conferences : [conferences];
+  conferences.forEach((venue, i) => {
+    const $input = $inputs.eq(i);
+    if ($input) {
+      $input.val(venue);
+    } else {
+      addKeyphraseInput(venue);
+    }
+  });
 
-    $location.search({
-      venues: conferences.map(conference => conference.value).join(",")
-    });
+  $inputs.slice(conferences.length).each((_, input) => {
+    input.value = "";
+  });
 
-    const yearRange = slider.noUiSlider.get();
+  if (yearRange) {
+    slider.noUiSlider.set(yearRange);
+  }
+}
 
-    const requests = [];
-    conferences.forEach(conference => {
-      requests.push(
-        axios.get(
-          `${API_HOST}/trends/publication?name=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
-        )
-      );
-    });
+function getFormParams() {
+  return {
+    conferences: $("#filterForm")
+      .serializeArray()
+      .map(kp => kp.value)
+      .slice(0, -1)
+      .filter(kp => kp !== ""),
+    yearRange: slider.noUiSlider.get()
+  };
+}
 
-    axios.all(requests).then(
-      axios.spread((...allData) => {
-        const parseData = [];
+function submitQuery() {
+  const { conferences, yearRange } = getFormParams();
 
-        allData.forEach((conference, i) => {
-          conference.data.forEach(data => {
-            parseData.push({
-              conference: conferences[i].value,
-              year: data.year,
-              count: data.count
-            });
-          });
-        });
-
-        updateVisualization(parseData);
-
-        fakeLoader.hide(500);
-      })
+  const requests = [];
+  conferences.forEach(conference => {
+    requests.push(
+      axios.get(
+        `${API_HOST}/trends/publication?name=${conference}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
+      )
     );
   });
+
+  axios.all(requests).then(
+    axios.spread((...allData) => {
+      const parseData = [];
+
+      allData.forEach((conference, i) => {
+        conference.data.forEach(data => {
+          parseData.push({
+            conference: conferences[i],
+            year: data.year,
+            count: data.count
+          });
+        });
+      });
+
+      updateVisualization(parseData);
+    })
+  );
+}
+
+/**
+ * UI Behaviors (Controller)
+ */
+
+// on submit
+$("#filterForm")
+  .on("click", ".addButton", () => addKeyphraseInput())
+  .submit(() => {
+    $location.search(getFormParams());
+  });
+
+function pageLoad() {
+  renderFormFromSearch();
+  submitQuery();
+}
+
+// on search change
+cir.run([
+  "$rootScope",
+  $rootScope => {
+    $rootScope.$on("$locationChangeStart", () => pageLoad());
+  }
+]);
+
+// on page load
+$(() => () => pageLoad());
 
 /**
   * D3 Visualisation
