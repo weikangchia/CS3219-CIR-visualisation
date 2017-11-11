@@ -26,11 +26,20 @@
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/nouislider.min.js"></script>
   <script src="./js/wNumb.js"></script>
+  <script src="./js/axios.min.js"></script>
+  <script src="./js/popper.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>  
+
+  <script src="./js/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="css/jquery-ui.css">
+
+  <script src="./js/utils.js"></script>
+  <script src="./js/cirfakeloader.js"></script>
+  <script src="./js/cir.js"></script>
 
 </head>
 
 <body ng-app="">
-  <div id="fakeLoader"></div>
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
@@ -66,7 +75,7 @@
             </div>
           </div>
 
-          <!-- template for confenrence input -->
+          <!-- template for conference input -->
           <div class="form-group row" id="optionTemplate" hidden>
             <div class="col-10">
               <label class="sr-only" for="inlineFormInputGroup">Keyphrase</label>
@@ -111,6 +120,8 @@
 
   <!-- filter script -->
   <script>
+    const fakeLoader = new CirFakeLoader();        
+
     // scripts for year slider
     const slider = document.getElementById('slider');
 
@@ -197,6 +208,8 @@
   <!-- d3 Script -->
   <script>
     function updateVisualization(data) {
+      fakeLoader.hide();
+
       $("#graph").empty();
       var visualization = d3plus.viz()
         .container("#graph")
@@ -233,11 +246,23 @@
 
   </script>
 
-  <!-- Optional JavaScript -->
-  <script src="./js/axios.min.js"></script>
-  <script src="./js/popper.min.js"></script>
-  <script src="./js/bootstrap.min.js"></script>
-  <script src="./js/utils.js"></script>
+  <!-- autocomplete -->
+  <script>
+    $(function(){
+      $("#inlineFormInputGroup").autocomplete({
+        source: function(req, updateList) {
+          var searchParams = new URLSearchParams();
+          searchParams.set("domain", "keyphrase");
+          searchParams.set("search", req.term);
+          var url = API_HOST + "/autocomplete?" + searchParams.toString();
+          $.ajax({
+            url: url,
+            success: updateList
+          });
+        }
+      });
+    })
+  </script>
 
 </body>
 

@@ -1,5 +1,9 @@
+const commonErrorResponse = require("../common").errorResponse;
+
 let logger;
 let db;
+
+const handlerName = "graphCoauthorsHandler";
 
 function minimizeAuthor(authorId, paper, level) {
   const selectedAuthor = paper.authors.find(author => author.ids[0] === authorId);
@@ -71,7 +75,10 @@ async function findAuthorsFromPaper(paper, authorName, currLevel, maxLevel, node
               const papers = await getPapersFromAuthorName(author.name);
 
               if (papers === null) {
-                logger.info(`No Papers found with author's Name: ${sourceAuthorName}`);
+                logger.info({
+                  handler: handlerName,
+                  message: `unable to find paper with author name ${sourceAuthorName}`
+                });
               } else {
                 await Promise.all(papers.map(async paper => {
                   await findAuthorsFromPaper(paper, author.name, currLevel+1, maxLevel, nodeLinks);
@@ -102,7 +109,10 @@ async function getCoAuthorsGraph(authorName, level) {
   const papers = await getPapersFromAuthorName(authorName);
 
   if (papers === null) {
-    logger.info(`No Papers found with author's Name: ${authorName}`);
+    logger.info({
+      handler: handlerName,
+      message: `unable to find paper with author name ${authorName}`
+    });
   } else {
     await Promise.all(papers.map(async paper => {
       await findAuthorsFromPaper(paper, authorName, 0, level, nodeLinks);
@@ -123,9 +133,19 @@ function handler(options) {
 
   return (req, res) => {
     const params = req.query;
-    const authorName = params.author.trim() || "";
+
+    if (!("author" in params)) {
+      res.status(400).send(JSON.stringify(commonErrorResponse.invalidField));
+    }
+
+    const authorName = params.author.trim();
     const level = parseInt(params.levels, 10) || 2;
-    logger.info(level);
+
+    logger.info({
+      handler: handlerName,
+      authorName,
+      maxLevel: level
+    });
 
     getCoAuthorsGraph(authorName, level).then(result => {
       res.send(JSON.stringify(result));
