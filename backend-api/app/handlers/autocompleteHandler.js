@@ -1,5 +1,8 @@
 module.exports = options => {
-  const { logger, db } = options;
+  const {
+    logger,
+    db
+  } = options;
 
   const domains = {
     venue: {
@@ -37,9 +40,17 @@ module.exports = options => {
   function autocomplete(params) {
     return new Promise((resolve, reject) => {
       let match;
-      const { domain, search } = params;
+      const {
+        domain,
+        search
+      } = params;
 
-      let { groupBy, unwind, getMatch, project } = domains[domain];
+      const {
+        groupBy,
+        unwind,
+        getMatch,
+        project
+      } = domains[domain];
 
       if (getMatch) {
         match = getMatch(params);
@@ -51,7 +62,9 @@ module.exports = options => {
         };
       }
 
-      const group = { _id: `$${groupBy}` };
+      const group = {
+        _id: `$${groupBy}`
+      };
 
       const pipeline = [];
 
@@ -93,8 +106,9 @@ module.exports = options => {
     logger.info("Retrieving autocomplete search from database");
 
     const params = req.query;
-    let { domain } = params;
-    let limit;
+    let {
+      domain
+    } = params;
 
     params.limit = params.topN || 5;
 
@@ -103,12 +117,15 @@ module.exports = options => {
     }
 
     if (validDomains.indexOf(domain) >= 0) {
-      return autocomplete(
-        ({ domain, topN: limit = 5, search } = params)
-      ).then(results => {
+      return autocomplete(({
+        domain,
+        topN: limit = 5,
+        search
+      } = params)).then(results => {
         res.send(JSON.stringify(results));
       });
     }
+
     return res.status(404).send("INVALID_DOMAIN");
   };
 };

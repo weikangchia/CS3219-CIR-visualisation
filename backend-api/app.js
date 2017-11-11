@@ -15,8 +15,7 @@ app.use(morgan("dev"));
 
 // init database connection
 mongoose.connect(
-  process.env.MONGO_DB_URI,
-  {
+  process.env.MONGO_DB_URI, {
     useMongoClient: true
   },
   err => {
@@ -49,18 +48,20 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => {
   const result = {
-    msg: "hello world"
+    message: "hello world"
   };
-  res.send(JSON.stringify(result));
+  res.status(200).send(JSON.stringify(result));
 });
 
 app.get("/top-X-of-Y", handlers.topNXofYHandler);
 
-app.get("/trends/publication", handlers.trendPublicationHandler);
+app.get("/trends/conference", handlers.trendConferenceHandler);
 
 app.get("/trends/keyphrase", handlers.trendKeyPhraseHandler);
 
 app.get("/graphs/incitation", handlers.graphIncitationHandler);
+
+app.get("/graphs/coauthors", handlers.graphCoauthorsHandler);
 
 app.get("/autocomplete", handlers.autocompleteHandler);
 

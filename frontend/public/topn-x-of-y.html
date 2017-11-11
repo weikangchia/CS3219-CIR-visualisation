@@ -40,7 +40,7 @@
   <div class="container">
     <div class="row">
         <div class="col">
-          <h1>Top N X of Y</h1>
+          <h1>Top-N X of Y</h1>
           <p>Visualization of a generic query of top objects in a domain</p>
         </div>
     </div>
@@ -57,7 +57,10 @@
       </div>
       <div class="col col-12 col-md-4 order-1 order-md-2">
         <div class="row" ng-controller="QueryParamsController">
-          <div class="col">
+          <div class="col-12">
+              <h5>Filtering</h5>
+          </div>
+          <div class="col-12">
             <div class="form-group">
               Limit
               <input class="form-control" ng-model="query.topN" min="2" max="10" type="number" ng-model="query.topN">                
@@ -82,7 +85,7 @@
               <input class="domain-selector" ng-model="query.yValue" placeholder="Search {{ query.yCategoryValue }}">
             </div>
 
-            <button  class="btn btn-info" ng-click="reloadWithParams()">Go</button>   
+            <button  class="btn btn-sm btn-primary" ng-click="reloadWithParams()">Submit</button>   
           </div>
         </div>
       </div>

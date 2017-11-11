@@ -1,7 +1,7 @@
 class CirFakeLoader {
   /**
-  * Initialise the fakeloader animation.
-  */
+   * Initialise the fakeloader animation.
+   */
   constructor(parentSelector, hide) {
     const $parent = $(parentSelector || "body");
     this.$fakeLoader = $("<div id='fakeLoader'></div>");
@@ -18,18 +18,14 @@ class CirFakeLoader {
   }
 
   /**
-  * Hide the fakeloader animation.
-  */
-  hide(delay) {
-    if (delay) {
-      this.$fakeLoader.hide(delay);
-    } else {
-      this.$fakeLoader.hide();
-    }
+   * Hide the fakeloader animation.
+   */
+  hide() {
+    this.$fakeLoader.hide();
   }
   /**
-  * Show the fakeloader animation.
-  */
+   * Show the fakeloader animation.
+   */
   show() {
     this.$fakeLoader.show();
   }
