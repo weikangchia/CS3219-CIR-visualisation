@@ -23,16 +23,21 @@
   <script src="./js/d3plus.full.min.js"></script>
   <script src="./js/jquery.min.js"></script>
   <script src="./js/angular.min.js"></script>
+  <script src="./js/axios.min.js"></script>
+  <script src="./js/popper.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/nouislider.min.js"></script>
   <script src="./js/wNumb.js"></script>
   <script src="./js/utils.js"></script>
+  <script src="./js/cirfakeloader.js"></script>
   <script src="./js/cir.js"></script>  
 
+  <script src="./js/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="css/jquery-ui.css">
 </head>
 
 <body ng-app="">
-  <div id="fakeLoader"></div>
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
@@ -114,7 +119,7 @@
   <!-- filter script -->
   <script>
     // init fakeloader
-    initFakeLoader();
+    const fakeLoader = new CirFakeLoader();
 
     // scripts for year slider
     const slider = document.getElementById('slider');
@@ -167,7 +172,7 @@
         }
       })
       .submit(() => {
-        showFakeLoader();
+        fakeLoader.show();
 
         let conferences = new Array();
         conferences = $("#filterForm").serializeArray();
@@ -198,7 +203,7 @@
 
             updateVisualization(parseData);
 
-            hideFakeLoader();
+            fakeLoader.hide(500);
           }));
       });
 
@@ -243,10 +248,24 @@
 
   </script>
 
-  <!-- Optional JavaScript -->
-  <script src="./js/axios.min.js"></script>
-  <script src="./js/popper.min.js"></script>
-  <script src="./js/bootstrap.min.js"></script>
+  <!-- autocomplete -->
+  <script>
+  $(function(){
+    $("#inlineFormInputGroup").autocomplete({
+      source: function(req, updateList) {
+        var searchParams = new URLSearchParams();
+        searchParams.set("domain", "venue");
+        searchParams.set("search", req.term);
+        var url = API_HOST + "/autocomplete?" + searchParams.toString();
+        $.ajax({
+          url: url,
+          success: updateList
+        });
+      }
+    });
+  })
+  </script>
+
 </body>
 
 </html>

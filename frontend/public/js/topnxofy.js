@@ -9,46 +9,46 @@ cir.controller("QueryParamsController", [
     $scope.xCategories = [
       {
         display: "Papers",
-        key: "paper"
+        key: "paper",
       },
       {
         display: "Authors",
-        key: "authors"
+        key: "author"
       },
       {
         display: "Conferences",
-        key: "conference"
+        key: "venue"
       },
       {
-        display: "Citations",
-        key: "citation"
+        display: "Key Phrase",
+        key: "keyphrase"
       },
       {
-        display: "Venues",
-        key: "venues"
-      },
-      {
-        display: "Base Papers",
-        key: "base-papers"
+        display: "Year",
+        key: "year"
       }
     ];
 
     $scope.yCategories = [
       {
-        display: "Venue",
-        key: "venues"
+        display: "Papers",
+        key: "paper",
       },
       {
-        display: "Author",
-        key: "authors"
+        display: "Authors",
+        key: "author"
       },
       {
-        display: "Cited Author",
-        key: "cited-authors"
+        display: "Conferences",
+        key: "venue"
       },
       {
-        display: "Cited By Author",
-        key: "cited-by-authors"
+        display: "Key Phrase",
+        key: "keyphrase"
+      },
+      {
+        display: "Year",
+        key: "year"
       }
     ];
 
@@ -57,9 +57,9 @@ cir.controller("QueryParamsController", [
     $scope.query = {
       topN: parseInt(searchParams.get("topN")) || 3,
       xCategoryValue:
-        searchParams.get("x") || "authors" || $scope.xCategories[0]["key"],
+        searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
       yCategoryValue:
-        searchParams.get("y") || "venues" || $scope.yCategories[0]["key"],
+        searchParams.get("y") || "venue" || $scope.yCategories[0]["key"],
       yValue: searchParams.get("value") || "ArXiv"
     };
 
@@ -67,7 +67,7 @@ cir.controller("QueryParamsController", [
       var results = data.results;
       return results
         .map(record => {
-          record["id"] = record.x.name || record.x.title || record.x.id;
+          record["id"] = record.x.name || record.x.venue || record.x.title || record.x.id;
           return record;
         })
         .sort((record1, record2) => {

@@ -5,9 +5,8 @@ const FRONTEND_HOST = "http://localhost:9000";
  * See https://paulund.co.uk/capitalize-first-letter-string-javascript
  * @param {*} string 
  */
-function capitalize(string) 
-{
-    return string.charAt(0).toUpperCase() + string.slice(1);
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 /**
@@ -18,32 +17,7 @@ function capitalize(string)
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
-}
-
-/**
- * Initialize the fakeloader animation.
- */
-function initFakeLoader() {
-  $("#fakeLoader").fakeLoader({
-    zIndex: "999",
-    spinner: "spinner1",
-    bgColor: "#2ecc71"
-  });
-}
-
-/**
- * Hide the fakeloader animation.
- */
-function hideFakeLoader() {
-  $("#fakeLoader").hide();
-}
-
-/**
- * Show the fakeloader animation.
- */
-function showFakeLoader() {
-  $("#fakeLoader").show();
+  return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive
 }
 
 /**
@@ -200,7 +174,7 @@ function showError(err) {
       "text-align": "center",
       background: "red",
       color: "white",
-      display: "block",
+      display: "block"
     });
   $("body").append($error);
 }
