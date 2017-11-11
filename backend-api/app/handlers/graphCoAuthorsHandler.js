@@ -113,7 +113,10 @@ async function getCoAuthorsGraph(authorName, level) {
   const papers = await getPapersFromAuthorName(authorName);
 
   if (papers === null) {
-    logger.info(`No Papers found with author's Name: ${authorName}`);
+    logger.info({
+      handler: handlerName,
+      message: `unable to find paper with author name ${authorName}`
+    });
   } else {
     await Promise.all(papers.map(async paper => {
       await findAuthorsFromPaper(paper, authorName, 0, level, nodeLinks);
