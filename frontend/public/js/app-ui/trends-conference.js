@@ -70,16 +70,16 @@ function addConferenceInput(value) {
 
 function renderFormFromSearch() {
   let { conferences, yearRange } = $location.search();
-  const $inputs = $("[name=conferences]");
-
+  const $inputs = $("[name=conferences]").slice(0, -1);
+  console.log($inputs);
   conferences = conferences || ["ArXiv"];
   conferences = Array.isArray(conferences) ? conferences : [conferences];
   conferences.forEach((venue, i) => {
-    const $input = $inputs.eq(i);
-    if ($input) {
-      $input.val(venue);
+    console.log(i, $inputs.length);
+    if (i >= $inputs.length) {
+      addConferenceInput(venue);
     } else {
-      addKeyphraseInput(venue);
+      $inputs.eq(i).val(venue);
     }
   });
 
@@ -140,7 +140,7 @@ function submitQuery() {
 
 // on submit
 $("#filterForm")
-  .on("click", ".addButton", () => addKeyphraseInput())
+  .on("click", ".addButton", () => addConferenceInput())
   .submit(() => {
     $location.search(getFormParams());
   });
