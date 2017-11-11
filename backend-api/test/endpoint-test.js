@@ -188,7 +188,8 @@ describe("/GET trends/conference", () => {
   });
 
   it("it should GET an array of conference trends", done => {
-    const expectedResult = [{
+    const expectedResult = [
+      {
         count: 1,
         year: 2015
       },
