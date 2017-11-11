@@ -3,6 +3,8 @@ const commonErrorResponse = require("../common").errorResponse;
 let db;
 let logger;
 
+const handlerName = "trendKeyPhraseHandler";
+
 async function getPapers(filter, projection) {
   const Paper = db.model("Paper");
 
@@ -70,6 +72,13 @@ function handler(options) {
     const phrase = params.phrase.trim();
     const minYear = parseInt(params.minYear, 10) || 1800;
     const maxYear = parseInt(params.maxYear, 10) || 1800;
+
+    logger.info({
+      handler: handlerName,
+      phrase,
+      minYear,
+      maxYear
+    });
 
     getKeyphraseTrends(phrase, minYear, maxYear).then(result => {
       res.status(200).send(JSON.stringify(result));
