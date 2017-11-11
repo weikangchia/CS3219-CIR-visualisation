@@ -31,7 +31,7 @@
   <script src="./js/wNumb.js"></script>
   <script src="./js/utils.js"></script>
   <script src="./js/cirfakeloader.js"></script>
-  <script src="./js/cir.js"></script>  
+  <script src="./js/cir.js"></script>
 
   <script src="./js/jquery-ui.min.js"></script>
   <link rel="stylesheet" href="css/jquery-ui.css">
@@ -183,7 +183,7 @@
         const requests = [];
         conferences.forEach((conference) => {
           requests.push(axios.get(
-            `${API_HOST}/trends/publication?name=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
+            `${API_HOST}/trends/conference?name=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
           ));
         });
 
@@ -203,7 +203,7 @@
 
             updateVisualization(parseData);
 
-            fakeLoader.hide(500);
+            fakeLoader.hide();
           }));
       });
 
@@ -228,8 +228,8 @@
         .y({
           "value": "count",
           "label": "No. of Publications"
-        }) // key to use for y-axis
-        .x("year") // key to use for x-axis
+        })
+        .x("year")
         .format({
           "text": (text, params) => {
             if (text === "count") {
@@ -250,20 +250,21 @@
 
   <!-- autocomplete -->
   <script>
-  $(function(){
-    $("#inlineFormInputGroup").autocomplete({
-      source: function(req, updateList) {
-        var searchParams = new URLSearchParams();
-        searchParams.set("domain", "venue");
-        searchParams.set("search", req.term);
-        var url = API_HOST + "/autocomplete?" + searchParams.toString();
-        $.ajax({
-          url: url,
-          success: updateList
-        });
-      }
-    });
-  })
+    $(function () {
+      $("#inlineFormInputGroup").autocomplete({
+        source: function (req, updateList) {
+          var searchParams = new URLSearchParams();
+          searchParams.set("domain", "venue");
+          searchParams.set("search", req.term);
+          var url = API_HOST + "/autocomplete?" + searchParams.toString();
+          $.ajax({
+            url: url,
+            success: updateList
+          });
+        }
+      });
+    })
+
   </script>
 
 </body>

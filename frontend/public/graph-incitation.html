@@ -124,15 +124,12 @@
         $("#graph").empty();
         var visualization = d3plus.viz()
           .container("#graph")
-          .type("network")
+          .type("rings")
           .data(data.nodes)
           .edges(data.links)
           .edges({
             "arrows": 4,
             "strength": 1.4
-          })
-          .size({
-            value: 5
           })
           .id("id")
           .width({
