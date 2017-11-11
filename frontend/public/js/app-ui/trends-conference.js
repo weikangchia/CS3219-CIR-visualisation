@@ -11,11 +11,11 @@ const fakeLoader = new CirFakeLoader();
 const slider = document.getElementById("slider");
 
 noUiSlider.create(slider, {
-  start: [1800, 2017],
+  start: [1920, 2017],
   connect: true,
   padding: 0,
   range: {
-    min: 1800,
+    min: 1920,
     max: 2017
   },
   step: 1,
@@ -134,7 +134,7 @@ function submitQuery() {
         });
       });
 
-      updateVisualization(parseData);
+      updateVisualization(parseData, `Number of Publications for ${conferences.length} Conference${conferences.length > 1 ? 's' : ''} from ${yearRange[0]} to ${yearRange[1]}`);
     })
   );
 }
@@ -170,7 +170,7 @@ $(() => () => pageLoad());
  * D3 Visualisation
  */
 
-function updateVisualization(data) {
+function updateVisualization(data, title) {
   $("#graph").empty();
   var visualization = d3plus
     .viz()
@@ -179,6 +179,7 @@ function updateVisualization(data) {
     .type("line")
     .id("conference")
     .text("conference")
+    .title(title)
     .width({
       value: $("#graph").width()
     })
