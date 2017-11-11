@@ -25,6 +25,7 @@
   <script src="./js/angular.min.js"></script>
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/nouislider.min.js"></script>
+  <script src="./js/cirfakeloader.js"></script>
   <script src="./js/wNumb.js"></script>
   <script src="./js/utils.js"></script>
 </head>
@@ -36,8 +37,8 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        <h1>Citation Web</h1>
-        <p>A citation web for a base author. Up to 2 levels of co-authors is created (i.e. if the base author is A, capture
+        <h1>Coauthor Graph</h1>
+        <p>A author graph for a base author. Up to 3 levels of base coauthor is created (i.e. if the base author is A, capture
           up to C: B published the paper with A, and C published the paper with B, so A
           <- B <- C) </p>
       </div>
@@ -56,7 +57,8 @@
             <input class="form-control" id="name" placeholder="Author Name">
           </div>
 
-          <h6>Level &#40;<span id="current-level">2</span>&#41;</h6>
+          <h6>Level &#40;
+            <span id="current-level">2</span>&#41;</h6>
           <div class="form-group row">
             <div class="col-12">
               <div id="slider"></div>
@@ -76,7 +78,7 @@
     <!-- filter script -->
     <script>
       // init fakeloader
-      initFakeLoader();
+      const fakeLoader = new CirFakeLoader();
 
       // scripts for year slider
       const slider = document.getElementById('slider');
@@ -101,7 +103,7 @@
 
       // scripts for the input
       $("#filterForm").submit(() => {
-        showFakeLoader();
+        fakeLoader.show();
 
         const currentLevel = slider.noUiSlider.get()[0];
         const name = $("#name").val();
@@ -111,27 +113,25 @@
         ).then(
           response => {
             updateVisualization(response.data);
-            hideFakeLoader();
+            fakeLoader.hide();
           });
       });
 
     </script>
 
-  <!-- d3 Script -->
-   <script>
+    <!-- d3 Script -->
+    <script>
       function updateVisualization(data) {
         $("#graph").empty();
         var visualization = d3plus.viz()
           .container("#graph")
-          .type("network")
+          .type("rings")
+          .focus(data.nodes[0].id)
           .data(data.nodes)
           .edges(data.links)
           .edges({
             "arrows": 4,
             "strength": 1.4
-          })
-          .size({
-            value: 5
           })
           .id("id")
           .width({
@@ -152,8 +152,8 @@
               const viewUrl = googleScholarSearchUrl(node.title);
 
               const htmlText =
-                `<h6>${node.title} (Level: ${node.level})</h6>` +
-                `<b>Author:</b> ${node.author}<br/>`;
+                `<h6>${node.author}</h6>` +
+                `<b>Paper:</b> ${node.title}`;
 
               return htmlText;
             }
