@@ -10,17 +10,17 @@ const mockgoose = new Mockgoose(mongoose);
 
 const server = require("../app");
 
-const should = chai.should();
-const expect = { chai };
-
+chai.should();
 chai.use(chaiHttp);
+
+const invalidFieldCode = 400;
+const invalidFieldMessage = "Missing field/invalid field.";
 
 let Paper;
 before(done => {
   mockgoose.prepareStorage().then(() => {
     mongoose.connect(
-      "mongodb://example.com/cs3219",
-      {
+      "mongodb://example.com/cs3219", {
         useMongoClient: true
       },
       err => {
@@ -42,22 +42,6 @@ describe("/GET index", () => {
         res.body.should.be.a("object");
         res.body.should.have.property("message");
         res.body.message.should.equal("hello world");
-        done();
-      });
-  });
-});
-
-describe("autocomplete", () => {
-  it("it should return some results", function(done) {
-    this.timeout(5000);
-    chai
-      .request(server)
-      .get("/autocomplete?search=a&domain=author")
-      .end((err, res) => {
-        expect(err).equals(null);
-        res.should.have.status(200);
-        res.body.should.be.a("array");
-        res.body.length.should.be.gt(0);
         done();
       });
   });
@@ -116,6 +100,9 @@ describe("/GET trends/keyphrase", () => {
       .get("/trends/keyphrase")
       .end((err, res) => {
         res.should.have.status(400);
+        res.body.should.be.a("object");
+        res.body.error.code.should.equal(invalidFieldCode);
+        res.body.error.message.should.equal(invalidFieldMessage);
         done();
       });
   });
@@ -155,6 +142,122 @@ describe("/GET trends/keyphrase", () => {
 
         res.body[3].year.should.equal("1803");
         res.body[3].count.should.equal(0);
+        done();
+      });
+  });
+});
+
+describe("/GET trends/conference", () => {
+  beforeEach(() => {
+    sinon.stub(Paper, "aggregate");
+  });
+
+  afterEach(() => {
+    Paper.aggregate.restore();
+  });
+
+  it("it should return 400 for empty name", done => {
+    chai
+      .request(server)
+      .get("/trends/conference")
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.be.a("object");
+        res.body.error.code.should.equal(invalidFieldCode);
+        res.body.error.message.should.equal(invalidFieldMessage);
+        done();
+      });
+  });
+
+  it("it should use default minYear and maxYear", done => {
+    const expectedResult = [];
+
+    Paper.aggregate.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/trends/conference?name=icse")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        res.body.length.should.equal(1);
+        res.body[0].year.should.equal(1800);
+        res.body[0].count.should.equal(0);
+        done();
+      });
+  });
+
+  it("it should GET an array of conference trends", done => {
+    const expectedResult = [
+      {
+        count: 1,
+        year: 2015
+      },
+      {
+        count: 1,
+        year: 2016
+      }
+    ];
+
+    Paper.aggregate.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/trends/conference?name=icse&minYear=2015&maxYear=2017")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        res.body.length.should.equal(3);
+        done();
+      });
+  });
+});
+
+describe("/GET graphs/incitation", () => {
+  beforeEach(() => {
+    sinon.stub(Paper, "findOne");
+  });
+
+  afterEach(() => {
+    Paper.findOne.restore();
+  });
+
+  it("it should return 400 for empty title", done => {
+    chai
+      .request(server)
+      .get("/graphs/incitation")
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.be.a("object");
+        res.body.error.code.should.equal(invalidFieldCode);
+        res.body.error.message.should.equal(invalidFieldMessage);
+        done();
+      });
+  });
+
+  it("it should return 200", done => {
+    const expectedResult = {
+      id: 123,
+      authors: [],
+      title: "abc",
+      year: 2017,
+      abstract: "abstract test",
+      pdfUrls: [],
+      inCitations: ["246"]
+    };
+
+    Paper.findOne.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/graphs/incitation?title=abc")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        res.body.should.have.property("nodes");
+        res.body.should.have.property("links");
+
+        res.body.nodes.length.should.equal(1);
         done();
       });
   });

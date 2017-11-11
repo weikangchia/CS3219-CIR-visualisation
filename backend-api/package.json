@@ -7,7 +7,8 @@
     "url": "git@github.com:weikangchia/CS3219-CIR-visualisation.git"
   },
   "scripts": {
-    "test": "nyc --reporter=lcov --reporter=text mocha --timeout 120000 -R spec --exit && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage",
+    "test": "nyc --reporter=lcov --reporter=text mocha --timeout 120000 -R spec --exit",
+    "test-coverage": "nyc --reporter=lcov --reporter=text mocha --timeout 120000 -R spec --exit && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage",
     "start": "nodemon app.js"
   },
   "author": "",
