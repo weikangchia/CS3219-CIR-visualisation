@@ -58,4 +58,4 @@ test-api-server:
         code: |
           cd backend-api
           npm install
-          npm run test-endpoints
+          npm test

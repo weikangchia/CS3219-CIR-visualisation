@@ -19,6 +19,11 @@
     "arrow-parens": ["error", "as-needed"],
     "no-underscore-dangle": ["error", {
       "allow": ["_id"]
-    }]
+    }],
+    "import/no-extraneous-dependencies": [
+      2, {
+        "devDependencies": true
+      }
+    ]
   }
 }
