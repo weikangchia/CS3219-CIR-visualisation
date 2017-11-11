@@ -24,7 +24,7 @@ noUiSlider.create(slider, {
   })
 });
 
-slider.noUiSlider.on("update", function() {
+slider.noUiSlider.on("update", function () {
   const yearSliderValue = slider.noUiSlider.get();
   $("#yearStart").text(yearSliderValue[0]);
   $("#yearEnd").text(yearSliderValue[1]);
@@ -32,7 +32,7 @@ slider.noUiSlider.on("update", function() {
 
 /**
  * Conference inputs
- **/
+ */
 
 // inputs
 const maxFields = 5;
@@ -69,7 +69,10 @@ function addConferenceInput(value) {
 }
 
 function renderFormFromSearch() {
-  let { conferences, yearRange } = $location.search();
+  let {
+    conferences,
+    yearRange
+  } = $location.search();
   const $inputs = $("[name=conferences]").slice(0, -1);
 
   conferences = conferences || ["ArXiv"];
@@ -103,13 +106,16 @@ function getFormParams() {
 }
 
 function submitQuery() {
-  const { conferences, yearRange } = getFormParams();
+  const {
+    conferences,
+    yearRange
+  } = getFormParams();
 
   const requests = [];
   conferences.forEach(conference => {
     requests.push(
       axios.get(
-        `${API_HOST}/trends/publication?name=${conference}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
+        `${API_HOST}/trends/conference?name=${conference}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
       )
     );
   });
@@ -161,8 +167,8 @@ cir.run([
 $(() => () => pageLoad());
 
 /**
-  * D3 Visualisation
-  */
+ * D3 Visualisation
+ */
 
 function updateVisualization(data) {
   $("#graph").empty();
@@ -201,12 +207,12 @@ function updateVisualization(data) {
 }
 
 /**
-* Auto-complete
-*/
+ * Auto-complete
+ */
 
 function attachAutocomplete($dom) {
   $dom.autocomplete({
-    source: function(req, updateList) {
+    source: function (req, updateList) {
       var searchParams = new URLSearchParams();
       searchParams.set("domain", "venue");
       searchParams.set("search", req.term);
@@ -219,6 +225,6 @@ function attachAutocomplete($dom) {
   });
 }
 // attach to first input
-$(function() {
+$(function () {
   attachAutocomplete($("#inlineFormInputGroup"));
 });

@@ -24,7 +24,7 @@ noUiSlider.create(slider, {
   })
 });
 
-slider.noUiSlider.on("update", function() {
+slider.noUiSlider.on("update", function () {
   const yearSliderValue = slider.noUiSlider.get();
   $("#yearStart").text(yearSliderValue[0]);
   $("#yearEnd").text(yearSliderValue[1]);
@@ -68,16 +68,19 @@ function addKeyphraseInput(value) {
 }
 
 function renderFormFromSearch() {
-  let { keyphrases, yearRange } = $location.search();
+  let {
+    keyphrases,
+    yearRange
+  } = $location.search();
   const $inputs = $("[name=keyphrases]").slice(0, -1);
 
   keyphrases = keyphrases || ["NLPR"];
   keyphrases = Array.isArray(keyphrases) ? keyphrases : [keyphrases];
   keyphrases.forEach((keyphrase, i) => {
     if (i >= $inputs.length) {
-      addKeyphraseInput(venue);
+      addKeyphraseInput(keyphrase);
     } else {
-      $inputs.eq(i).val(venue);
+      $inputs.eq(i).val(keyphrase);
     }
   });
 
@@ -102,7 +105,10 @@ function getFormParams() {
 }
 
 function submitQuery() {
-  const { keyphrases, yearRange } = getFormParams();
+  const {
+    keyphrases,
+    yearRange
+  } = getFormParams();
 
   const requests = [];
   keyphrases.forEach(keyphrase => {
@@ -206,7 +212,7 @@ function updateVisualization(data) {
 
 function attachAutocomplete($dom) {
   $dom.autocomplete({
-    source: function(req, updateList) {
+    source: function (req, updateList) {
       var searchParams = new URLSearchParams();
       searchParams.set("domain", "keyphrase");
       searchParams.set("search", req.term);
@@ -219,6 +225,6 @@ function attachAutocomplete($dom) {
   });
 }
 // attach to first input
-$(function() {
+$(function () {
   attachAutocomplete($("#inlineFormInputGroup"));
 });
