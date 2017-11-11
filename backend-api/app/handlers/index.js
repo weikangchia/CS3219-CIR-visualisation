@@ -6,11 +6,8 @@
 module.exports = function (option) {
   return {
     topNXofYHandler: require("./topXofYHandler")(option),
-    trendConferenceHandler: require("./trendConferenceHandler")(option),
+    trendPublicationHandler: require("./trendPublicationHandler")(option),
     trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option),
-    autocompleteHandler: require("./autocompleteHandler")(option),
-    graphCoauthorsHandler: require("./graphCoauthorsHandler")(option),
     graphIncitationHandler: require("./graphIncitationHandler")(option)
   };
 };
-/* eslint-enable global-require */

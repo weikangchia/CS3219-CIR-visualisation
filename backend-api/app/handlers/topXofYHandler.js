@@ -1,141 +1,145 @@
 let logger;
 let db;
 
-const selects = {
-  author: "authors",
-  venue: "venue",
-  keyphrase: "keyPhrases",
-  year: "year",
-  paper:
-  "id title authors venue inCitations outCitations year abstract keyPhrases"
-};
-
-const entities = {
-  author: {
-    select: selects.author,
-    getGroupKeys(paper) {
-      const keys = [];
-      paper.authors.forEach(author => {
-        if (author.ids.length !== 0) {
-          keys.push({
-            id: author.ids[0],
-            obj: author,
-            count: 1
-          });
-        }
-      }, this);
-      return keys;
-    },
-    getFilter(y, value) {
-      if (y && value) {
-        return {
-          'authors.name': value
-        };
-      }
-      return {};
-    }
-  },
-  venue: {
-    select: selects.venue,
-    getGroupKeys(paper) {
-      if (paper.venue && (!paper.venue.trim || paper.venue.trim() !== "")) {
-        return [{
-          id: paper.venue,
-          obj: {
-            venue: paper.venue
-          },
-          count: 1
-        }];
-      }
-      return [];
-    },
-    getFilter(y, value) {
-      const filterY = {};
-      if (y && value) {
-        filterY[y] = value;
-      }
-      return filterY;
-    }
-  },
-  keyphrase: {
-    select: selects.keyphrase,
-    getGroupKeys(paper) {
-      return paper.keyPhrases.map(keyPhrase => {
-        return {
-          id: keyPhrase,
-          obj: {
-            keyPhrase
-          },
-          count: 1
-        };
-      }, this);
-    },
-    getFilter(y, value) {
-      if (y && value) {
-        return { keyPhrases: value };
-      }
-      return {};
-    }
-  },
-  year: {
-    select: selects.year,
-    getGroupKeys(paper) {
-      if (paper.year && (!paper.year.trim || paper.year.trim() !== "")) {
-        return [{
-          id: paper.year,
-          obj: {
-            year: paper.year
-          },
-          count: 1
-        }];
-      }
-      return [];
-    },
-    getFilter(y, value) {
-      const filterY = {};
-      if (y && value && !Number.isNaN(value)) {
-        filterY[y] = value;
-      }
-      return filterY;
-    }
-  },
-  paper: {
-    select: selects.paper,
-    getGroupKeys(paper) {
-      const paperObj = {
-        title: paper.title,
-        authors: paper.authors,
-        venue: paper.venue,
-        inCitations: paper.inCitations,
-        outCitations: paper.outCitations,
-        year: paper.year,
-        abstract: paper.abstract,
-        keyPhrases: paper.keyPhrases
-      };
-
-      const key = {
-        id: paper.id,
-        obj: paperObj,
-        count: paper.inCitations.length
-      };
-      return [key];
-    },
-    getFilter(y, value) {
-      if (y && value) {
-        return { title: value };
-      }
-      return {};
-    }
+/**
+ * Returns appropriate select depending on x.
+ * Default is paper if x empty.
+ *
+ * @param {string} x domain
+ */
+function getSelect(x) {
+  let toReturn = "";
+  if (x === "author") {
+    toReturn = "authors";
+  } else if (x === "venue") {
+    toReturn = "venue";
+  } else if (x === "keyphrase") {
+    toReturn = "keyPhrases";
+  } else if (x === "year") {
+    toReturn = "year";
+  } else {
+    // default is paper
+    toReturn = "id title authors venue inCitations outCitations year abstract keyPhrases";
   }
-};
+  return toReturn;
+}
 
-function sanitizeXorY(xOrY) {
-  if (xOrY === "authors") {
-    xOrY = "author";
-  } else if (xOrY === "venues") {
-    xOrY = "venue";
+/**
+ * Returns appropriate filter depending on Y.
+ * Returns empty filter if either y or value is missing.
+ *
+ * @param {string} params.y range
+ * @param {string} params.value for y
+ */
+function getFilter(params) {
+  const filterY = {};
+  let y;
+  let value;
+
+  if (!params.y || !params.value) {
+    return filterY;
   }
-  return xOrY;
+
+  if (params.y === "author") {
+    y = "authors.name";
+    ({
+      value
+    } = params);
+  } else if (params.y === "keyphrase") {
+    y = "keyPhrases";
+    ({
+      value
+    } = params);
+  } else if (params.y === "paper") {
+    y = "title";
+    ({
+      value
+    } = params);
+  } else {
+    // venue, year and invalid
+    ({
+      y,
+      value
+    } = params);
+  }
+
+  filterY[y] = value;
+  return filterY;
+}
+
+/**
+ * Returns appropriate key object for paper depending on X
+ *
+ * @param {object} paper
+ * @param {string} x domain (default is paper)
+ */
+function getGroupKeys(paper, x) {
+  const keys = [];
+
+  // paper must have an id
+  if (paper.id === "") {
+    return keys;
+  }
+
+  if (x === "author") {
+    paper.authors.forEach(author => {
+      if (author.ids.length !== 0) {
+        const key = {};
+        [key.id] = author.ids;
+        key.obj = author;
+        key.count = 1;
+        keys.push(key);
+      }
+    }, this);
+  } else if (x === "venue") {
+    if (paper.venue && (!paper.venue.trim || paper.venue.trim() !== "")) {
+      const key = {};
+      key.id = paper.venue;
+      key.obj = {
+        venue: paper.venue
+      };
+      key.count = 1;
+      keys.push(key);
+    }
+  } else if (x === "keyphrase") {
+    paper.keyPhrases.forEach(keyPhrase => {
+      const key = {};
+      key.id = keyPhrase;
+      key.obj = {
+        keyPhrase
+      };
+      key.count = 1;
+      keys.push(key);
+    }, this);
+  } else if (x === "year") {
+    if (paper.year && (!paper.year.trim || paper.year.trim() !== "")) {
+      const key = {};
+      key.id = paper.year;
+      key.obj = {
+        year: paper.year
+      };
+      key.count = 1;
+      keys.push(key);
+    }
+  } else {
+    // default is paper
+    const paperObj = {};
+    paperObj.title = paper.title;
+    paperObj.authors = paper.authors;
+    paperObj.venue = paper.venue;
+    paperObj.inCitations = paper.inCitations;
+    paperObj.outCitations = paper.outCitations;
+    paperObj.year = paper.year;
+    paperObj.abstract = paper.abstract;
+    paperObj.keyPhrases = paper.keyPhrases;
+
+    const key = {};
+    key.id = paper.id;
+    key.obj = paperObj;
+    key.count = paper.inCitations.length;
+    keys.push(key);
+  }
+  return keys;
 }
 
 /**
@@ -150,24 +154,10 @@ function getTopXofY(params) {
   return new Promise((resolve, reject) => {
     params = params || {};
     const topN = params.topN || 10;
-    let x = params.x || "paper";
+    const x = params.x || "paper";
 
-    x = sanitizeXorY(x);
-    const y = sanitizeXorY(params.y);
-
-    let filterY = {};
-    if (entities[y]) {
-      const { getFilter } = entities[y];
-      filterY = getFilter(y, params.value);
-    }
-
-    let select = "";
-    let getGroupKeys;
-    if (entities[x]) {
-      ({ select, getGroupKeys } = entities[x]);
-    } else {
-      ({ select, getGroupKeys } = entities.paper);
-    }
+    const filterY = getFilter(params);
+    const select = getSelect(x);
 
     let topX = {};
     const xObjArr = {};
@@ -179,10 +169,12 @@ function getTopXofY(params) {
         logger.info(err);
       } else {
         logger.info(`${papers.length} results from DB found.`);
-        papers.forEach(element => {
-          const groupKeys = getGroupKeys(element);
+        papers.forEach(function (element) {
+          const groupKeys = getGroupKeys(element, x);
           groupKeys.forEach(key => {
-            const { id } = key;
+            const {
+              id
+            } = key;
             topX[id] = topX[id] || [];
             topX[id] = Number(topX[id]) + Number(key.count);
             xObjArr[id] = key.obj;
@@ -190,40 +182,39 @@ function getTopXofY(params) {
         });
 
         topX = Object.keys(topX)
-          .sort((x1, x2) => topX[x2] - topX[x1])
+          .sort((x1, x2) =>
+            topX[x2] - topX[x1])
           .slice(0, topN)
           .map(id => {
             return {
               x: xObjArr[id],
               count: topX[id]
             };
-          })
-          .filter(d => d.count !== 0);
+          });
 
         resolve(topX);
       }
-    })
-      .select(select)
+    }).select(select)
       .lean();
   });
 }
 
 function handler(options) {
-  ({ logger, db } = options);
+  ({
+    logger,
+    db
+  } = options);
 
   return (req, res) => {
     const params = req.query;
 
-    getTopXofY(params).then(result => {
-      const send = {
-        topN: params.topN,
-        x: params.x,
-        y: params.y,
-        value: params.value,
-        results: result
-      };
-      res.send(JSON.stringify(send));
-    });
+    getTopXofY(params).then(result => res.send(JSON.stringify({
+      topN: params.topN,
+      x: params.x,
+      y: params.y,
+      value: params.value,
+      results: result
+    })));
   };
 }
 

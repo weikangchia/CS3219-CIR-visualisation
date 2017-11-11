@@ -5,7 +5,6 @@
 ## Description
   Returns the top N X of Y in JSON format. <br />
   Top papers are counted by number of inCitations while the rest are counted by number of papers.
-  X objects of count 0 are omitted from results.
 
 ***
 

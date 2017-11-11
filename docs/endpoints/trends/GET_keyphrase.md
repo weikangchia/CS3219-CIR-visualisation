@@ -28,7 +28,7 @@ An array of trend data.
 ## Example
 **Request**
 
-  GET trends/keyphrase?phrase=nlp&minYear=2010&maxYear=2017
+  GET trends/keyphrase?phrase=icse&minYear=2010&maxYear=2017
 
 **Return**
 ``` json

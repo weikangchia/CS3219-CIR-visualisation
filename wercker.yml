@@ -34,7 +34,6 @@ deploy-frontend:
         code: |
           cd frontend
           sed -i -e 's/http:\/\/localhost:3000/https:\/\/cs3219-api-server.herokuapp.com/g' public/js/utils.js
-          sed -i -e 's/http:\/\/localhost:9000/https:\/\/cs3219-frontend.herokuapp.com/g' public/js/utils.js
     - heroku-deploy:
         key: $HEROKU_KEY
         key-name: HEROKU_KEY_PAIR
@@ -50,12 +49,3 @@ deploy-api-server:
         user: $HEROKU_USER
         app-name: $HEROKU_APP_NAME
         source_dir: backend-api
-
-test-api-server:
-  steps:
-    - script:
-        name: echo mocha test api-server
-        code: |
-          cd backend-api
-          npm install
-          npm run test-coverage

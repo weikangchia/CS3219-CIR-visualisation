@@ -30,9 +30,6 @@ npm install
 Follow the instructions in this [online documentation](https://docs.mongodb.com/manual/administration/install-community/) to install the MongoDB server.
 
 1. Start the MongoDB server.
-  ```
-  sudo mongod
-  ```
 2. Open the MongoDB console and create the database and collection:
    <br/>
    ```
@@ -93,9 +90,6 @@ Below is the architecture diagram of the whole solution for this project.
 ### Trends
 - **[<code>GET</code> trends/conference](endpoints/trends/GET_conference.md)**
 - **[<code>GET</code> trends/keyphrase](endpoints/trends/GET_keyphrase.md)**
-
-### Auto-complete
-- **[<code>GET</code> autocomplete](endpoints/GET_autocomplete.md)**
 
 ### Graphs
 - **[<code>GET</code> graphs/incitation](endpoints/graphs/GET_incitation.md)**

@@ -1,5 +1,3 @@
-const commonErrorResponse = require("../common").errorResponse;
-
 let logger;
 let db;
 
@@ -56,11 +54,7 @@ async function dig(paper, currentLevel, maxLevel, basePaperId, nodeLinks) {
   }
 
   if (currentLevel >= maxLevel) {
-    logger.debug({
-      handler: handlerName,
-      currentLevel,
-      message: "level reached"
-    });
+    logger.info(`handler="${handlerName}" currentLevel=${currentLevel} message="level reached"`);
   } else {
     const {
       inCitations
@@ -70,13 +64,8 @@ async function dig(paper, currentLevel, maxLevel, basePaperId, nodeLinks) {
       const inCitedPaper = await getPaperById(inCitationId, paperProjOptions);
 
       if (inCitedPaper === null) {
-        logger.debug({
-          handler: handlerName,
-          currentLevel,
-          citationId: inCitationId,
-          message: "null (skipping)",
-          parentId: basePaperId
-        });
+        /* logger.info(`handler="${handlerName}" currentLevel=${currentLevel} citationId="${inCitationId}" ` +
+          `message="null (skipping)" parentId="${basePaperId}"`); */
       } else {
         nodeLinks.rawNodes[inCitedPaper.id] = parsePaper(inCitedPaper);
 
@@ -87,14 +76,8 @@ async function dig(paper, currentLevel, maxLevel, basePaperId, nodeLinks) {
             target: paper.id
           });
 
-        logger.debug({
-          handler: handlerName,
-          currentLevel,
-          citationId: inCitationId,
-          inCitationLength: inCitedPaper.inCitations.length,
-          message: "continue to dig",
-          parentId: basePaperId
-        });
+        /* logger.info(`handler="${handlerName}" currentLevel=${currentLevel} citationId="${inCitationId}" ` +
+          `incitationLength=${inCitedPaper.inCitations.length} message="continue to dig" parentId="${basePaperId}"`); */
 
         await dig(inCitedPaper, currentLevel + 1, maxLevel, inCitationId, nodeLinks);
       }
@@ -104,68 +87,40 @@ async function dig(paper, currentLevel, maxLevel, basePaperId, nodeLinks) {
   return nodeLinks;
 }
 
-/**
- * Returns an array of node and links to build incitation graph.
- *
- * @param {string} title
- * @param {int} level
- */
-async function getIncitationGraph(title, level) {
-  const nodeLinks = {
-    rawNodes: {},
-    nodes: [],
-    links: []
-  };
-
-  await getPaperByTitle(title, paperProjOptions).then(async paper => {
-    if (paper === null) {
-      logger.info({
-        handler: handlerName,
-        message: `unable to find paper ${title}`
-      });
-    } else {
-      logger.info({
-        handler: handlerName,
-        message: `searching for graph incitation for ${title}`
-      });
-
-      await dig(paper, 0, level, null, nodeLinks).then(async result => {
-        Object.keys(nodeLinks.rawNodes).forEach(key => {
-          nodeLinks.nodes.push(nodeLinks.rawNodes[key]);
-        });
-
-        delete nodeLinks.rawNodes;
-      });
-    }
-  });
-
-  return nodeLinks;
-}
-
 function handler(options) {
-  ({
-    logger,
-    db
-  } = options);
-
   return (req, res) => {
+    ({
+      logger,
+      db
+    } = options);
+
     const params = req.query;
-
-    if (!("title" in params)) {
-      res.status(400).send(JSON.stringify(commonErrorResponse.invalidField));
-    }
-
-    const title = params.title.trim();
+    const title = params.title.trim() || "";
     const level = parseInt(params.level, 10) || 2;
 
-    logger.info({
-      handler: handlerName,
-      title,
-      maxLevel: level
-    });
+    logger.info(`handler="${handlerName}" title="${title}" maxLevel=${level}`);
 
-    getIncitationGraph(title, level).then(result => {
-      res.send(JSON.stringify(result));
+    getPaperByTitle(params.title, paperProjOptions).then(paper => {
+      const nodeLinks = {
+        rawNodes: {},
+        nodes: [],
+        links: []
+      };
+
+      if (paper === null) {
+        logger.info(`handler="${handlerName}" message="unable to find paper ${title}"`);
+        res.send(nodeLinks);
+      } else {
+        dig(paper, 0, level, null, nodeLinks).then(result => {
+          Object.keys(nodeLinks.rawNodes).forEach(key => {
+            nodeLinks.nodes.push(nodeLinks.rawNodes[key]);
+          });
+
+          delete nodeLinks.rawNodes;
+
+          res.send(JSON.stringify(result));
+        });
+      }
     });
   };
 }

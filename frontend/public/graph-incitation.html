@@ -26,12 +26,11 @@
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/nouislider.min.js"></script>
   <script src="./js/wNumb.js"></script>
-  <script src="./js/cirfakeloader.js"></script>
   <script src="./js/utils.js"></script>
-  <script src="./js/cir.js"></script>
 </head>
 
-<body ng-app="CIR">
+<body ng-app="">
+  <div id="fakeLoader"></div>
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
@@ -77,7 +76,7 @@
     <!-- filter script -->
     <script>
       // init fakeloader
-      const fakeLoader = new CirFakeLoader();
+      initFakeLoader();
 
       // scripts for year slider
       const slider = document.getElementById('slider');
@@ -102,7 +101,7 @@
 
       // scripts for the input
       $("#filterForm").submit(() => {
-        fakeLoader.show();
+        showFakeLoader();
 
         const currentLevel = slider.noUiSlider.get()[0];
         const title = $("#title").val();
@@ -112,7 +111,7 @@
         ).then(
           response => {
             updateVisualization(response.data);
-            fakeLoader.hide();
+            hideFakeLoader();
           });
       });
 
@@ -124,13 +123,15 @@
         $("#graph").empty();
         var visualization = d3plus.viz()
           .container("#graph")
-          .type("rings")
-          .focus(data.nodes[0].id)
+          .type("network")
           .data(data.nodes)
           .edges(data.links)
           .edges({
             "arrows": 4,
             "strength": 1.4
+          })
+          .size({
+            value: 5
           })
           .id("id")
           .width({
