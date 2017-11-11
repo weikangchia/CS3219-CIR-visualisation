@@ -11,9 +11,9 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="./css/bootstrap.min.css">
 
-  <link rel="stylesheet" href="css/custom.css">
+  <link rel="stylesheet" href="./css/custom.css">
 
-  <link rel="stylesheet" href="css/fakeLoader.css">
+  <link rel="stylesheet" href="./css/fakeLoader.css">
 
   <link rel="stylesheet" href="./css/font-awesome.min.css">
 
@@ -26,19 +26,20 @@
   <script src="./js/fakeLoader.min.js"></script>
   <script src="./js/nouislider.min.js"></script>
   <script src="./js/wNumb.js"></script>
+  <script src="./js/cirfakeloader.js"></script>
   <script src="./js/utils.js"></script>
+  <script src="./js/cir.js"></script>
 </head>
 
-<body ng-app="">
-  <div id="fakeLoader"></div>
+<body ng-app="CIR">
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
     <div class="row">
       <div class="col">
-        <h1>Citation Web</h1>
-        <p>A citation web for a base author. Up to 2 levels of co-authors is created (i.e. if the base author is A, capture
-          up to C: B published the paper with A, and C published the paper with B, so A
+        <h1>Incitation Graph</h1>
+        <p>A citation graph for a base paper. Up to 3 levels of base paper citation is created (i.e. if the base paper is A, capture
+          up to C: A is cited by B, and B is cited by C, so A
           <- B <- C) </p>
       </div>
     </div>
@@ -52,8 +53,8 @@
 
         <form id="filterForm">
           <div class="form-group">
-            <label for="name">Base Author</label>
-            <input class="form-control" id="name" placeholder="Author Name">
+            <label for="title">Base Paper</label>
+            <input class="form-control" id="title" placeholder="Title">
           </div>
 
           <h6>Level &#40;<span id="current-level">2</span>&#41;</h6>
@@ -76,7 +77,7 @@
     <!-- filter script -->
     <script>
       // init fakeloader
-      initFakeLoader();
+      const fakeLoader = new CirFakeLoader();
 
       // scripts for year slider
       const slider = document.getElementById('slider');
@@ -101,37 +102,35 @@
 
       // scripts for the input
       $("#filterForm").submit(() => {
-        showFakeLoader();
+        fakeLoader.show();
 
         const currentLevel = slider.noUiSlider.get()[0];
-        const name = $("#name").val();
+        const title = $("#title").val();
 
         axios.get(
-          `${API_HOST}/graph/coauthors?levels=${currentLevel}&author=${name}`
+          `${API_HOST}/graphs/incitation?level=${currentLevel}&title=${title}`
         ).then(
           response => {
             updateVisualization(response.data);
-            hideFakeLoader();
+            fakeLoader.hide();
           });
       });
 
     </script>
 
-  <!-- d3 Script -->
-   <script>
+    <!-- d3 Script -->
+    <script>
       function updateVisualization(data) {
         $("#graph").empty();
         var visualization = d3plus.viz()
           .container("#graph")
-          .type("network")
+          .type("rings")
+          .focus(data.nodes[0].id)
           .data(data.nodes)
           .edges(data.links)
           .edges({
             "arrows": 4,
             "strength": 1.4
-          })
-          .size({
-            value: 5
           })
           .id("id")
           .width({
@@ -148,12 +147,13 @@
             large: 500,
             fullscreen: true,
             html: function (id) {
-              const node = data.nodes.find(node => node.id === id);
-              const viewUrl = googleScholarSearchUrl(node.title);
+              const paper = data.nodes.find(node => node.id === id);
+              const viewUrl = paper.pdfUrl || googleScholarSearchUrl(paper.title);
 
               const htmlText =
-                `<h6>${node.title} (Level: ${node.level})</h6>` +
-                `<b>Author:</b> ${node.author}<br/>`;
+                `<h6>${paper.title} (${paper.year})</h6>` +
+                `<b>Authors:</b> ${paper.authors.map(author => author.name).join(", ")}<br/>` +
+                `<b>Abstract:</b> ${paper.abstract}<br/><br/><a class="btn btn-secondary btn-sm" href="${viewUrl}" role="button" target="_blank">View</a>`;
 
               return htmlText;
             }
@@ -167,7 +167,6 @@
     <script src="./js/axios.min.js"></script>
     <script src="./js/popper.min.js"></script>
     <script src="./js/bootstrap.min.js"></script>
-
 </body>
 
 </html>
