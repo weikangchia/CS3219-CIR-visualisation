@@ -74,7 +74,7 @@ function renderFormFromSearch() {
   } = $location.search();
   const $inputs = $("[name=keyphrases]").slice(0, -1);
 
-  keyphrases = keyphrases || ["NLPR"];
+  keyphrases = keyphrases || ["nlp"];
   keyphrases = Array.isArray(keyphrases) ? keyphrases : [keyphrases];
   keyphrases.forEach((keyphrase, i) => {
     if (i >= $inputs.length) {
