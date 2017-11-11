@@ -5,9 +5,8 @@
 cir.controller("QueryParamsController", [
   "API_HOST",
   "$scope",
-  function(API_HOST, $scope) {
-    $scope.xCategories = [
-      {
+  function (API_HOST, $scope) {
+    $scope.xCategories = [{
         display: "Papers",
         key: "paper",
       },
@@ -29,8 +28,7 @@ cir.controller("QueryParamsController", [
       }
     ];
 
-    $scope.yCategories = [
-      {
+    $scope.yCategories = [{
         display: "Papers",
         key: "paper",
       },
@@ -56,10 +54,8 @@ cir.controller("QueryParamsController", [
 
     $scope.query = {
       topN: parseInt(searchParams.get("topN")) || 3,
-      xCategoryValue:
-        searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
-      yCategoryValue:
-        searchParams.get("y") || "venue" || $scope.yCategories[0]["key"],
+      xCategoryValue: searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
+      yCategoryValue: searchParams.get("y") || "venue" || $scope.yCategories[0]["key"],
       yValue: searchParams.get("value") || "ArXiv"
     };
 
@@ -88,8 +84,7 @@ cir.controller("QueryParamsController", [
         x: "author",
         y: "venue",
         value: "arxiv",
-        results: [
-          {
+        results: [{
             name: "John Doe",
             count: getRandomIntInclusive(1, 10)
           },
@@ -121,14 +116,22 @@ cir.controller("QueryParamsController", [
         })
         .title(
           "Top " +
-            barData.length +
-            " " +
-            capitalize(data.x) +
-            "(s) of " +
-            capitalize(data.y) +
-            ": " +
-            data.value
-        )
+          barData.length +
+          " " +
+          capitalize(data.x) +
+          "(s) of " +
+          capitalize(data.y) +
+          ": " +
+          data.value
+        ).format({
+          "text": (text, params) => {
+            if (text === "size") {
+              return "Count";
+            } else {
+              return d3plus.string.title(text, params);
+            }
+          }
+        })
         .order(d => barDataIds.indexOf(d))
         .draw();
     }
@@ -142,7 +145,7 @@ cir.controller("QueryParamsController", [
       return searchParams;
     }
 
-    $scope.submitQuery = function() {
+    $scope.submitQuery = function () {
       var path = "/top-X-of-Y?" + getSearchParamsFromUser().toString();
       var url = API_HOST + path;
 
@@ -154,12 +157,12 @@ cir.controller("QueryParamsController", [
 
     $scope.submitQuery();
 
-    $scope.reloadWithParams = function() {
+    $scope.reloadWithParams = function () {
       location.search = getSearchParamsFromUser().toString();
     };
 
     $(".domain-selector").autocomplete({
-      source: function(req, updateList) {
+      source: function (req, updateList) {
         var domain = $scope.query.yCategoryValue;
         var search = $scope.query.yValue;
         var searchParams = new URLSearchParams();

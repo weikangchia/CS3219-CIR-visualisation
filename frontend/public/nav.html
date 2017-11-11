@@ -6,16 +6,17 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mr-auto">
+      <!--
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="{{API_HOST}}" id="navbarTopChartsDropdownMenuLink" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           Top Charts
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarTopChartsDropdownMenuLink">
-          <a class="dropdown-item" href="top10-authors">Top-10 Authors</a>
-          <a class="dropdown-item" href="top5-papers">Top-5 Papers</a>
+          <a class="dropdown-item" href="topn-x-of-y">Top-N X of Y</a>
         </div>
       </li>
+      -->
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="{{API_HOST}}" id="navbarTrendsDropdownMenuLink" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
@@ -24,22 +25,23 @@
         <div class="dropdown-menu" aria-labelledby="navbarTrendsDropdownMenuLink">
           <a class="dropdown-item" href="trends-conference">Trends Conference</a>
           <a class="dropdown-item" href="trends-keyphrase">Trends Keyphrase</a>
-          <a class="dropdown-item" href="topn-x-of-y">Top N X of Y</a>
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="{{API_HOST}}" id="navbarGraphDropdownMenuLink" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle" href="{{ API_HOST }}" id="navbarGraphDropdownMenuLink" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           Graph
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarGraphDropdownMenuLink">
-          <a class="dropdown-item" href="graph-incitation">Graph In-Citations</a>
+          <a class="dropdown-item" href="graphs-incitations">Graph Incitations</a>
+          <a class="dropdown-item" href="graphs-coauthors">Graph Coauthors</a>
         </div>
       </li>
     </ul>
   </div>
 </nav>
 <script>
+  // set active link
   $(document).ready(() => {
     $(".nav-link").each((index, link) => {
       if (location.href.indexOf(link.href) >= 0) {
@@ -47,5 +49,4 @@
       }
     })
   })
-
 </script>

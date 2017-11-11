@@ -55,11 +55,13 @@ app.get("/", (req, res) => {
 
 app.get("/top-X-of-Y", handlers.topNXofYHandler);
 
-app.get("/trends/publication", handlers.trendPublicationHandler);
+app.get("/trends/conference", handlers.trendConferenceHandler);
 
 app.get("/trends/keyphrase", handlers.trendKeyPhraseHandler);
 
 app.get("/graphs/incitation", handlers.graphIncitationHandler);
+
+app.get("/graphs/coauthors", handlers.graphCoauthorsHandler);
 
 app.get("/autocomplete", handlers.autocompleteHandler);
 

@@ -2,7 +2,16 @@
  * Global angular app
  */
 
-var cir = angular.module("CIR", []);
+var $location;
 
-cir.constant('API_HOST', API_HOST);
-cir.constant('FRONTEND_HOST', FRONTEND_HOST);
+var cir = angular
+  .module("CIR", [])
+  .constant("API_HOST", API_HOST)
+  .constant("FRONTEND_HOST", FRONTEND_HOST)
+  // expose $location
+  .run([
+    "$location",
+    function(location) {
+      $location = location;
+    }
+  ]);

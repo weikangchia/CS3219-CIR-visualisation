@@ -6,9 +6,10 @@
 module.exports = function (option) {
   return {
     topNXofYHandler: require("./topXofYHandler")(option),
-    trendPublicationHandler: require("./trendPublicationHandler")(option),
+    trendConferenceHandler: require("./trendConferenceHandler")(option),
     trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option),
     autocompleteHandler: require("./autocompleteHandler")(option),
+    graphCoauthorsHandler: require("./graphCoauthorsHandler")(option),
     graphIncitationHandler: require("./graphIncitationHandler")(option)
   };
 };

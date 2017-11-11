@@ -31,13 +31,14 @@
   <script src="./js/wNumb.js"></script>
   <script src="./js/utils.js"></script>
   <script src="./js/cirfakeloader.js"></script>
-  <script src="./js/cir.js"></script>  
+  <script src="./js/cir.js"></script>
 
   <script src="./js/jquery-ui.min.js"></script>
   <link rel="stylesheet" href="css/jquery-ui.css">
+
 </head>
 
-<body ng-app="">
+<body ng-app="CIR">
   <div ng-include="'nav.html'"></div>
 
   <div class="container">
@@ -63,7 +64,7 @@
               <label class="sr-only" for="inlineFormInputGroup">Conference</label>
               <div class="input-group mb-2 mb-sm-0">
                 <div class="input-group-addon">@</div>
-                <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Conference" name="conferences" value="arxiv">
+                <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Conference" name="conferences">
               </div>
             </div>
             <div class="col-2">
@@ -73,7 +74,7 @@
             </div>
           </div>
 
-          <!-- template for confenrence input -->
+          <!-- template for conference input -->
           <div class="form-group row" id="optionTemplate" hidden>
             <div class="col-10">
               <label class="sr-only" for="inlineFormInputGroup">Conference</label>
@@ -116,156 +117,7 @@
     </div>
   </div>
 
-  <!-- filter script -->
-  <script>
-    // init fakeloader
-    const fakeLoader = new CirFakeLoader();
-
-    // scripts for year slider
-    const slider = document.getElementById('slider');
-
-    noUiSlider.create(slider, {
-      start: [1800, 2017],
-      connect: true,
-      padding: 0,
-      range: {
-        'min': 1800,
-        'max': 2017
-      },
-      step: 1,
-      format: wNumb({
-        decimals: 0
-      })
-    });
-
-    slider.noUiSlider.on('update', function () {
-      const yearSliderValue = slider.noUiSlider.get();
-      $("#yearStart").text(yearSliderValue[0]);
-      $("#yearEnd").text(yearSliderValue[1]);
-    });
-
-    // scripts for the conference input
-    const maxFields = 5;
-    let currentNumFields = 1;
-
-    const template = $("#optionTemplate");
-
-    function deleteSelf(conferenceInputObj) {
-      $(".addButton").removeAttr("disabled");
-      $(conferenceInputObj).closest(".form-group.row").remove();
-      currentNumFields--;
-    }
-
-    $("#filterForm")
-      .on("click", ".addButton", () => {
-        if (currentNumFields < maxFields) {
-          const clone = template.clone()
-            .removeAttr("hidden")
-            .removeAttr("id")
-            .insertBefore(template);
-
-          currentNumFields++;
-        }
-
-        if (currentNumFields === maxFields) {
-          $(".addButton").attr("disabled", "disabled");
-        }
-      })
-      .submit(() => {
-        fakeLoader.show();
-
-        let conferences = new Array();
-        conferences = $("#filterForm").serializeArray();
-        conferences.pop();
-
-        const yearRange = slider.noUiSlider.get();
-
-        const requests = [];
-        conferences.forEach((conference) => {
-          requests.push(axios.get(
-            `${API_HOST}/trends/publication?name=${conference.value}&minYear=${yearRange[0]}&maxYear=${yearRange[1]}`
-          ));
-        });
-
-        axios.all(requests)
-          .then(axios.spread((...allData) => {
-            const parseData = [];
-
-            allData.forEach((conference, i) => {
-              conference.data.forEach(data => {
-                parseData.push({
-                  conference: conferences[i].value,
-                  year: data.year,
-                  count: data.count
-                });
-              });
-            });
-
-            updateVisualization(parseData);
-
-            fakeLoader.hide(500);
-          }));
-      });
-
-  </script>
-
-  <!-- d3 Script -->
-  <script>
-    function updateVisualization(data) {
-      $("#graph").empty();
-      var visualization = d3plus.viz()
-        .container("#graph")
-        .data(data)
-        .type("line")
-        .id("conference")
-        .text("conference")
-        .width({
-          value: $("#graph").width()
-        })
-        .height({
-          value: 300
-        })
-        .y({
-          "value": "count",
-          "label": "No. of Publications"
-        }) // key to use for y-axis
-        .x("year") // key to use for x-axis
-        .format({
-          "text": (text, params) => {
-            if (text === "count") {
-              return "Number of Publications";
-            } else {
-              return d3plus.string.title(text, params);
-            }
-          }
-        })
-        .time("year")
-        .timing({
-          "transitions": 1000
-        })
-        .draw();
-    }
-
-  </script>
-
-  <!-- autocomplete -->
-  <script>
-  $(function(){
-    $("#inlineFormInputGroup").autocomplete({
-      source: function(req, updateList) {
-        var searchParams = new URLSearchParams();
-        searchParams.set("domain", "venue");
-        searchParams.set("search", req.term);
-        var url = API_HOST + "/autocomplete?" + searchParams.toString();
-        $.ajax({
-          url: url,
-          success: updateList
-        });
-      }
-    });
-  })
-  </script>
-
+  <!-- app ui -->
+  <script src="./js/app-ui/trends-conference.js"></script>
 </body>
-
 </html>

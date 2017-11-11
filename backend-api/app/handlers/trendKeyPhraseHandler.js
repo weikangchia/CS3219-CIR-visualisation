@@ -1,3 +1,5 @@
+const commonErrorResponse = require("../common").errorResponse;
+
 let db;
 let logger;
 
@@ -62,7 +64,7 @@ function handler(options) {
     const params = req.query;
 
     if (!("phrase" in params)) {
-      res.status(400);
+      res.status(400).send(JSON.stringify(commonErrorResponse.invalidField));
     }
 
     const phrase = params.phrase.trim();
