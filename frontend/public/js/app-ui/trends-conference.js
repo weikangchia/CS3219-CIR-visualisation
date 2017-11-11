@@ -71,11 +71,10 @@ function addConferenceInput(value) {
 function renderFormFromSearch() {
   let { conferences, yearRange } = $location.search();
   const $inputs = $("[name=conferences]").slice(0, -1);
-  console.log($inputs);
+
   conferences = conferences || ["ArXiv"];
   conferences = Array.isArray(conferences) ? conferences : [conferences];
   conferences.forEach((venue, i) => {
-    console.log(i, $inputs.length);
     if (i >= $inputs.length) {
       addConferenceInput(venue);
     } else {

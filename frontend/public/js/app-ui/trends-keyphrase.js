@@ -69,16 +69,15 @@ function addKeyphraseInput(value) {
 
 function renderFormFromSearch() {
   let { keyphrases, yearRange } = $location.search();
-  const $inputs = $("[name=keyphrases]");
+  const $inputs = $("[name=keyphrases]").slice(0, -1);
 
   keyphrases = keyphrases || ["NLPR"];
   keyphrases = Array.isArray(keyphrases) ? keyphrases : [keyphrases];
   keyphrases.forEach((keyphrase, i) => {
-    const $input = $inputs.eq(i);
-    if ($input) {
-      $input.val(keyphrase);
+    if (i >= $inputs.length) {
+      addKeyphraseInput(venue);
     } else {
-      addKeyphraseInput(keyphrase);
+      $inputs.eq(i).val(venue);
     }
   });
 
