@@ -68,9 +68,11 @@ To run backend API server, go to `/backend-api` folder and execute:
 npm start
 ```
 
-### Test
-A quick test to check if the backend API server is to run:
-`curl localhost:3000` or equivalent
+### Testing
+
+- **[Backend](testing/backend.md)**
+
+#### Installation
 
 ## Code style
 We are following closely to [Airbnb](https://github.com/airbnb/javascript) Javascript style but with a bit modification.

@@ -61,6 +61,8 @@ app.get("/trends/keyphrase", handlers.trendKeyPhraseHandler);
 
 app.get("/graphs/incitation", handlers.graphIncitationHandler);
 
+app.get("/graphs/coauthors", handlers.graphCoauthorsHandler);
+
 app.get("/autocomplete", handlers.autocompleteHandler);
 
 const server = app.listen(process.env.PORT, () => {
