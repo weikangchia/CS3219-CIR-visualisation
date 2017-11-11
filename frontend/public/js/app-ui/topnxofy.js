@@ -85,7 +85,6 @@ cir.controller("QueryParamsController", [
       .type("bar")
       .container("#barchart")
       .id("id");
-    window.bc = barChart;
 
     function displayVisualization(data) {
       var barData = transformDataIntoBarData(data);
