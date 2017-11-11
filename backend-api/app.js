@@ -55,7 +55,7 @@ app.get("/", (req, res) => {
 
 app.get("/top-X-of-Y", handlers.topNXofYHandler);
 
-app.get("/trends/publication", handlers.trendPublicationHandler);
+app.get("/trends/conference", handlers.trendConferenceHandler);
 
 app.get("/trends/keyphrase", handlers.trendKeyPhraseHandler);
 
