@@ -288,6 +288,10 @@ describe("/GET top-X-of-Y", () => {
         _id: "59f5d5afdfa15819497db2d6",
         authors: [{ ids: ["1749917"], name: "Daniel Kanaan" },
           { ids: ["1732597"], name: "Philippe Wenger" }, { ids: ["1747337"], name: "Damien Chablat" }]
+      },
+      {
+        _id: "59f5d5afdfa15819497db2d6",
+        authors: [{ ids: [], name: "Daniel Kanaan" }]
       }
     ];
 
@@ -391,6 +395,75 @@ describe("/GET top-X-of-Y", () => {
         done();
       });
   });
+
+  it("it should return 200", done => {
+    const expectedResult = [
+      { _id: "59f5d5b6dfa15819497e8749", year: 2007 }
+    ];
+
+    Paper.find.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/top-X-of-Y?topN=1&y=year&x=year")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+
+        res.body.should.have.property("topN");
+        res.body.topN.should.equal("1");
+        res.body.should.have.property("x");
+        res.body.x.should.equal("year");
+        res.body.should.have.property("y");
+        res.body.y.should.equal("year");
+
+        res.body.should.have.property("results");
+        res.body.results.length.should.equal(1);
+
+        res.body.results[0].should.have.property("x");
+        res.body.results[0].x.should.have.property("year");
+        res.body.results[0].x.year.should.equal(2007);
+        res.body.results[0].should.have.property("count");
+        res.body.results[0].count.should.equal(1);
+
+        done();
+      });
+  });
+
+  it("it should return 200", done => {
+    const expectedResult = [
+      { _id: "59f5d5b6dfa15819497e8749", year: 2007 }
+    ];
+
+    Paper.find.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/top-X-of-Y?topN=1&y=paper&x=year")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+
+        res.body.should.have.property("topN");
+        res.body.topN.should.equal("1");
+        res.body.should.have.property("x");
+        res.body.x.should.equal("year");
+        res.body.should.have.property("y");
+        res.body.y.should.equal("paper");
+
+        res.body.should.have.property("results");
+        res.body.results.length.should.equal(1);
+
+        res.body.results[0].should.have.property("x");
+        res.body.results[0].x.should.have.property("year");
+        res.body.results[0].x.year.should.equal(2007);
+        res.body.results[0].should.have.property("count");
+        res.body.results[0].count.should.equal(1);
+
+        done();
+      });
+  });
+
   it("it should return 200", done => {
     const expectedResult = [
       {
@@ -467,7 +540,8 @@ describe("/GET top-X-of-Y", () => {
       { _id: "59f5d5b5dfa15819497e5b9f", venue: "ACCV" },
       { _id: "59f5d5b5dfa15819497e6002", venue: "Mach. Vis. Appl." },
       { _id: "59f5d5b6dfa15819497e6a02", venue: "MICCAI" },
-      { _id: "59f5d5b6dfa15819497e77e0", venue: "Comp. Int. and Neurosc." }
+      { _id: "59f5d5b6dfa15819497e77e0", venue: "Comp. Int. and Neurosc." },
+      { _id: "59f5d5b6dfa15123497e77e0" }
     ];
 
     Paper.find.yields(null, expectedResult);
@@ -508,6 +582,40 @@ describe("/GET top-X-of-Y", () => {
         res.body.results[2].x.venue.should.equal("Journal of Circuits, Systems, and Computers");
         res.body.results[2].should.have.property("count");
         res.body.results[2].count.should.equal(1);
+
+        done();
+      });
+  });
+
+  it("it should return 200", done => {
+    const expectedResult = [
+      { _id: "59f5d5b4dfa15819497e357e", venue: "ArXiv" }
+    ];
+
+    Paper.find.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/top-X-of-Y?topN=1&y=venue&x=venues")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+
+        res.body.should.have.property("topN");
+        res.body.topN.should.equal("1");
+        res.body.should.have.property("x");
+        res.body.x.should.equal("venues");
+        res.body.should.have.property("y");
+        res.body.y.should.equal("venue");
+
+        res.body.should.have.property("results");
+        res.body.results.length.should.equal(1);
+
+        res.body.results[0].should.have.property("x");
+        res.body.results[0].x.should.have.property("venue");
+        res.body.results[0].x.venue.should.equal("ArXiv");
+        res.body.results[0].should.have.property("count");
+        res.body.results[0].count.should.equal(1);
 
         done();
       });
@@ -669,6 +777,43 @@ describe("/GET top-X-of-Y", () => {
   it("it should return 200", done => {
     const expectedResult = [
       {
+        _id: "59f5d5b5dfa15819497e5fe4",
+        keyPhrases: ["MNO", "CYS", "HPV", "TEM", "Ctivity"]
+      }
+    ];
+
+    Paper.find.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/top-X-of-Y?topN=1&y=keyphrase&x=keyphrase")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+
+        res.body.should.have.property("topN");
+        res.body.topN.should.equal("1");
+        res.body.should.have.property("x");
+        res.body.x.should.equal("keyphrase");
+        res.body.should.have.property("y");
+        res.body.y.should.equal("keyphrase");
+
+        res.body.should.have.property("results");
+        res.body.results.length.should.equal(1);
+
+        res.body.results[0].should.have.property("x");
+        res.body.results[0].x.should.have.property("keyPhrase");
+        res.body.results[0].x.keyPhrase.should.equal("MNO");
+        res.body.results[0].should.have.property("count");
+        res.body.results[0].count.should.equal(1);
+
+        done();
+      });
+  });
+
+  it("it should return 200", done => {
+    const expectedResult = [
+      {
         _id: "59f5d5a9dfa15819497ce9b0",
         authors: [{ ids: ["2200197"], name: "Yingda Chen" },
           { ids: ["3212767"], name: "Shalinee Kishore" },
@@ -720,6 +865,50 @@ describe("/GET top-X-of-Y", () => {
         res.body.results[2].x.name.should.equal("Shalinee Kishore");
         res.body.results[2].should.have.property("count");
         res.body.results[2].count.should.equal(1);
+
+        done();
+      });
+  });
+
+  it("it should return 200", done => {
+    const expectedResult = [
+      {
+        _id: "59f5d5b6dfa15819497e8b3d",
+        authors: [{ ids: ["2378382"], name: "Andreas Darmann" }],
+        id: "827b9d00200d2aedcf942230b1aad5f9b06e5776",
+        inCitations: ["7d12e1978c504b00e23af34e5edeb498536b1c23",
+          "2c3903c7a53e5aa21de91aac40882c7638635b61", "507e8c35890f2be08416df4538c379c1f1cc2f63",
+          "9d86a7016b083838b518cb368c4631c20c817cb2"],
+        keyPhrases: ["Balanced Allocation"],
+        outCitations: [],
+        title: "Proportional Borda allocations",
+        venue: "Social Choice and Welfare",
+        year: 2016
+      }
+    ];
+
+    Paper.find.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/top-X-of-Y?x=wrong&y=author")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+
+        res.body.should.have.property("x");
+        res.body.x.should.equal("wrong");
+        res.body.should.have.property("y");
+        res.body.y.should.equal("author");
+
+        res.body.should.have.property("results");
+        res.body.results.length.should.equal(1);
+
+        res.body.results[0].should.have.property("x");
+        res.body.results[0].x.should.have.property("title");
+        res.body.results[0].x.title.should.equal("Proportional Borda allocations");
+        res.body.results[0].should.have.property("count");
+        res.body.results[0].count.should.equal(4);
 
         done();
       });
