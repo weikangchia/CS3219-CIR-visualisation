@@ -22,10 +22,6 @@ slider.noUiSlider.on("change", function() {
   $("#current-level").text(levelSliderValue[0]);
 });
 
-/**
- * D3 Visualisation
- */
-
 function updateVisualization(data) {
   $("#graph").empty();
   var visualization = d3plus
@@ -54,15 +50,11 @@ function updateVisualization(data) {
       large: 500,
       fullscreen: true,
       html: function(id) {
-        const paper = data.nodes.find(node => node.id === id);
-        const viewUrl = paper.pdfUrl || googleScholarSearchUrl(paper.title);
+        const node = data.nodes.find(node => node.id === id);
+        const viewUrl = googleScholarSearchUrl(node.title);
 
         const htmlText =
-          `<h6>${paper.title} (${paper.year})</h6>` +
-          `<b>Authors:</b> ${paper.authors
-            .map(author => author.name)
-            .join(", ")}<br/>` +
-          `<b>Abstract:</b> ${paper.abstract}<br/><br/><a class="btn btn-secondary btn-sm" href="${viewUrl}" role="button" target="_blank">View</a>`;
+          `<h6>${node.author}</h6>` + `<b>Paper:</b> ${node.title}`;
 
         return htmlText;
       }
@@ -78,7 +70,7 @@ function attachAutocomplete($dom) {
   $dom.autocomplete({
     source: function(req, updateList) {
       var searchParams = new URLSearchParams();
-      searchParams.set("domain", "paper");
+      searchParams.set("domain", "author");
       searchParams.set("search", req.term);
       var url = API_HOST + "/autocomplete?" + searchParams.toString();
       $.ajax({
@@ -90,7 +82,7 @@ function attachAutocomplete($dom) {
 }
 // attach to first input
 $(function() {
-  attachAutocomplete($("input[name=title]"));
+  attachAutocomplete($("input[name=author]"));
 });
 
 /**
@@ -99,27 +91,30 @@ $(function() {
 
 function getFormParams() {
   return {
-    title: $("input[name=title]").val(),
+    author: $("input[name=author]").val(),
     currentLevel: slider.noUiSlider.get()[0]
   };
 }
 
 function renderFormFromSearch() {
-  const { title, currentLevel = 2 } = $location.search();
-  $("input[name=title]").val(title);
+  const { author, currentLevel = 2 } = $location.search();
+  $("input[name=author]").val(author);
   slider.noUiSlider.set(currentLevel);
 }
 
 /**
- * No request is made if title is empty
+ * No request is made if name is empty
  */
 function submitQuery() {
   // fakeLoader.show();
 
-  const { title, currentLevel } = getFormParams();
-  if (title) {
+  const { author, currentLevel } = getFormParams();
+
+  if (author) {
     axios
-      .get(`${API_HOST}/graphs/incitation?level=${currentLevel}&title=${title}`)
+      .get(
+        `${API_HOST}/graphs/coauthors?levels=${currentLevel}&author=${author}`
+      )
       .then(response => {
         updateVisualization(response.data);
         // fakeLoader.hide();
