@@ -134,14 +134,13 @@ function submitQuery() {
 }
 
 /**
- * UI Behaviors
+ * UI Behaviors (Controller)
  */
 
 // on submit
 $("#filterForm")
   .on("click", ".addButton", () => addKeyphraseInput())
   .submit(() => {
-    console.log(getFormParams())
     $location.search(getFormParams());
   });
 
