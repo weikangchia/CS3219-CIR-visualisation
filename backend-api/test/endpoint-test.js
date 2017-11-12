@@ -1,6 +1,13 @@
 process.env.NODE_ENV = "test";
 process.env.PORT = 3001;
 
+const commonErrorResponse = require("../app/common").errorResponse;
+
+const {
+  invalidField,
+  invalidDomain
+} = commonErrorResponse;
+
 const sinon = require("sinon");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
@@ -12,9 +19,6 @@ const server = require("../app");
 
 chai.should();
 chai.use(chaiHttp);
-
-const invalidFieldCode = 400;
-const invalidFieldMessage = "Missing field/invalid field.";
 
 let Paper;
 before(done => {
@@ -57,8 +61,7 @@ describe("/GET trends/keyphrase", () => {
   });
 
   it("it should GET an array of keyphrase trends", done => {
-    const expectedResult = [
-      {
+    const expectedResult = [{
         _id: "59f32bd4cd71fe9b08c653e9",
         year: 2015
       },
@@ -101,8 +104,8 @@ describe("/GET trends/keyphrase", () => {
       .end((err, res) => {
         res.should.have.status(400);
         res.body.should.be.a("object");
-        res.body.error.code.should.equal(invalidFieldCode);
-        res.body.error.message.should.equal(invalidFieldMessage);
+        res.body.error.code.should.equal(invalidField.error.code);
+        res.body.error.message.should.equal(invalidField.error.message);
         done();
       });
   });
@@ -163,8 +166,8 @@ describe("/GET trends/conference", () => {
       .end((err, res) => {
         res.should.have.status(400);
         res.body.should.be.a("object");
-        res.body.error.code.should.equal(invalidFieldCode);
-        res.body.error.message.should.equal(invalidFieldMessage);
+        res.body.error.code.should.equal(invalidField.error.code);
+        res.body.error.message.should.equal(invalidField.error.message);
         done();
       });
   });
@@ -188,8 +191,7 @@ describe("/GET trends/conference", () => {
   });
 
   it("it should GET an array of conference trends", done => {
-    const expectedResult = [
-      {
+    const expectedResult = [{
         count: 1,
         year: 2015
       },
@@ -229,8 +231,8 @@ describe("/GET graphs/incitation", () => {
       .end((err, res) => {
         res.should.have.status(400);
         res.body.should.be.a("object");
-        res.body.error.code.should.equal(invalidFieldCode);
-        res.body.error.message.should.equal(invalidFieldMessage);
+        res.body.error.code.should.equal(invalidField.error.code);
+        res.body.error.message.should.equal(invalidField.error.message);
         done();
       });
   });
@@ -279,15 +281,14 @@ describe("/GET graphs/coauthors", () => {
       .end((err, res) => {
         res.should.have.status(400);
         res.body.should.be.a("object");
-        res.body.error.code.should.equal(invalidFieldCode);
-        res.body.error.message.should.equal(invalidFieldMessage);
+        res.body.error.code.should.equal(invalidField.error.code);
+        res.body.error.message.should.equal(invalidField.error.message);
         done();
       });
   });
 
   it("it should return 200", done => {
-    const expectedResult = [
-      {
+    const expectedResult = [{
         id: 123,
         authors: [{
           ids: 456,
@@ -314,6 +315,106 @@ describe("/GET graphs/coauthors", () => {
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
+        done();
+      });
+  });
+});
+
+describe("/GET autocomplete", () => {
+  beforeEach(() => {
+    sinon.stub(Paper, "aggregate");
+  });
+
+  afterEach(() => {
+    Paper.aggregate.restore();
+  });
+
+  it("it should return 400 for empty search value", done => {
+    chai
+      .request(server)
+      .get("/autocomplete")
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.be.a("object");
+        res.body.error.code.should.equal(invalidField.error.code);
+        res.body.error.message.should.equal(invalidField.error.message);
+        done();
+      });
+  });
+
+  it("it should return 400 for invalid domain", done => {
+    chai
+      .request(server)
+      .get("/autocomplete?search=abc&domain=random")
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.be.a("object");
+        res.body.error.code.should.equal(invalidDomain.error.code);
+        res.body.error.message.should.equal(invalidDomain.error.message);
+        done();
+      });
+  });
+
+  it("it should return 200 for valid search and in venue domain", done => {
+    const expectedResult = ["Arab journal of urology", "ARC", "Arch. Math. Log."];
+
+    Paper.aggregate.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/autocomplete?search=ar&domain=venue")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        res.body.length.should.equal(3);
+        done();
+      });
+  });
+
+  it("it should return 200 for exact search match and in venue domain", done => {
+    const expectedResult = ["ArXiv"];
+
+    Paper.aggregate.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/autocomplete?search=ArXiv&domain=venue")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        res.body.length.should.equal(1);
+        done();
+      });
+  });
+
+  it("it should return 200 for valid search and in author domain", done => {
+    const expectedResult = ["Ar", "Ar Argentina", "Ar Belkov", "AR Chopade", "AR Dorosty"];
+
+    Paper.aggregate.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/autocomplete?search=ar&domain=author")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        res.body.length.should.equal(5);
+        done();
+      });
+  });
+
+  it("it should return 200 for valid search and in year domain", done => {
+    const expectedResult = ["Ar", "Ar Argentina", "Ar Belkov", "AR Chopade", "AR Dorosty"];
+
+    Paper.aggregate.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/autocomplete?search=ar&domain=author")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("array");
+        res.body.length.should.equal(5);
         done();
       });
   });
