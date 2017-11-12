@@ -87,15 +87,12 @@ cir.controller("QueryParamsController", [
       .id("id");
 
     function displayVisualization(data) {
+      removeNoDataMessage();
+
       var barData = transformDataIntoBarData(data);
 
       if (barData.length == 0) {
-        return $("#barchart")
-          .html("No Data Available")
-          .css({
-            "text-align": "center",
-            color: "red"
-          });
+        return addNoDataMessage();
       }
 
       var maxCount = barData.reduce(
@@ -148,6 +145,30 @@ cir.controller("QueryParamsController", [
       searchParams.set("y", $scope.query.yCategoryValue);
       searchParams.set("value", $scope.query.yValue);
       return searchParams;
+    }
+
+    /**
+     * No data
+     */
+
+    function removeNoDataMessage() {
+      $("div.noDataDiv").remove();
+    }
+
+    function addNoDataMessage() {
+      const $noDataDiv = $("<div>")
+        .addClass("noDataDiv")
+        .css({
+          position: "absolute",
+          top: "20%",
+          left: "0",
+          width: "100%",
+          height: "100%",
+          color: "red",
+          "text-align": "center"
+        })
+        .html("No Data Available");
+      $("#barchart-container").append($noDataDiv);
     }
 
     $scope.submitQuery = function() {
