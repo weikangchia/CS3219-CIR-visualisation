@@ -5,32 +5,39 @@
 cir.controller("QueryParamsController", [
   "API_HOST",
   "$scope",
-  function (API_HOST, $scope) {
-    $scope.xCategories = [{
+  function(API_HOST, $scope) {
+    $scope.xCategories = [
+      {
         display: "Papers",
         key: "paper",
+        itemId: i => i.title
       },
       {
         display: "Authors",
-        key: "author"
+        key: "author",
+        itemId: i => i.name
       },
       {
         display: "Conferences",
-        key: "venue"
+        key: "venue",
+        itemId: i => i.venue
       },
       {
         display: "Key Phrase",
-        key: "keyphrase"
+        key: "keyphrase",
+        itemId: i => i.keyPhrase
       },
       {
         display: "Year",
-        key: "year"
+        key: "year",
+        itemId: i => i.year
       }
     ];
 
-    $scope.yCategories = [{
+    $scope.yCategories = [
+      {
         display: "Papers",
-        key: "paper",
+        key: "paper"
       },
       {
         display: "Authors",
@@ -54,17 +61,19 @@ cir.controller("QueryParamsController", [
 
     $scope.query = {
       topN: parseInt(searchParams.get("topN")) || 3,
-      xCategoryValue: searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
-      yCategoryValue: searchParams.get("y") || "venue" || $scope.yCategories[0]["key"],
+      xCategoryValue:
+        searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
+      yCategoryValue:
+        searchParams.get("y") || "venue" || $scope.yCategories[0]["key"],
       yValue: searchParams.get("value") || "ArXiv"
     };
 
     function transformDataIntoBarData(data) {
+      var itemId = _.find($scope.xCategories, { key: data.x }).itemId;
       var results = data.results;
       return results
         .map(record => {
-          record["id"] = record.x.name || record.x.venue || record.x.title || record.x.id;
-          return record;
+          return { count: record.count, id: itemId(record.x) };
         })
         .sort((record1, record2) => {
           return record1.count - record2.count;
@@ -78,24 +87,16 @@ cir.controller("QueryParamsController", [
       .id("id");
 
     function displayVisualization(data) {
-      data = data || {
-        // test data
-        topN: "3",
-        x: "author",
-        y: "venue",
-        value: "arxiv",
-        results: [{
-            name: "John Doe",
-            count: getRandomIntInclusive(1, 10)
-          },
-          {
-            name: "Jane Doe",
-            count: getRandomIntInclusive(1, 20)
-          }
-        ]
-      };
-
       var barData = transformDataIntoBarData(data);
+
+      if (barData.length == 0) {
+        $("#barchart")
+          .html("No Data Available")
+          .css({
+            "text-align": "center",
+            "color": "red"
+          });
+      }
 
       var maxCount = barData.reduce(
         (max, record) => Math.max(max, record.count),
@@ -116,15 +117,19 @@ cir.controller("QueryParamsController", [
         })
         .title(
           "Top " +
-          barData.length +
-          " " +
-          capitalize(data.x) +
-          "(s) of " +
-          capitalize(data.y) +
-          ": " +
-          data.value
-        ).format({
-          "text": (text, params) => {
+            barData.length +
+            " " +
+            capitalize(data.x) +
+            "(s) of " +
+            capitalize(data.y) +
+            ": " +
+            data.value
+        )
+        .title({
+          sub: data.description
+        })
+        .format({
+          text: (text, params) => {
             if (text === "size") {
               return "Count";
             } else {
@@ -145,7 +150,7 @@ cir.controller("QueryParamsController", [
       return searchParams;
     }
 
-    $scope.submitQuery = function () {
+    $scope.submitQuery = function() {
       var path = "/top-X-of-Y?" + getSearchParamsFromUser().toString();
       var url = API_HOST + path;
 
@@ -157,12 +162,12 @@ cir.controller("QueryParamsController", [
 
     $scope.submitQuery();
 
-    $scope.reloadWithParams = function () {
+    $scope.reloadWithParams = function() {
       location.search = getSearchParamsFromUser().toString();
     };
 
     $(".domain-selector").autocomplete({
-      source: function (req, updateList) {
+      source: function(req, updateList) {
         var domain = $scope.query.yCategoryValue;
         var search = $scope.query.yValue;
         var searchParams = new URLSearchParams();

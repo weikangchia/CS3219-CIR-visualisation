@@ -1,3 +1,5 @@
+const commonErrorResponse = require("../common").errorResponse;
+
 module.exports = options => {
   const {
     logger,
@@ -76,8 +78,7 @@ module.exports = options => {
         pipeline.push(unwind);
       }
 
-      [
-        {
+      [{
           $match: match
         },
         {
@@ -85,7 +86,7 @@ module.exports = options => {
         },
         {
           $sort: {
-            _id: -1
+            _id: 1
           }
         },
         {
@@ -107,25 +108,24 @@ module.exports = options => {
 
     const params = req.query;
     let {
-      domain
+      domain,
+      limit = 5
     } = params;
 
-    params.limit = params.topN || 5;
-
     if (!params.search) {
-      return res.status(404).send("INVALID_SEARCH_VALUE");
+      return res.status(400).send(JSON.stringify(commonErrorResponse.invalidField));
     }
 
     if (validDomains.indexOf(domain) >= 0) {
       return autocomplete(({
         domain,
-        topN: limit = 5,
+        limit,
         search
       } = params)).then(results => {
         res.send(JSON.stringify(results));
       });
     }
 
-    return res.status(404).send("INVALID_DOMAIN");
+    return res.status(400).send(JSON.stringify(commonErrorResponse.invalidDomain));
   };
 };

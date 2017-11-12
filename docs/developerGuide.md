@@ -37,7 +37,7 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    <br/>
    ```
    // create database
-   use cs3219
+   use CS3219
 
    // create papers collection
    db.createCollection("papers", {collation: {locale: 'en', strength: 2}})
@@ -45,7 +45,7 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
 4. Import the datasets into the database.
    <br/>
    ```
-   ./mongoimport --db cs3219 --collection papers --file <paper json file location>
+   ./mongoimport --db CS3219 --collection papers --file <paper json file location>
    ```
 5. Create indexes:
    <br/>
@@ -81,6 +81,10 @@ We are following closely to [Airbnb](https://github.com/airbnb/javascript) Javas
 Below is the architecture diagram of the whole solution for this project.
 
 <img src="images/architecture.png" width="600"><br>
+
+### Frontend
+
+* [Developer Guide](/frontend/README.md)
 
 ### CI/CD Process
 
