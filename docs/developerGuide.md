@@ -4,6 +4,7 @@
 * [Code Style](#code-style)
 * [Design](#design)
 * [API Endpoints](#api-endpoints)
+* [Testing](#testing)
 * [Developer Tools](#developer-tools)
 * [Others](#others)
 
@@ -30,9 +31,9 @@ npm install
 Follow the instructions in this [online documentation](https://docs.mongodb.com/manual/administration/install-community/) to install the MongoDB server.
 
 1. Start the MongoDB server.
-  ```
-  sudo mongod
-  ```
+   ```
+   sudo mongod
+   ```
 2. Open the MongoDB console and create the database and collection:
    <br/>
    ```
@@ -103,6 +104,13 @@ Below is the architecture diagram of the whole solution for this project.
 
 ### Graphs
 - **[<code>GET</code> graphs/incitation](endpoints/graphs/GET_incitation.md)**
+
+## Testing
+To run the test for the backend API codes, go to `backend-api` directory and run `npm test`.
+
+At the end of the test, you will see the test result in your terminal. A sample of the test result is shown below.
+
+<img src="images/test_result.png" width="600"><br>
 
 ## Developer Tools
 
