@@ -2,7 +2,7 @@
 ## Pages with Useful Results
 
 ## Top N X Of Y
-- `<frontendurl>`/topn-x-of-y?topN=3&x=paper&y=year&value=2016
+- `<frontendurl>`/topn-x-of-y?limit=3&x=paper&y=year&value=2016
 
 ## Graphs Incitations
 - `<frontendurl>`/graphs-incitations#?title=Cultures%20and%20Organizations:%20Software%20of%20the%20Mind%20(pdf)%20by%20Geert%20Hofstede%20(ebook)&currentLevel=2

@@ -148,9 +148,9 @@ function sanitizeXorY(xOrY) {
 }
 
 /**
- * Returns the topN x of y.
+ * Returns the top N x of y.
  *
- * @param {integer} topN number of x (default is 10)
+ * @param {integer} limit number of x (default is 10)
  * @param {string} x domain (default is paper)
  * @param {string} y range
  * @param {string} value of y
@@ -158,8 +158,7 @@ function sanitizeXorY(xOrY) {
 function getTopXofY(params) {
   return new Promise((resolve, reject) => {
     params = params || {};
-    const topN = params.topN || 10;
-    let x = params.x || "paper";
+    let {limit= 10, x="paper"} = params
 
     x = sanitizeXorY(x);
     const y = sanitizeXorY(params.y);
@@ -200,7 +199,7 @@ function getTopXofY(params) {
 
         topX = Object.keys(topX)
           .sort((x1, x2) => topX[x2] - topX[x1])
-          .slice(0, topN)
+          .slice(0, limit)
           .map(id => {
             return {
               x: xObjArr[id],
@@ -225,7 +224,7 @@ function handler(options) {
 
     getTopXofY(params).then(result => {
       const send = {
-        topN: params.topN,
+        limit: params.limit,
         x: params.x,
         y: params.y,
         value: params.value,

@@ -60,7 +60,7 @@ cir.controller("QueryParamsController", [
     var searchParams = new URLSearchParams(location.search);
 
     $scope.query = {
-      topN: parseInt(searchParams.get("topN")) || 3,
+      limit: parseInt(searchParams.get("limit")) || 3,
       xCategoryValue:
         searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
       yCategoryValue:
@@ -94,7 +94,7 @@ cir.controller("QueryParamsController", [
           .html("No Data Available")
           .css({
             "text-align": "center",
-            "color": "red"
+            color: "red"
           });
       }
 
@@ -143,7 +143,7 @@ cir.controller("QueryParamsController", [
 
     function getSearchParamsFromUser() {
       var searchParams = new URLSearchParams();
-      searchParams.set("topN", $scope.query.topN);
+      searchParams.set("limit", $scope.query.limit);
       searchParams.set("x", $scope.query.xCategoryValue);
       searchParams.set("y", $scope.query.yCategoryValue);
       searchParams.set("value", $scope.query.yValue);
