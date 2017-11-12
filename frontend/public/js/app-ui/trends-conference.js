@@ -74,8 +74,7 @@ function renderFormFromSearch() {
     yearRange
   } = $location.search();
   const $inputs = $("[name=conferences]").slice(0, -1);
-
-  conferences = conferences || ["ArXiv"];
+  
   conferences = Array.isArray(conferences) ? conferences : [conferences];
   conferences.forEach((venue, i) => {
     if (i >= $inputs.length) {
@@ -160,7 +159,7 @@ function addNoDataMessage() {
       'text-align' : 'center'
     })
     .html("No Data Available");
-  $("#graph-container").append($noDataDiv);
+  $("#graph").append($noDataDiv);
 }
 
 /**
@@ -199,7 +198,7 @@ function updateVisualization(data, title) {
 
   $("#graph").empty();
 
-  if(data.length == 0 || data.every(d => d.count == 0)){
+  if (data.length == 0 || data.every(d => d.count == 0)){
     return addNoDataMessage();
   }
 

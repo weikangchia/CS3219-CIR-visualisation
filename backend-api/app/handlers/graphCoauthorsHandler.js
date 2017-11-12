@@ -77,7 +77,7 @@ async function findAuthorsFromPaper(paper, authorName, authorId, currLevel, maxL
             });
           } else {
             await Promise.all(papers.map(async paper => {
-              await findAuthorsFromPaper(paper, author.name, coAuthorId, currLevel+1, maxLevel, nodeLinks);
+              await findAuthorsFromPaper(paper, author.name, coAuthorId, currLevel + 1, maxLevel, nodeLinks);
             }));
           }
         }
@@ -109,7 +109,7 @@ async function getCoAuthorsGraph(authorName, level) {
     });
   } else {
     await Promise.all(papers.map(async paper => {
-      let authorId = findAuthorId(paper, authorName);
+      const authorId = findAuthorId(paper, authorName);
       await findAuthorsFromPaper(paper, authorName, authorId, 0, level, nodeLinks);
     }));
   }
