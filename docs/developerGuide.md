@@ -54,8 +54,9 @@ Follow the instructions in this [online documentation](https://docs.mongodb.com/
    // create indexes to improve query time
    db.papers.createIndex({venue: 1})
    db.papers.createIndex({"authors.name": 1})
-   db.papers.createIndex({"year": 1})
+   db.papers.createIndex({year: 1})
    db.papers.createIndex({keyPhrases: 1})
+   db.papers.createIndex({id: 1})
    ```
 ### Run frontend server
 To run frontend server, go to `/frontend` folder and execute:
@@ -106,7 +107,10 @@ Below is the architecture diagram of the whole solution for this project.
 - **[<code>GET</code> graphs/incitation](endpoints/graphs/GET_incitation.md)**
 
 ## Testing
-To run the test for the backend API codes, go to `backend-api` directory and run `npm test`.
+To run the test for the backend API codes, go to `backend-api` directory and execute: 
+```
+npm test
+```
 
 At the end of the test, you will see the test result in your terminal. A sample of the test result is shown below.
 
