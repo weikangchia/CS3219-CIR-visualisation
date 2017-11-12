@@ -79,7 +79,8 @@ module.exports = options => {
         pipeline.push(unwind);
       }
 
-      [{
+      [
+        {
           $match: match
         },
         {

@@ -65,7 +65,7 @@ cir.controller("QueryParamsController", [
         searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
       yCategoryValue:
         searchParams.get("y") || "venue" || $scope.yCategories[0]["key"],
-      yValue: searchParams.get("value") || "ArXiv"
+      yValue: searchParams.get("value")
     };
 
     function transformDataIntoBarData(data) {

@@ -73,8 +73,7 @@ function renderFormFromSearch() {
     yearRange
   } = $location.search();
   const $inputs = $("[name=keyphrases]").slice(0, -1);
-
-  keyphrases = keyphrases || ["nlp"];
+  
   keyphrases = Array.isArray(keyphrases) ? keyphrases : [keyphrases];
   keyphrases.forEach((keyphrase, i) => {
     if (i >= $inputs.length) {
@@ -139,6 +138,30 @@ function submitQuery() {
 }
 
 /**
+ * No data
+ */
+
+function removeNoDataMessage() {
+  $("div.noDataDiv").remove();
+}
+
+function addNoDataMessage() {
+  const $noDataDiv = $("<div>")
+    .addClass("noDataDiv")
+    .css({
+      position: "absolute",
+      top: "20%",
+      left: "0",
+      width: "100%",
+      height: "100%",
+      color: "red",
+      'text-align' : 'center'
+    })
+    .html("No Data Available");
+  $("#graph").append($noDataDiv);
+}
+
+/**
  * UI Behaviors (Controller)
  */
 
@@ -170,8 +193,15 @@ $(() => () => pageLoad());
  */
 function updateVisualization(data, title) {
   fakeLoader.hide();
+  removeNoDataMessage();
 
   $("#graph").empty();
+
+  if (data.length == 0 || data.every(d => d.count == 0)){
+    console.log("no data");
+    return addNoDataMessage();
+  }
+
   var visualization = d3plus
     .viz()
     .container("#graph")
