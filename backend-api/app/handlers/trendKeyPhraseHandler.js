@@ -15,6 +15,13 @@ async function getPapers(filter, projection) {
   });
 }
 
+/**
+ * Returns an array of data of the keyphrase trends.
+ *
+ * @param {string} phrase
+ * @param {int} minYear
+ * @param {int} maxYear
+ */
 async function getKeyphraseTrends(phrase, minYear, maxYear) {
   const filter = {
     keyPhrases: {
