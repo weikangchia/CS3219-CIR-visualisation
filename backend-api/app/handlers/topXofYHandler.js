@@ -6,8 +6,7 @@ const selects = {
   venue: "venue",
   keyphrase: "keyPhrases",
   year: "year",
-  paper:
-    "id title authors venue inCitations outCitations year abstract keyPhrases"
+  paper: "id title authors venue inCitations outCitations year abstract keyPhrases"
 };
 
 const entities = {
@@ -40,15 +39,13 @@ const entities = {
     select: selects.venue,
     getGroupKeys(paper) {
       if (paper.venue && (!paper.venue.trim || paper.venue.trim() !== "")) {
-        return [
-          {
-            id: paper.venue,
-            obj: {
-              venue: paper.venue
-            },
-            count: 1
-          }
-        ];
+        return [{
+          id: paper.venue,
+          obj: {
+            venue: paper.venue
+          },
+          count: 1
+        }];
       }
       return [];
     },
@@ -76,7 +73,9 @@ const entities = {
     },
     getFilter(y, value) {
       if (y && value) {
-        return { keyPhrases: value };
+        return {
+          keyPhrases: value
+        };
       }
       return {};
     },
@@ -86,15 +85,13 @@ const entities = {
     select: selects.year,
     getGroupKeys(paper) {
       if (paper.year && (!paper.year.trim || paper.year.trim() !== "")) {
-        return [
-          {
-            id: paper.year,
-            obj: {
-              year: paper.year
-            },
-            count: 1
-          }
-        ];
+        return [{
+          id: paper.year,
+          obj: {
+            year: paper.year
+          },
+          count: 1
+        }];
       }
       return [];
     },
@@ -130,22 +127,15 @@ const entities = {
     },
     getFilter(y, value) {
       if (y && value) {
-        return { title: value };
+        return {
+          title: value
+        };
       }
       return {};
     },
     description: "Papers which are cited the most"
   }
 };
-
-function sanitizeXorY(xOrY) {
-  if (xOrY === "authors") {
-    xOrY = "author";
-  } else if (xOrY === "venues") {
-    xOrY = "venue";
-  }
-  return xOrY;
-}
 
 /**
  * Returns the topN x of y.
@@ -159,23 +149,31 @@ function getTopXofY(params) {
   return new Promise((resolve, reject) => {
     params = params || {};
     const topN = params.topN || 10;
-    let x = params.x || "paper";
-
-    x = sanitizeXorY(x);
-    const y = sanitizeXorY(params.y);
+    const {
+      x,
+      y
+    } = params;
 
     let filterY = {};
     if (entities[y]) {
-      const { getFilter } = entities[y];
+      const {
+        getFilter
+      } = entities[y];
       filterY = getFilter(y, params.value);
     }
 
     let select = "";
     let getGroupKeys;
     if (entities[x]) {
-      ({ select, getGroupKeys } = entities[x]);
+      ({
+        select,
+        getGroupKeys
+      } = entities[x]);
     } else {
-      ({ select, getGroupKeys } = entities.paper);
+      ({
+        select,
+        getGroupKeys
+      } = entities.paper);
     }
 
     let topX = {};
@@ -191,7 +189,9 @@ function getTopXofY(params) {
         papers.forEach(element => {
           const groupKeys = getGroupKeys(element);
           groupKeys.forEach(key => {
-            const { id } = key;
+            const {
+              id
+            } = key;
             topX[id] = topX[id] || [];
             topX[id] = Number(topX[id]) + Number(key.count);
             xObjArr[id] = key.obj;
@@ -211,17 +211,23 @@ function getTopXofY(params) {
 
         resolve(topX);
       }
-    })
-      .select(select)
-      .lean();
+    }).select(select).lean();
   });
 }
 
 function handler(options) {
-  ({ logger, db } = options);
+  ({
+    logger,
+    db
+  } = options);
 
   return (req, res) => {
     const params = req.query;
+    params.x = params.x || "paper";
+
+    if (!(params.x in entities)) {
+      params.x = "paper";
+    }
 
     getTopXofY(params).then(result => {
       const send = {
