@@ -114,7 +114,7 @@ function renderFormFromSearch() {
  * No request is made if title is empty
  */
 function submitQuery() {
-  // fakeLoader.show();
+  fakeLoader.show();
 
   const { title, currentLevel } = getFormParams();
   if (title) {
@@ -122,7 +122,7 @@ function submitQuery() {
       .get(`${API_HOST}/graphs/incitation?level=${currentLevel}&title=${title}`)
       .then(response => {
         updateVisualization(response.data);
-        // fakeLoader.hide();
+        fakeLoader.hide();
       });
   }
 }
