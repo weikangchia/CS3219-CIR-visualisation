@@ -24,6 +24,9 @@ slider.noUiSlider.on("change", function() {
 
 function updateVisualization(data) {
   $("#graph").empty();
+  if(!data.nodes[0]) {
+        return fakeLoader.hide();
+  }
   var visualization = d3plus
     .viz()
     .container("#graph")
@@ -117,7 +120,6 @@ function submitQuery() {
       )
       .then(response => {
         updateVisualization(response.data);
-        fakeLoader.hide();
       });
   }
 }
