@@ -111,3 +111,4 @@ Below is the architecture diagram of the whole solution for this project.
 ## Others
 
 - d3plus (v1) [documentation](https://github.com/alexandersimoes/d3plus/wiki/Visualizations)
+- [Pages](pagesWithUsefulResults.md) with useful results
