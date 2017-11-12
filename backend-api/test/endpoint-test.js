@@ -404,17 +404,17 @@ describe("/GET autocomplete", () => {
   });
 
   it("it should return 200 for valid search and in year domain", done => {
-    const expectedResult = ["Ar", "Ar Argentina", "Ar Belkov", "AR Chopade", "AR Dorosty"];
+    const expectedResult = ["2010", "2011", "2012"];
 
     Paper.aggregate.yields(null, expectedResult);
 
     chai
       .request(server)
-      .get("/autocomplete?search=ar&domain=author")
+      .get("/autocomplete?search=201&domain=year")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("array");
-        res.body.length.should.equal(5);
+        res.body.length.should.equal(3);
         done();
       });
   });
