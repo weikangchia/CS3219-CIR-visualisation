@@ -48,6 +48,7 @@ A JSON object with the following keys and values:
   "x": "author",
   "y": "venue",
   "value": "arxiv",
+  "description": "Authors who have written the most number of papers",
   "results": [
     { "x": { "ids": ["1747337"], "name": "Damien Chablat" }, "count": 6 },
     { "x": { "ids": ["1706805"], "name": "Zhiyuan Yan" }, "count": 4 },
