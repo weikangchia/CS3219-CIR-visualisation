@@ -60,7 +60,7 @@ cir.controller("QueryParamsController", [
     var searchParams = new URLSearchParams(location.search);
 
     $scope.query = {
-      topN: parseInt(searchParams.get("topN")) || 3,
+      limit: parseInt(searchParams.get("limit")) || 3,
       xCategoryValue:
         searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
       yCategoryValue:
@@ -87,15 +87,12 @@ cir.controller("QueryParamsController", [
       .id("id");
 
     function displayVisualization(data) {
+      removeNoDataMessage();
+
       var barData = transformDataIntoBarData(data);
 
       if (barData.length == 0) {
-        return $("#barchart")
-          .html("No Data Available")
-          .css({
-            "text-align": "center",
-            "color": "red"
-          });
+        return addNoDataMessage();
       }
 
       var maxCount = barData.reduce(
@@ -143,11 +140,35 @@ cir.controller("QueryParamsController", [
 
     function getSearchParamsFromUser() {
       var searchParams = new URLSearchParams();
-      searchParams.set("topN", $scope.query.topN);
+      searchParams.set("limit", $scope.query.limit);
       searchParams.set("x", $scope.query.xCategoryValue);
       searchParams.set("y", $scope.query.yCategoryValue);
       searchParams.set("value", $scope.query.yValue);
       return searchParams;
+    }
+
+    /**
+     * No data
+     */
+
+    function removeNoDataMessage() {
+      $("div.noDataDiv").remove();
+    }
+
+    function addNoDataMessage() {
+      const $noDataDiv = $("<div>")
+        .addClass("noDataDiv")
+        .css({
+          position: "absolute",
+          top: "20%",
+          left: "0",
+          width: "100%",
+          height: "100%",
+          color: "red",
+          "text-align": "center"
+        })
+        .html("No Data Available");
+      $("#barchart-container").append($noDataDiv);
     }
 
     $scope.submitQuery = function() {

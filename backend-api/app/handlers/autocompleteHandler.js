@@ -44,7 +44,8 @@ module.exports = options => {
       let match;
       const {
         domain,
-        search
+        search,
+        limit
       } = params;
 
       const {
@@ -90,7 +91,7 @@ module.exports = options => {
           }
         },
         {
-          $limit: params.limit
+          $limit: limit
         }
       ].forEach(operation => {
         pipeline.push(operation);
@@ -107,21 +108,19 @@ module.exports = options => {
     logger.info("Retrieving autocomplete search from database");
 
     const params = req.query;
-    let {
+    const {
       domain,
-      limit = 5
+      limit
     } = params;
+
+    params.limit = parseInt(limit, 10) || 5;
 
     if (!params.search) {
       return res.status(400).send(JSON.stringify(commonErrorResponse.invalidField));
     }
 
     if (validDomains.indexOf(domain) >= 0) {
-      return autocomplete(({
-        domain,
-        limit,
-        search
-      } = params)).then(results => {
+      return autocomplete(params).then(results => {
         res.send(JSON.stringify(results));
       });
     }

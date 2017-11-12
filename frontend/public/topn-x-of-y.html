@@ -48,7 +48,7 @@
     </div>
 
     <div class="row">
-      <div class="col col-12 col-md-8 order-2 order-md-1">
+      <div id="barchart-container" class="col col-12 col-md-8 order-2 order-md-1">
         <div id="barchart"></div>
         <style>
           #barchart {
@@ -65,7 +65,7 @@
           <div class="col-12">
             <div class="form-group">
               Limit
-              <input class="form-control" ng-model="query.topN" min="2" max="10" type="number" ng-model="query.topN">                
+              <input class="form-control" ng-model="query.limit" min="2" max="10" type="number" ng-model="query.limit">                
             </div>
 
             <div class="form-group">
