@@ -74,7 +74,7 @@ async function findAuthorsFromPaper(paper, authorName, currLevel, maxLevel, node
             if ((currLevel + 1) < maxLevel) {
               const papers = await getPapersFromAuthorName(author.name);
 
-              if (papers === null) {
+              if (!papers[0]) {
                 logger.info({
                   handler: handlerName,
                   message: `unable to find paper with author name ${author.name}`
@@ -108,14 +108,22 @@ async function getCoAuthorsGraph(authorName, level) {
 
   const papers = await getPapersFromAuthorName(authorName);
 
-  if (papers === null) {
+  if (!papers[0]) {
     logger.info({
       handler: handlerName,
       message: `unable to find paper with author name ${authorName}`
     });
   } else {
     await Promise.all(papers.map(async paper => {
-      await findAuthorsFromPaper(paper, authorName, 0, level, nodeLinks);
+      logger.info(paper.authors);
+      if (findAuthorId(paper, authorName) === undefined) {
+        logger.info({
+          handler: handlerName,
+          message: `${authorName} id is undefined.`
+        });
+      } else {
+        await findAuthorsFromPaper(paper, authorName, 0, level, nodeLinks);
+      }
     }));
   }
 
