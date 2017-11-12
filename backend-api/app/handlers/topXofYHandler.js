@@ -215,6 +215,13 @@ function getTopXofY(params) {
   });
 }
 
+
+/**
+ * handle /top-X-of-Y API calls. Sends response in JSON format.
+ *
+ * @param {integer} logger used for logging
+ * @param {string} db database object used for connecting
+ */
 function handler(options) {
   ({
     logger,
