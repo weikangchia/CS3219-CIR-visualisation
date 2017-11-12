@@ -27,6 +27,10 @@ slider.noUiSlider.on("change", function() {
  */
 
 function updateVisualization(data) {
+  removeNoDataMessage();
+  if(data.length == 0){
+    return addNoDataMessage();
+  }
   $("#graph").empty();
   var visualization = d3plus
     .viz()
@@ -125,6 +129,30 @@ function submitQuery() {
         fakeLoader.hide();
       });
   }
+}
+
+/**
+ * No Data
+ */
+
+function removeNoDataMessage() {
+  $("div.noDataDiv").remove();
+}
+
+function addNoDataMessage() {
+  const $noDataDiv = $("<div>")
+    .addClass("noDataDiv")
+    .css({
+      position: "absolute",
+      top: "20%",
+      left: "0",
+      width: "100%",
+      height: "100%",
+      color: "red",
+      "text-align": "center"
+    })
+    .html("No Data Available");
+  $("#graph-container").append($noDataDiv);
 }
 
 /**

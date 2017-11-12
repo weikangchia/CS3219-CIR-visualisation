@@ -74,13 +74,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=venue&value=arxiv&x=author")
+      .get("/top-X-of-Y?limit=3&y=venue&value=arxiv&x=author")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("3");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("3");
         res.body.should.have.property("x");
         res.body.x.should.equal("author");
         res.body.should.have.property("y");
@@ -162,13 +162,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&x=year")
+      .get("/top-X-of-Y?limit=3&x=year")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("3");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("3");
         res.body.should.have.property("x");
         res.body.x.should.equal("year");
 
@@ -207,13 +207,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=1&y=year&x=year")
+      .get("/top-X-of-Y?limit=1&y=year&x=year")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("1");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("1");
         res.body.should.have.property("x");
         res.body.x.should.equal("year");
         res.body.should.have.property("y");
@@ -242,13 +242,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=1&y=paper&x=year")
+      .get("/top-X-of-Y?limit=1&y=paper&x=year")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("1");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("1");
         res.body.should.have.property("x");
         res.body.x.should.equal("year");
         res.body.should.have.property("y");
@@ -295,13 +295,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=venue&value=arxiv&x=keyphrase")
+      .get("/top-X-of-Y?limit=3&y=venue&value=arxiv&x=keyphrase")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("3");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("3");
         res.body.should.have.property("x");
         res.body.x.should.equal("keyphrase");
         res.body.should.have.property("y");
@@ -377,13 +377,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=keyphrase&value=CNN&x=venue")
+      .get("/top-X-of-Y?limit=3&y=keyphrase&value=CNN&x=venue")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("3");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("3");
         res.body.should.have.property("x");
         res.body.x.should.equal("venue");
         res.body.should.have.property("y");
@@ -426,13 +426,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=1&y=venue&x=venue")
+      .get("/top-X-of-Y?limit=1&y=venue&x=venue")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("1");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("1");
         res.body.should.have.property("x");
         res.body.x.should.equal("venue");
         res.body.should.have.property("y");
@@ -532,13 +532,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=1&y=year&value=2016")
+      .get("/top-X-of-Y?limit=1&y=year&value=2016")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("1");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("1");
         res.body.should.have.property("y");
         res.body.y.should.equal("year");
         res.body.should.have.property("value");
@@ -581,13 +581,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=author&value=Jing Li&x=keyphrase")
+      .get("/top-X-of-Y?limit=3&y=author&value=Jing Li&x=keyphrase")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("3");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("3");
         res.body.should.have.property("x");
         res.body.x.should.equal("keyphrase");
         res.body.should.have.property("y");
@@ -630,13 +630,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=1&y=keyphrase&x=keyphrase")
+      .get("/top-X-of-Y?limit=1&y=keyphrase&x=keyphrase")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("1");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("1");
         res.body.should.have.property("x");
         res.body.x.should.equal("keyphrase");
         res.body.should.have.property("y");
@@ -678,13 +678,13 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=paper&value=Wireless diversity through network coding&x=author")
+      .get("/top-X-of-Y?limit=3&y=paper&value=Wireless diversity through network coding&x=author")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
 
-        res.body.should.have.property("topN");
-        res.body.topN.should.equal("3");
+        res.body.should.have.property("limit");
+        res.body.limit.should.equal("3");
         res.body.should.have.property("x");
         res.body.x.should.equal("author");
         res.body.should.have.property("y");
