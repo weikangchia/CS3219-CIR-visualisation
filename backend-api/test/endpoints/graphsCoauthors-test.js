@@ -47,10 +47,10 @@ module.exports = function (options) {
       {
         id: 234,
         authors: [{
-          ids: 456,
+          ids: [456],
           name: "jack"
         }, {
-          ids: 789,
+          ids: [789],
           name: "mary"
         }]
       }
@@ -60,7 +60,52 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/graphs/coauthors?author=abc")
+      .get("/graphs/coauthors?author=jack")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+
+  it("it should return 200", done => {
+    const expectedResult = [
+      {
+        id: 123,
+        authors: [{
+          ids: [456],
+          name: "jack"
+        }]
+      },
+      {
+        id: 456,
+        authors: [{
+          ids: [789],
+          name: "mary"
+        }]
+      }
+    ];
+
+    Paper.find.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/graphs/coauthors?author=jack")
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        done();
+      });
+  });
+
+  it("it should return 200", done => {
+    const expectedResult = [];
+
+    Paper.find.yields(null, expectedResult);
+
+    chai
+      .request(server)
+      .get("/graphs/coauthors?author=jack")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
