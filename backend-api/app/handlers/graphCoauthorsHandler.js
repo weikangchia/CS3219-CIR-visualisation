@@ -23,7 +23,7 @@ function findAuthorId(paper, authorName) {
   let authorId;
 
   authors.forEach(author => {
-    if (author.name === authorName) {
+    if (author.name.toLowerCase() === authorName.toLowerCase()) {
       authorId = author.ids[0] || author.name;
     }
   });
@@ -110,7 +110,9 @@ async function getCoAuthorsGraph(authorName, level) {
   } else {
     await Promise.all(papers.map(async paper => {
       const authorId = findAuthorId(paper, authorName);
-      await findAuthorsFromPaper(paper, authorName, authorId, 0, level, nodeLinks);
+      if (authorId !== undefined) {
+        await findAuthorsFromPaper(paper, authorName, authorId, 0, level, nodeLinks);
+      }
     }));
   }
 
