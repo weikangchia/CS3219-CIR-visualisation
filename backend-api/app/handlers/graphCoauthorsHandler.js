@@ -5,13 +5,13 @@ let db;
 
 const handlerName = "graphCoauthorsHandler";
 
-function minimizeAuthor(authorId, paper, level) {
-  const selectedAuthor = paper.authors.find(author => author.ids[0] === authorId);
+function minimizeAuthor(authorId, authorName, paper, level) {
+  // const selectedAuthor = paper.authors.find(author => author.ids[0] === authorId);
 
   return {
     id: authorId,
     level,
-    author: selectedAuthor ? selectedAuthor.name : "undefined",
+    author: authorName,
     title: paper.title ? paper.title : "undefined"
   };
 }
@@ -23,8 +23,8 @@ function findAuthorId(paper, authorName) {
   let authorId;
 
   authors.forEach(author => {
-    if (author.name === authorName) {
-      authorId = author.ids[0] ? author.ids[0] : undefined;
+    if (author.name.toLowerCase() === authorName.toLowerCase()) {
+      authorId = author.ids[0] || author.name;
     }
   });
 
@@ -43,52 +43,46 @@ async function getPapersFromAuthorName(authorName) {
   });
 }
 
-async function findAuthorsFromPaper(paper, authorName, currLevel, maxLevel, nodeLinks) {
+async function findAuthorsFromPaper(paper, authorName, authorId, currLevel, maxLevel, nodeLinks) {
   if (currLevel <= maxLevel && paper !== undefined && !(paper.id in nodeLinks.papers)) {
     const {
       authors
     } = paper;
     nodeLinks.papers[paper.id] = paper.id;
 
-    const authorId = findAuthorId(paper, authorName);
-    if (!(authorId in nodeLinks.authors) && authorId !== undefined) {
+    if (!(authorId in nodeLinks.authors)) {
       nodeLinks.authors[authorId] = authorId;
-      nodeLinks.nodes.push(minimizeAuthor(authorId, paper, currLevel));
+      nodeLinks.nodes.push(minimizeAuthor(authorId, authorName, paper, currLevel));
     }
+    await Promise.all(authors.map(async author => {
+      const coAuthorId = author.ids[0] || author.name;
+      if (!(coAuthorId in nodeLinks.authors)) {
+        nodeLinks.nodes.push(minimizeAuthor(coAuthorId, author.name, paper, currLevel + 1));
+        nodeLinks.authors[coAuthorId] = coAuthorId;
+      }
 
-    if (authorId !== undefined) {
-      await Promise.all(authors.map(async author => {
-        const coAuthorId = author.ids[0] ? author.ids[0] : undefined;
-        if (coAuthorId !== undefined) {
-          if (!(coAuthorId in nodeLinks.authors)) {
-            nodeLinks.nodes.push(minimizeAuthor(coAuthorId, paper, currLevel + 1));
-            nodeLinks.authors[coAuthorId] = coAuthorId;
-          }
+      if (coAuthorId !== authorId) {
+        nodeLinks.links.push({
+          source: coAuthorId,
+          target: authorId
+        });
 
-          if (coAuthorId !== authorId) {
-            nodeLinks.links.push({
-              source: author.ids[0],
-              target: authorId
+        if ((currLevel + 1) < maxLevel) {
+          const papers = await getPapersFromAuthorName(author.name);
+
+          if (!papers[0]) {
+            logger.info({
+              handler: handlerName,
+              message: `unable to find paper with author name ${author.name}`
             });
-
-            if ((currLevel + 1) < maxLevel) {
-              const papers = await getPapersFromAuthorName(author.name);
-
-              if (!papers[0]) {
-                logger.info({
-                  handler: handlerName,
-                  message: `unable to find paper with author name ${author.name}`
-                });
-              } else {
-                await Promise.all(papers.map(async paper => {
-                  await findAuthorsFromPaper(paper, author.name, currLevel+1, maxLevel, nodeLinks);
-                }));
-              }
-            }
+          } else {
+            await Promise.all(papers.map(async paper => {
+              await findAuthorsFromPaper(paper, author.name, coAuthorId, currLevel + 1, maxLevel, nodeLinks);
+            }));
           }
         }
-      }));
-    }
+      }
+    }));
   }
 }
 
@@ -115,14 +109,9 @@ async function getCoAuthorsGraph(authorName, level) {
     });
   } else {
     await Promise.all(papers.map(async paper => {
-      logger.info(paper.authors);
-      if (findAuthorId(paper, authorName) === undefined) {
-        logger.info({
-          handler: handlerName,
-          message: `${authorName} id is undefined.`
-        });
-      } else {
-        await findAuthorsFromPaper(paper, authorName, 0, level, nodeLinks);
+      const authorId = findAuthorId(paper, authorName);
+      if (authorId !== undefined) {
+        await findAuthorsFromPaper(paper, authorName, authorId, 0, level, nodeLinks);
       }
     }));
   }

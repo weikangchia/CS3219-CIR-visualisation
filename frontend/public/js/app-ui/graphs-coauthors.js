@@ -33,6 +33,7 @@ function updateVisualization(data) {
     .viz()
     .container("#graph")
     .type("rings")
+    .text("author")
     .focus(data.nodes[0].id)
     .data(data.nodes)
     .edges(data.links)

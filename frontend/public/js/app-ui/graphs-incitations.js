@@ -28,14 +28,18 @@ slider.noUiSlider.on("change", function() {
 
 function updateVisualization(data) {
   removeNoDataMessage();
-  if(data.length == 0){
+
+  $("#graph").empty();
+
+  if(data.links.length == 0){
     return addNoDataMessage();
   }
-  $("#graph").empty();
+  
   var visualization = d3plus
     .viz()
     .container("#graph")
     .type("rings")
+    .text("title")
     .focus(data.nodes[0].id)
     .data(data.nodes)
     .edges(data.links)
@@ -152,7 +156,7 @@ function addNoDataMessage() {
       "text-align": "center"
     })
     .html("No Data Available");
-  $("#graph-container").append($noDataDiv);
+  $("#graph").append($noDataDiv);
 }
 
 /**
