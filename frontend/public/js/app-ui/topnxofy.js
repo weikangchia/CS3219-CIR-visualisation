@@ -134,7 +134,9 @@ cir.controller("QueryParamsController", [
             }
           }
         })
-        .order(d => barDataIds.indexOf(d))
+        .order(d => {
+          return barDataIds.indexOf(d.id);
+        })
         .draw();
     }
 
