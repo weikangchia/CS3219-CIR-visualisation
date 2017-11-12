@@ -106,7 +106,7 @@ function renderFormFromSearch() {
  * No request is made if name is empty
  */
 function submitQuery() {
-  // fakeLoader.show();
+  fakeLoader.show();
 
   const { author, currentLevel } = getFormParams();
 
@@ -117,7 +117,7 @@ function submitQuery() {
       )
       .then(response => {
         updateVisualization(response.data);
-        // fakeLoader.hide();
+        fakeLoader.hide();
       });
   }
 }
