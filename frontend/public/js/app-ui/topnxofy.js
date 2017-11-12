@@ -90,7 +90,7 @@ cir.controller("QueryParamsController", [
       var barData = transformDataIntoBarData(data);
 
       if (barData.length == 0) {
-        $("#barchart")
+        return $("#barchart")
           .html("No Data Available")
           .css({
             "text-align": "center",
