@@ -15,6 +15,13 @@ async function getPapers(pipeStages) {
   });
 }
 
+/**
+ * Returns an array of data of the conference trends.
+ *
+ * @param {string} name
+ * @param {int} minYear
+ * @param {int} maxYear
+ */
 async function getConferenceTrends(name, minYear, maxYear) {
   const matchStage = {
     $match: {
