@@ -7,7 +7,7 @@ const selects = {
   keyphrase: "keyPhrases",
   year: "year",
   paper:
-  "id title authors venue inCitations outCitations year abstract keyPhrases"
+    "id title authors venue inCitations outCitations year abstract keyPhrases"
 };
 
 const entities = {
@@ -29,23 +29,26 @@ const entities = {
     getFilter(y, value) {
       if (y && value) {
         return {
-          'authors.name': value
+          "authors.name": value
         };
       }
       return {};
-    }
+    },
+    description: "Authors who have written the most number of papers"
   },
   venue: {
     select: selects.venue,
     getGroupKeys(paper) {
       if (paper.venue && (!paper.venue.trim || paper.venue.trim() !== "")) {
-        return [{
-          id: paper.venue,
-          obj: {
-            venue: paper.venue
-          },
-          count: 1
-        }];
+        return [
+          {
+            id: paper.venue,
+            obj: {
+              venue: paper.venue
+            },
+            count: 1
+          }
+        ];
       }
       return [];
     },
@@ -55,7 +58,8 @@ const entities = {
         filterY[y] = value;
       }
       return filterY;
-    }
+    },
+    description: "Conferences which have the most number of papers published in"
   },
   keyphrase: {
     select: selects.keyphrase,
@@ -75,19 +79,22 @@ const entities = {
         return { keyPhrases: value };
       }
       return {};
-    }
+    },
+    description: "Keyphrases which are listed in the most number of papers"
   },
   year: {
     select: selects.year,
     getGroupKeys(paper) {
       if (paper.year && (!paper.year.trim || paper.year.trim() !== "")) {
-        return [{
-          id: paper.year,
-          obj: {
-            year: paper.year
-          },
-          count: 1
-        }];
+        return [
+          {
+            id: paper.year,
+            obj: {
+              year: paper.year
+            },
+            count: 1
+          }
+        ];
       }
       return [];
     },
@@ -97,7 +104,8 @@ const entities = {
         filterY[y] = value;
       }
       return filterY;
-    }
+    },
+    description: "Year with the most number of papers written in"
   },
   paper: {
     select: selects.paper,
@@ -125,7 +133,8 @@ const entities = {
         return { title: value };
       }
       return {};
-    }
+    },
+    description: "Papers which are cited the most"
   }
 };
 
@@ -220,6 +229,7 @@ function handler(options) {
         x: params.x,
         y: params.y,
         value: params.value,
+        description: entities[params.x].description || "Description",
         results: result
       };
       res.send(JSON.stringify(send));

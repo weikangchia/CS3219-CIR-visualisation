@@ -27,6 +27,7 @@ A JSON object with the following keys and values:
 - **y** — The y domain.
 - **value** — The search value.
 - **results** — An array of x objects.
+- **description** - A user readable description of search query
 
 ***
 
