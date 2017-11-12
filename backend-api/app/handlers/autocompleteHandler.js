@@ -1,41 +1,85 @@
-module.exports = options => {
-  const { logger, db } = options;
+const commonErrorResponse = require("../common").errorResponse;
 
-  const validDomains = ["venues", "authors"];
+module.exports = options => {
+  const {
+    logger,
+    db
+  } = options;
+
+  const domains = {
+    venue: {
+      groupBy: "venue"
+    },
+    author: {
+      groupBy: "authors.name",
+      unwind: {
+        $unwind: "$authors"
+      }
+    },
+    keyphrase: {
+      unwind: {
+        $unwind: "$keyPhrases"
+      },
+      groupBy: "keyPhrases"
+    },
+    paper: {
+      groupBy: "title"
+    },
+    year: {
+      groupBy: "year",
+      project: {
+        $project: {
+          year: {
+            $substr: ["$year", 0, 4]
+          }
+        }
+      }
+    }
+  };
+
+  const validDomains = Object.keys(domains);
 
   function autocomplete(params) {
     return new Promise((resolve, reject) => {
-      let groupBy;
-      let unwind;
-      const match = {};
-      const { domain, search } = params;
+      let match;
+      const {
+        domain,
+        search,
+        limit
+      } = params;
 
-      if (domain === "authors") {
-        groupBy = "authors.name";
+      const {
+        groupBy,
+        unwind,
+        getMatch,
+        project
+      } = domains[domain];
 
-        unwind = {
-          $unwind: "$authors"
+      if (getMatch) {
+        match = getMatch(params);
+      } else {
+        match = {};
+
+        match[groupBy] = {
+          $regex: new RegExp(`^${search}`, "i")
         };
       }
 
-      if (domain === "venues") {
-        groupBy = "venue";
-      }
-
-      match[groupBy] = {
-        $regex: new RegExp(`^${search}`, "i")
+      const group = {
+        _id: `$${groupBy}`
       };
 
-      const group = { _id: `$${groupBy}` };
-
       const pipeline = [];
+
+      if (project) {
+        pipeline.push(project);
+      }
 
       if (unwind) {
         pipeline.push(unwind);
       }
 
-      [
-        {
+      [{
           $match: match
         },
         {
@@ -43,11 +87,11 @@ module.exports = options => {
         },
         {
           $sort: {
-            _id: -1
+            _id: 1
           }
         },
         {
-          $limit: params.limit
+          $limit: limit
         }
       ].forEach(operation => {
         pipeline.push(operation);
@@ -64,22 +108,23 @@ module.exports = options => {
     logger.info("Retrieving autocomplete search from database");
 
     const params = req.query;
-    let { domain } = params;
-    let limit;
+    const {
+      domain,
+      limit
+    } = params;
 
-    params.limit = params.topN || 5;
+    params.limit = parseInt(limit, 10) || 5;
 
     if (!params.search) {
-      return res.status(404).send("INVALID_SEARCH_VALUE");
+      return res.status(400).send(JSON.stringify(commonErrorResponse.invalidField));
     }
 
     if (validDomains.indexOf(domain) >= 0) {
-      return autocomplete(
-        ({ domain, topN: limit = 5, search } = params)
-      ).then(results => {
+      return autocomplete(params).then(results => {
         res.send(JSON.stringify(results));
       });
     }
-    return res.status(404).send("INVALID_DOMAIN");
+
+    return res.status(400).send(JSON.stringify(commonErrorResponse.invalidDomain));
   };
 };

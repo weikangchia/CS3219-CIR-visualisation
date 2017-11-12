@@ -58,4 +58,4 @@ test-api-server:
         code: |
           cd backend-api
           npm install
-          npm test
+          npm run test-coverage

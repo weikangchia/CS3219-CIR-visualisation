@@ -6,8 +6,7 @@ const selects = {
   venue: "venue",
   keyphrase: "keyPhrases",
   year: "year",
-  paper:
-  "id title authors venue inCitations outCitations year abstract keyPhrases"
+  paper: "id title authors venue inCitations outCitations year abstract keyPhrases"
 };
 
 const entities = {
@@ -29,11 +28,12 @@ const entities = {
     getFilter(y, value) {
       if (y && value) {
         return {
-          'authors.name': value
+          "authors.name": value
         };
       }
       return {};
-    }
+    },
+    description: "Authors who have written the most number of papers"
   },
   venue: {
     select: selects.venue,
@@ -55,7 +55,8 @@ const entities = {
         filterY[y] = value;
       }
       return filterY;
-    }
+    },
+    description: "Conferences which have the most number of papers published in"
   },
   keyphrase: {
     select: selects.keyphrase,
@@ -72,10 +73,13 @@ const entities = {
     },
     getFilter(y, value) {
       if (y && value) {
-        return { keyPhrases: value };
+        return {
+          keyPhrases: value
+        };
       }
       return {};
-    }
+    },
+    description: "Keyphrases which are listed in the most number of papers"
   },
   year: {
     select: selects.year,
@@ -97,7 +101,8 @@ const entities = {
         filterY[y] = value;
       }
       return filterY;
-    }
+    },
+    description: "Year with the most number of papers written in"
   },
   paper: {
     select: selects.paper,
@@ -122,21 +127,15 @@ const entities = {
     },
     getFilter(y, value) {
       if (y && value) {
-        return { title: value };
+        return {
+          title: value
+        };
       }
       return {};
-    }
+    },
+    description: "Papers which are cited the most"
   }
 };
-
-function sanitizeXorY(xOrY) {
-  if (xOrY === "authors") {
-    xOrY = "author";
-  } else if (xOrY === "venues") {
-    xOrY = "venue";
-  }
-  return xOrY;
-}
 
 /**
  * Returns the topN x of y.
@@ -150,23 +149,31 @@ function getTopXofY(params) {
   return new Promise((resolve, reject) => {
     params = params || {};
     const topN = params.topN || 10;
-    let x = params.x || "paper";
-
-    x = sanitizeXorY(x);
-    const y = sanitizeXorY(params.y);
+    const {
+      x,
+      y
+    } = params;
 
     let filterY = {};
     if (entities[y]) {
-      const { getFilter } = entities[y];
+      const {
+        getFilter
+      } = entities[y];
       filterY = getFilter(y, params.value);
     }
 
     let select = "";
     let getGroupKeys;
     if (entities[x]) {
-      ({ select, getGroupKeys } = entities[x]);
+      ({
+        select,
+        getGroupKeys
+      } = entities[x]);
     } else {
-      ({ select, getGroupKeys } = entities.paper);
+      ({
+        select,
+        getGroupKeys
+      } = entities.paper);
     }
 
     let topX = {};
@@ -182,7 +189,9 @@ function getTopXofY(params) {
         papers.forEach(element => {
           const groupKeys = getGroupKeys(element);
           groupKeys.forEach(key => {
-            const { id } = key;
+            const {
+              id
+            } = key;
             topX[id] = topX[id] || [];
             topX[id] = Number(topX[id]) + Number(key.count);
             xObjArr[id] = key.obj;
@@ -202,17 +211,23 @@ function getTopXofY(params) {
 
         resolve(topX);
       }
-    })
-      .select(select)
-      .lean();
+    }).select(select).lean();
   });
 }
 
 function handler(options) {
-  ({ logger, db } = options);
+  ({
+    logger,
+    db
+  } = options);
 
   return (req, res) => {
     const params = req.query;
+    params.x = params.x || "paper";
+
+    if (!(params.x in entities)) {
+      params.x = "paper";
+    }
 
     getTopXofY(params).then(result => {
       const send = {
@@ -220,6 +235,7 @@ function handler(options) {
         x: params.x,
         y: params.y,
         value: params.value,
+        description: entities[params.x].description || "Description",
         results: result
       };
       res.send(JSON.stringify(send));

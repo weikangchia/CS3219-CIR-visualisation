@@ -1,0 +1,10 @@
+{
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "global-require": "off",
+    "no-unused-vars": "off"
+  }
+}

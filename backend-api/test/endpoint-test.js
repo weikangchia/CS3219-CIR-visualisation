@@ -1,6 +1,7 @@
 process.env.NODE_ENV = "test";
 process.env.PORT = 3001;
 
+const commonErrorResponse = require("../app/common").errorResponse;
 const sinon = require("sinon");
 const chai = require("chai");
 const chaiHttp = require("chai-http");
@@ -21,7 +22,8 @@ const options = {
   chaiHttp,
   chai,
   sinon,
-  server
+  server,
+  commonErrorResponse
 };
 
 before(done => {
@@ -51,6 +53,14 @@ describe("/GET trends/conference", () => {
 
 describe("/GET graphs/incitation", () => {
   require("./endpoints/graphsIncitation-test")(options);
+});
+
+describe("/GET graphs/coauthors", () => {
+  require("./endpoints/graphsCoauthors-test")(options);
+});
+
+describe("/GET autocomplete", () => {
+  require("./endpoints/autocomplete-test")(options);
 });
 
 describe("/GET top-X-of-Y", () => {

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="shortcut icon" href="./image/favicon.ico">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="./css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="./css/custom.css">
+
+  <link rel="stylesheet" href="./css/fakeLoader.css">
+
+  <link rel="stylesheet" href="./css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="./css/nouislider.min.css">
+
+  <script src="./js/d3.min.js"></script>
+  <script src="./js/d3plus.full.min.js"></script>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/angular.min.js"></script>
+  <script src="./js/fakeLoader.min.js"></script>
+  <script src="./js/nouislider.min.js"></script>
+  <script src="./js/wNumb.js"></script>
+  <script src="./js/axios.min.js"></script>
+  <script src="./js/popper.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
+
+  <script src="./js/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="css/jquery-ui.css">
+
+  <script src="./js/cirfakeloader.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/cir.js"></script>
+</head>
+
+<body ng-app="CIR">
+  <div ng-include="'nav.html'"></div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h1>Incitation Graph</h1>
+        <p>A citation graph for a base paper. Up to 3 levels of base paper citation is created (i.e. if the base paper is A, capture
+          up to C: A is cited by B, and B is cited by C, so A
+          <- B <- C) </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col col-12 col-md-8 order-2 order-md-1">
+        <div id="graph"></div>
+      </div>
+      <div class="col col-12 col-md-4 order-1 order-md-2">
+        <h5>Filtering</h5>
+
+        <form id="filterForm">
+          <div class="form-group">
+            <label for="title">Base Paper</label>
+            <input class="form-control" name="title" id="title" placeholder="Title">
+          </div>
+
+          <h6>Level &#40;<span id="current-level">2</span>&#41;</h6>
+          <div class="form-group row">
+            <div class="col-12">
+              <div id="slider"></div>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-10">
+              <button type="submit" class="btn btn-sm btn-primary">Submit</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- app ui -->
+    <script src="./js/app-ui/graphs-incitations.js"></script>
+</body>
+
+</html>

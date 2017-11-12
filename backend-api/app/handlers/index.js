@@ -9,6 +9,7 @@ module.exports = function (option) {
     trendConferenceHandler: require("./trendConferenceHandler")(option),
     trendKeyPhraseHandler: require("./trendKeyPhraseHandler")(option),
     autocompleteHandler: require("./autocompleteHandler")(option),
+    graphCoauthorsHandler: require("./graphCoauthorsHandler")(option),
     graphIncitationHandler: require("./graphIncitationHandler")(option)
   };
 };

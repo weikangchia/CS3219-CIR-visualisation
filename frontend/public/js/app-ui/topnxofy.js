@@ -9,46 +9,51 @@ cir.controller("QueryParamsController", [
     $scope.xCategories = [
       {
         display: "Papers",
-        key: "paper"
+        key: "paper",
+        itemId: i => i.title
       },
       {
         display: "Authors",
-        key: "authors"
+        key: "author",
+        itemId: i => i.name
       },
       {
         display: "Conferences",
-        key: "conference"
+        key: "venue",
+        itemId: i => i.venue
       },
       {
-        display: "Citations",
-        key: "citation"
+        display: "Key Phrase",
+        key: "keyphrase",
+        itemId: i => i.keyPhrase
       },
       {
-        display: "Venues",
-        key: "venues"
-      },
-      {
-        display: "Base Papers",
-        key: "base-papers"
+        display: "Year",
+        key: "year",
+        itemId: i => i.year
       }
     ];
 
     $scope.yCategories = [
       {
-        display: "Venue",
-        key: "venues"
+        display: "Papers",
+        key: "paper"
       },
       {
-        display: "Author",
-        key: "authors"
+        display: "Authors",
+        key: "author"
       },
       {
-        display: "Cited Author",
-        key: "cited-authors"
+        display: "Conferences",
+        key: "venue"
       },
       {
-        display: "Cited By Author",
-        key: "cited-by-authors"
+        display: "Key Phrase",
+        key: "keyphrase"
+      },
+      {
+        display: "Year",
+        key: "year"
       }
     ];
 
@@ -57,18 +62,18 @@ cir.controller("QueryParamsController", [
     $scope.query = {
       topN: parseInt(searchParams.get("topN")) || 3,
       xCategoryValue:
-        searchParams.get("x") || "authors" || $scope.xCategories[0]["key"],
+        searchParams.get("x") || "author" || $scope.xCategories[0]["key"],
       yCategoryValue:
-        searchParams.get("y") || "venues" || $scope.yCategories[0]["key"],
+        searchParams.get("y") || "venue" || $scope.yCategories[0]["key"],
       yValue: searchParams.get("value") || "ArXiv"
     };
 
     function transformDataIntoBarData(data) {
+      var itemId = _.find($scope.xCategories, { key: data.x }).itemId;
       var results = data.results;
       return results
         .map(record => {
-          record["id"] = record.x.name || record.x.title || record.x.id;
-          return record;
+          return { count: record.count, id: itemId(record.x) };
         })
         .sort((record1, record2) => {
           return record1.count - record2.count;
@@ -82,25 +87,16 @@ cir.controller("QueryParamsController", [
       .id("id");
 
     function displayVisualization(data) {
-      data = data || {
-        // test data
-        topN: "3",
-        x: "author",
-        y: "venue",
-        value: "arxiv",
-        results: [
-          {
-            name: "John Doe",
-            count: getRandomIntInclusive(1, 10)
-          },
-          {
-            name: "Jane Doe",
-            count: getRandomIntInclusive(1, 20)
-          }
-        ]
-      };
-
       var barData = transformDataIntoBarData(data);
+
+      if (barData.length == 0) {
+        return $("#barchart")
+          .html("No Data Available")
+          .css({
+            "text-align": "center",
+            "color": "red"
+          });
+      }
 
       var maxCount = barData.reduce(
         (max, record) => Math.max(max, record.count),
@@ -129,6 +125,18 @@ cir.controller("QueryParamsController", [
             ": " +
             data.value
         )
+        .title({
+          sub: data.description
+        })
+        .format({
+          text: (text, params) => {
+            if (text === "size") {
+              return "Count";
+            } else {
+              return d3plus.string.title(text, params);
+            }
+          }
+        })
         .order(d => barDataIds.indexOf(d))
         .draw();
     }

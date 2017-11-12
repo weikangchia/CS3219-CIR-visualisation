@@ -7,9 +7,6 @@ module.exports = function (options) {
     server
   } = options;
 
-  const invalidFieldCode = 400;
-  const invalidFieldMessage = "Missing field/invalid field.";
-
   let Paper;
   beforeEach(() => {
     Paper = mongoose.connection.model("Paper");
@@ -298,7 +295,7 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=venues&value=arxiv&x=keyphrase")
+      .get("/top-X-of-Y?topN=3&y=venue&value=arxiv&x=keyphrase")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
@@ -308,7 +305,7 @@ module.exports = function (options) {
         res.body.should.have.property("x");
         res.body.x.should.equal("keyphrase");
         res.body.should.have.property("y");
-        res.body.y.should.equal("venues");
+        res.body.y.should.equal("venue");
         res.body.should.have.property("value");
         res.body.value.should.equal("arxiv");
 
@@ -380,7 +377,7 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=keyphrase&value=CNN&x=venues")
+      .get("/top-X-of-Y?topN=3&y=keyphrase&value=CNN&x=venue")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
@@ -388,7 +385,7 @@ module.exports = function (options) {
         res.body.should.have.property("topN");
         res.body.topN.should.equal("3");
         res.body.should.have.property("x");
-        res.body.x.should.equal("venues");
+        res.body.x.should.equal("venue");
         res.body.should.have.property("y");
         res.body.y.should.equal("keyphrase");
         res.body.should.have.property("value");
@@ -429,7 +426,7 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=1&y=venue&x=venues")
+      .get("/top-X-of-Y?topN=1&y=venue&x=venue")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
@@ -437,7 +434,7 @@ module.exports = function (options) {
         res.body.should.have.property("topN");
         res.body.topN.should.equal("1");
         res.body.should.have.property("x");
-        res.body.x.should.equal("venues");
+        res.body.x.should.equal("venue");
         res.body.should.have.property("y");
         res.body.y.should.equal("venue");
 
@@ -584,7 +581,7 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=authors&value=Jing Li&x=keyphrase")
+      .get("/top-X-of-Y?topN=3&y=author&value=Jing Li&x=keyphrase")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
@@ -594,7 +591,7 @@ module.exports = function (options) {
         res.body.should.have.property("x");
         res.body.x.should.equal("keyphrase");
         res.body.should.have.property("y");
-        res.body.y.should.equal("authors");
+        res.body.y.should.equal("author");
         res.body.should.have.property("value");
         res.body.value.should.equal("Jing Li");
 
@@ -681,7 +678,7 @@ module.exports = function (options) {
 
     chai
       .request(server)
-      .get("/top-X-of-Y?topN=3&y=paper&value=Wireless diversity through network coding&x=authors")
+      .get("/top-X-of-Y?topN=3&y=paper&value=Wireless diversity through network coding&x=author")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
@@ -689,7 +686,7 @@ module.exports = function (options) {
         res.body.should.have.property("topN");
         res.body.topN.should.equal("3");
         res.body.should.have.property("x");
-        res.body.x.should.equal("authors");
+        res.body.x.should.equal("author");
         res.body.should.have.property("y");
         res.body.y.should.equal("paper");
         res.body.should.have.property("value");
@@ -726,7 +723,7 @@ module.exports = function (options) {
       });
   });
 
-  it("it should return 200", done => {
+  it("it should return 200 with default domain when invalid domain is used", done => {
     const expectedResult = [{
       _id: "59f5d5b6dfa15819497e8b3d",
       authors: [{
@@ -755,7 +752,7 @@ module.exports = function (options) {
         res.body.should.be.a("object");
 
         res.body.should.have.property("x");
-        res.body.x.should.equal("wrong");
+        res.body.x.should.equal("paper");
         res.body.should.have.property("y");
         res.body.y.should.equal("author");
 

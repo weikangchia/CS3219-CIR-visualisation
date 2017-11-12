@@ -15,17 +15,17 @@ module.exports = function (options) {
   let Paper;
   beforeEach(() => {
     Paper = mongoose.connection.model("Paper");
-    sinon.stub(Paper, "findOne");
+    sinon.stub(Paper, "find");
   });
 
   afterEach(() => {
-    Paper.findOne.restore();
+    Paper.find.restore();
   });
 
-  it("it should return 400 for empty title", done => {
+  it("it should return 400 for empty author", done => {
     chai
       .request(server)
-      .get("/graphs/incitation")
+      .get("/graphs/coauthors")
       .end((err, res) => {
         res.should.have.status(400);
         res.body.should.be.a("object");
@@ -36,28 +36,34 @@ module.exports = function (options) {
   });
 
   it("it should return 200", done => {
-    const expectedResult = {
-      id: 123,
-      authors: [],
-      title: "abc",
-      year: 2017,
-      abstract: "abstract test",
-      pdfUrls: [],
-      inCitations: ["246"]
-    };
+    const expectedResult = [
+      {
+        id: 123,
+        authors: [{
+          ids: 456,
+          name: "jack"
+        }]
+      },
+      {
+        id: 234,
+        authors: [{
+          ids: 456,
+          name: "jack"
+        }, {
+          ids: 789,
+          name: "mary"
+        }]
+      }
+    ];
 
-    Paper.findOne.yields(null, expectedResult);
+    Paper.find.yields(null, expectedResult);
 
     chai
       .request(server)
-      .get("/graphs/incitation?title=abc")
+      .get("/graphs/coauthors?author=abc")
       .end((err, res) => {
         res.should.have.status(200);
         res.body.should.be.a("object");
-        res.body.should.have.property("nodes");
-        res.body.should.have.property("links");
-
-        res.body.nodes.length.should.equal(1);
         done();
       });
   });

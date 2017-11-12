@@ -4,14 +4,15 @@ module.exports = function (options) {
     chai,
     chaiHttp,
     mongoose,
-    server
+    server,
+    commonErrorResponse
   } = options;
 
-  const invalidFieldCode = 400;
-  const invalidFieldMessage = "Missing field/invalid field.";
+  const {
+    invalidField
+  } = commonErrorResponse;
 
   let Paper;
-
   beforeEach(() => {
     Paper = mongoose.connection.model("Paper");
     sinon.stub(Paper, "find");
@@ -22,7 +23,8 @@ module.exports = function (options) {
   });
 
   it("it should GET an array of keyphrase trends", done => {
-    const expectedResult = [{
+    const expectedResult = [
+      {
         _id: "59f32bd4cd71fe9b08c653e9",
         year: 2015
       },
@@ -65,8 +67,8 @@ module.exports = function (options) {
       .end((err, res) => {
         res.should.have.status(400);
         res.body.should.be.a("object");
-        res.body.error.code.should.equal(invalidFieldCode);
-        res.body.error.message.should.equal(invalidFieldMessage);
+        res.body.error.code.should.equal(invalidField.error.code);
+        res.body.error.message.should.equal(invalidField.error.message);
         done();
       });
   });
