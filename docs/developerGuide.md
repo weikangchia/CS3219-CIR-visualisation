@@ -107,6 +107,14 @@ Below is the architecture diagram of the whole solution for this project.
 - **[<code>GET</code> graphs/incitation](endpoints/graphs/GET_incitation.md)**
 
 ## Testing
+
+### Before
+Before every test, execute the following command to ensure all dependency are installed.
+```
+npm install
+```
+
+### Run
 To run the test for the backend API codes, go to `backend-api` directory and execute: 
 ```
 npm test
