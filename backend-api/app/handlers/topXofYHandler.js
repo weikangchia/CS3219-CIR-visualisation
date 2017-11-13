@@ -1,5 +1,11 @@
+/**
+ * Handler for top x of y API.
+ */
+
 let logger;
 let db;
+
+const handlerName = "topXofYHandler";
 
 const selects = {
   author: "authors",
@@ -140,10 +146,10 @@ const entities = {
 /**
  * Returns the top N x of y.
  *
- * @param {integer} limit number of x (default is 10)
- * @param {string} x domain (default is paper)
- * @param {string} y range
- * @param {string} value of y
+ * @param {int} limit number of x (default is 10)
+ * @param {String} x domain (default is paper)
+ * @param {String} y range
+ * @param {String} value of y
  */
 function getTopXofY(params) {
   return new Promise((resolve, reject) => {
@@ -185,7 +191,6 @@ function getTopXofY(params) {
       if (err) {
         logger.info(err);
       } else {
-        logger.info(`${papers.length} results from DB found.`);
         papers.forEach(element => {
           const groupKeys = getGroupKeys(element);
           groupKeys.forEach(key => {
@@ -217,10 +222,10 @@ function getTopXofY(params) {
 
 
 /**
- * handle /top-X-of-Y API calls. Sends response in JSON format.
+ * Handle /top-X-of-Y API calls. Sends response in JSON format.
  *
- * @param {integer} logger used for logging
- * @param {string} db database object used for connecting
+ * @param {object} logger used for logging
+ * @param {object} db database object used for connecting
  */
 function handler(options) {
   ({
@@ -235,6 +240,11 @@ function handler(options) {
     if (!(params.x in entities)) {
       params.x = "paper";
     }
+
+    logger.info({
+      hander: handlerName,
+      x: params.x
+    });
 
     getTopXofY(params).then(result => {
       const send = {
