@@ -2,6 +2,12 @@ const winston = require("winston");
 const dotenv = require("dotenv");
 require("winston-loggly");
 
+/**
+ * Winston logger middleware.
+ *
+ * https://github.com/winstonjs/winston
+ */
+
 dotenv.load();
 
 const transports = [
@@ -13,6 +19,7 @@ const transports = [
   })
 ];
 
+// only in production, the logs will be sent Loggly
 if (process.env.NODE_ENV === "production") {
   transports.push(new winston.transports.Loggly({
     inputToken: process.env.LOGGLY_INPUT_TOKEN,

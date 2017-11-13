@@ -1,13 +1,15 @@
 const commonErrorResponse = require("../common").errorResponse;
 
+/**
+ * Handler for graph coauthors API.
+ */
+
 let logger;
 let db;
 
 const handlerName = "graphCoauthorsHandler";
 
 function minimizeAuthor(authorId, authorName, paper, level) {
-  // const selectedAuthor = paper.authors.find(author => author.ids[0] === authorId);
-
   return {
     id: authorId,
     level,

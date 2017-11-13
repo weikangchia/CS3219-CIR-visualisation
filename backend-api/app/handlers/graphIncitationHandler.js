@@ -1,5 +1,9 @@
 const commonErrorResponse = require("../common").errorResponse;
 
+/**
+ * Handler for graph incitation API.
+ */
+
 let logger;
 let db;
 

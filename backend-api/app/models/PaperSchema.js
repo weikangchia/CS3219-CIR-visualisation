@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 
+/**
+ * A schema for Paper.
+ */
+
 /* eslint prefer-destructuring: 0 */
 const Schema = mongoose.Schema;
 

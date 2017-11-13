@@ -1,5 +1,11 @@
 const commonErrorResponse = require("../common").errorResponse;
 
+/**
+ * Handler for autocomplete API.
+ */
+
+const handlerName = "autocompleteHandler";
+
 module.exports = options => {
   const {
     logger,
@@ -106,8 +112,6 @@ module.exports = options => {
   }
 
   return (req, res) => {
-    logger.info("Retrieving autocomplete search from database");
-
     const params = req.query;
     const {
       domain,
@@ -119,6 +123,11 @@ module.exports = options => {
     if (!params.search) {
       return res.status(400).send(JSON.stringify(commonErrorResponse.invalidField));
     }
+
+    logger.info({
+      handler: handlerName,
+      search: params.search
+    });
 
     if (validDomains.indexOf(domain) >= 0) {
       return autocomplete(params).then(results => {

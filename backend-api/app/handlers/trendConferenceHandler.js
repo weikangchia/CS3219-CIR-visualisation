@@ -1,5 +1,9 @@
 const commonErrorResponse = require("../common").errorResponse;
 
+/**
+ * Handler for trends conference API.
+ */
+
 let db;
 let logger;
 
@@ -18,7 +22,7 @@ async function getPapers(pipeStages) {
 /**
  * Returns an array of data of the conference trends.
  *
- * @param {string} name
+ * @param {String} name
  * @param {int} minYear
  * @param {int} maxYear
  */

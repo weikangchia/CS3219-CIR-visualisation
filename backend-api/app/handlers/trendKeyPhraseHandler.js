@@ -1,5 +1,9 @@
 const commonErrorResponse = require("../common").errorResponse;
 
+/**
+ * Handler for trends keyphrase API.
+ */
+
 let db;
 let logger;
 
@@ -18,7 +22,7 @@ async function getPapers(filter, projection) {
 /**
  * Returns an array of data of the keyphrase trends.
  *
- * @param {string} phrase
+ * @param {String} phrase
  * @param {int} minYear
  * @param {int} maxYear
  */
